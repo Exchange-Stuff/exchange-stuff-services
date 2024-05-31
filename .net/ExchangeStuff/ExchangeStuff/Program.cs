@@ -1,4 +1,4 @@
-using ExchangeStuff.Infrastructure.Extensions;
+using ExchangeStuff.Service.Extensions;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.

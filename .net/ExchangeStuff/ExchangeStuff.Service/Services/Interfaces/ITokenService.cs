@@ -1,7 +1,7 @@
-﻿using ExchangeStuff.Application.DTOs;
-using ExchangeStuff.Core.Entities;
+﻿using ExchangeStuff.Core.Entities;
+using ExchangeStuff.Service.DTOs;
 
-namespace ExchangeStuff.Application.Services
+namespace ExchangeStuff.Service.Services.Interfaces
 {
     public interface ITokenService
     {

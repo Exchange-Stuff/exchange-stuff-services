@@ -1,6 +1,6 @@
 ﻿using ExchangeStuff.Core.Common;
 
-namespace ExchangeStuff.Application.DTOs
+namespace ExchangeStuff.Service.DTOs
 {
     public class ClaimDTO:BaseEntity<Guid>
     {

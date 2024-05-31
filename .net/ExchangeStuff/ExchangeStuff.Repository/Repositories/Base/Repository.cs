@@ -1,7 +1,7 @@
 ﻿using ExchangeStuff.Core.Repositories.Base;
 using System.Linq.Expressions;
 
-namespace ExchangeStuff.Infrastructure.Repositories.Base
+namespace ExchangeStuff.Repository.Repositories.Base
 {
     public class Repository<T> : IRepository<T> where T : class
     {

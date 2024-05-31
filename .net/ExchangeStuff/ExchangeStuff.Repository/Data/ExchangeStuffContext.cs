@@ -1,10 +1,10 @@
-﻿using ExchangeStuff.Application.Services;
-using ExchangeStuff.Core.Common;
+﻿using ExchangeStuff.Core.Common;
 using ExchangeStuff.Core.Entities;
+using ExchangeStuff.CurrentUser.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
-namespace ExchangeStuff.Infrastructure.Persistents
+namespace ExchangeStuff.Repository.Data
 {
     public class ExchangeStuffContext : DbContext
     {

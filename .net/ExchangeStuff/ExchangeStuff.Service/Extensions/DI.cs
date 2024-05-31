@@ -1,14 +1,13 @@
-﻿using ExchangeStuff.Application;
-using ExchangeStuff.Application.Services;
-using ExchangeStuff.Core.Uows;
-using ExchangeStuff.Infrastructure.Persistents;
-using ExchangeStuff.Infrastructure.Services;
-using ExchangeStuff.Infrastructure.Uows;
+﻿using ExchangeStuff.Core.Uows;
+using ExchangeStuff.Repository.Data;
+using ExchangeStuff.Repository.Uows;
+using ExchangeStuff.Service.Services.Impls;
+using ExchangeStuff.Service.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace ExchangeStuff.Infrastructure.Extensions
+namespace ExchangeStuff.Service.Extensions
 {
     public static class DI
     {
@@ -17,7 +16,6 @@ namespace ExchangeStuff.Infrastructure.Extensions
             services.AddDbContext<ExchangeStuffContext>(x => x.UseSqlServer("TODO"));
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<ITokenService, TokenService>();
-            services.AddMediatR(x => x.RegisterServicesFromAssembly(typeof(ApplicationMediatr).Assembly));
         }
     }
 }

@@ -1,8 +1,6 @@
-﻿using ExchangeStuff.Application.Services;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
+﻿using ExchangeStuff.Service.Services.Interfaces;
 
-namespace ExchangeStuff.Infrastructure.Services
+namespace ExchangeStuff.Service.Services.Impls
 {
     public class IdentityUser<T> : IIdentityUser<T>
     {
@@ -10,7 +8,7 @@ namespace ExchangeStuff.Infrastructure.Services
 
         public IdentityUser(ITokenService tokenService)
         {
-            _tokenService=tokenService;
+            _tokenService = tokenService;
         }
 
         public T UserId

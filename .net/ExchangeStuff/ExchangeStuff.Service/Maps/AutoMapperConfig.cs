@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 
-namespace ExchangeStuff.Application.Maps
+namespace ExchangeStuff.Service.Maps
 {
     public class AutoMapperConfig
     {

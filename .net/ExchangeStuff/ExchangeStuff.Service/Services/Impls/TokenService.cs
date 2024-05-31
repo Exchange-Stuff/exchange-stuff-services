@@ -1,8 +1,8 @@
-﻿using ExchangeStuff.Application.DTOs;
-using ExchangeStuff.Application.Services;
-using ExchangeStuff.Core.Entities;
+﻿using ExchangeStuff.Core.Entities;
+using ExchangeStuff.Service.DTOs;
+using ExchangeStuff.Service.Services.Interfaces;
 
-namespace ExchangeStuff.Infrastructure.Services
+namespace ExchangeStuff.Service.Services.Impls
 {
     public class TokenService : ITokenService
     {
