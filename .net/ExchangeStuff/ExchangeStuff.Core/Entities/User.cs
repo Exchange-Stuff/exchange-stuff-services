@@ -38,11 +38,11 @@ namespace ExchangeStuff.Core.Entities
 
         public Campus Campus { get; set; }
         public UserBalance  UserBalance { get; set; }
-        public Role Role { get; set; }
-        public ICollection<Comment> Comments { get; set; }
-        public ICollection<FinancialTicket> FinancialTickets { get; set; }
-        public ICollection<PostTicket> PostTickets { get; set; }
-        public ICollection<PurchaseTicket> PurchaseTickets { get; set; }
+        public ICollection<PermissionGroup> PermissionGroups { get; set; }
+        public ICollection<Comment>? Comments { get; set; }
+        public ICollection<FinancialTicket>? FinancialTickets { get; set; }
+        public ICollection<PostTicket>? PostTickets { get; set; }
+        public ICollection<PurchaseTicket>? PurchaseTickets { get; set; }
 
     }
 }

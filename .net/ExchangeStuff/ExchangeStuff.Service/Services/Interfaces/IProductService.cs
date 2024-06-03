@@ -1,7 +1,6 @@
 ﻿namespace ExchangeStuff.Service.Services.Interfaces
 {
-    public interface IIdentityUser<T>
+    public interface IProductService
     {
-        public T UserId { get; }
     }
 }

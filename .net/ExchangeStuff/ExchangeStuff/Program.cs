@@ -1,3 +1,4 @@
+using ExchangeStuff.Repository.Data;
 using ExchangeStuff.Service.Extensions;
 var builder = WebApplication.CreateBuilder(args);
 

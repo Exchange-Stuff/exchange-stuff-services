@@ -8,7 +8,7 @@ namespace ExchangeStuff.Core.Repositories.Base
 
         Task<T> GetOneAsync(Expression<Func<T, bool>> predicate, string? include = null!);
 
-        List<T> GetManyAsync(Expression<Func<T, bool>> predicate = null!, string? include = null!, int? pageIndex = null,
+        Task<List<T>> GetManyAsync(Expression<Func<T, bool>>? predicate = null!, string? include = null!, int? pageIndex = null,
           int? pageSize = null, Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null!);
 
         void Remove(T entity);
