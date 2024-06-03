@@ -12,10 +12,10 @@
 
   <ItemGroup>
     <Folder Include="Controllers\" />
+    <Folder Include="Exceptions\" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ExchangeStuff.Application\ExchangeStuff.Service.csproj" />
     <ProjectReference Include="..\ExchangeStuff.Service\ExchangeStuff.Service.csproj" />
   </ItemGroup>
 

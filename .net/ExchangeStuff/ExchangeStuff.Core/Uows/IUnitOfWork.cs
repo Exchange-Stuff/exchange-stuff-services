@@ -1,6 +1,10 @@
-﻿namespace ExchangeStuff.Core.Uows
+﻿using ExchangeStuff.Core.Repositories;
+
+namespace ExchangeStuff.Core.Uows
 {
-    public class IUnitOfWork
+    public interface IUnitOfWork
     {
+        IUserRepository UserRepository { get; }
+        Task<int> SaveChangeAsync();
     }
 }

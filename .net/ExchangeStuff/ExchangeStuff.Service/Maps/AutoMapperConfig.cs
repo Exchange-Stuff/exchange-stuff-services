@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using ExchangeStuff.Core.Entities;
+using ExchangeStuff.Service.Models.Products;
 
 namespace ExchangeStuff.Service.Maps
 {
@@ -18,6 +20,9 @@ namespace ExchangeStuff.Service.Maps
 
     public class MapperHandler : Profile
     {
-
+        public MapperHandler()
+        {
+            CreateMap<Product, ProductViewModel>();
+        }
     }
 }

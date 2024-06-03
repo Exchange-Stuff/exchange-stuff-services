@@ -1,4 +1,5 @@
 ﻿using ExchangeStuff.Core.Common;
+using ExchangeStuff.Core.Enums;
 
 namespace ExchangeStuff.Core.Entities
 {
@@ -7,7 +8,7 @@ namespace ExchangeStuff.Core.Entities
         public double Amount { get; set; }
         public Guid UserId { get; set; }
         public bool IsCredit { get; set; }
-        public bool IsAccepted { get; set; }
+        public FinancialTicketStatus Status { get; set; }
         public User User { get; set; }
     }
 }

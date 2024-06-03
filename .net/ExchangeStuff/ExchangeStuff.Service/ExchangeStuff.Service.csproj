@@ -13,8 +13,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ExchangeStuff.Infrastructure\ExchangeStuff.Repository.csproj" />
     <ProjectReference Include="..\ExchangeStuff.Repository\ExchangeStuff.Repository.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Models\Images\" />
+    <Folder Include="Models\Categories\" />
+    <Folder Include="Models\Comments\" />
   </ItemGroup>
 
 </Project>

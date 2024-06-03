@@ -16,6 +16,7 @@ namespace ExchangeStuff.Service.Extensions
             services.AddDbContext<ExchangeStuffContext>(x => x.UseSqlServer("TODO"));
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<ITokenService, TokenService>();
+            services.AddScoped<IProductService, ProductService>();
         }
     }
 }
