@@ -18,7 +18,6 @@
 
   <ItemGroup>
     <Folder Include="Models\Images\" />
-    <Folder Include="Models\Categories\" />
     <Folder Include="Models\Comments\" />
   </ItemGroup>
 

@@ -13,9 +13,12 @@ namespace ExchangeStuff.Repository.Uows
         {
             _context = exchangeStuffContext;
             UserRepository = new UserRepository(_context);
+            CategoryRepository = new CategoryRepository(_context);
         }
 
         public IUserRepository UserRepository { get; private set; }
+
+        public ICategoryRepository CategoryRepository { get; private set; }
 
         public async Task<int> SaveChangeAsync()
         => await _context.SaveChangesAsync();
