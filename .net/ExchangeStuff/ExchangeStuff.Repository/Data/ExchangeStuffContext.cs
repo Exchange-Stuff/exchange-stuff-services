@@ -20,12 +20,8 @@ namespace ExchangeStuff.Repository.Data
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-            => optionsBuilder.UseSqlServer("Data Source=DESKTOP-KESBSLV\\SQLEXPRESS;Initial Catalog=ExchangeStuff;Integrated Security=True;Encrypt=False;Trust Server Certificate=True");
+            => optionsBuilder.UseSqlServer("Data Source=(local);Initial Catalog=ExchangeStuff;Integrated Security=True;Encrypt=False;Trust Server Certificate=True");
 
-        /// <summary>
-        /// Use later
-        /// </summary>
-        /// <returns></returns>
         private string GetConnectionString()
         {
             IConfigurationRoot configurationRoot = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("appsettings.json", true, true).Build();
@@ -49,6 +45,25 @@ namespace ExchangeStuff.Repository.Data
         public DbSet<Resource> Resources { get; set; }
         public DbSet<Permission> Permissions { get; set; }
         public DbSet<ExchangeStuff.Core.Entities.Action> Actions { get; set; }
+        public DbSet<Moderator> Moderators { get; set; }
+        public DbSet<Admin> Admins { get; set; }
+
+
+        /// <summary>
+        /// TPH
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        //protected override void OnModelCreating(ModelBuilder modelBuilder)
+        //{
+        //    base.OnModelCreating(modelBuilder);
+        //    modelBuilder.Entity<User>()
+        //        .ToTable("Users");
+        //    modelBuilder.Entity<Admin>()
+        //        .ToTable("Admins");
+        //    modelBuilder.Entity<Moderator>()
+        //      .ToTable("Moderators");
+        //}
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
@@ -57,13 +72,13 @@ namespace ExchangeStuff.Repository.Data
                 switch (entry.State)
                 {
                     case EntityState.Added:
-                        entry.Entity.CreatedBy = _identityUser.UserId;
+                        entry.Entity.CreatedBy = _identityUser.AccountId;
                         entry.Entity.CreatedOn = DateTime.Now;
-                        entry.Entity.ModifiedBy = _identityUser.UserId;
+                        entry.Entity.ModifiedBy = _identityUser.AccountId;
                         entry.Entity.ModifiedOn = DateTime.Now;
                         break;
                     case EntityState.Modified:
-                        entry.Entity.ModifiedBy = _identityUser.UserId;
+                        entry.Entity.ModifiedBy = _identityUser.AccountId;
                         entry.Entity.ModifiedOn = DateTime.Now;
                         break;
                 }

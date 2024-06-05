@@ -1,6 +1,6 @@
 ﻿namespace ExchangeStuff.Core.Entities
 {
-    public class Admin : Account
+    public class Moderator : Account
     {
     }
 }

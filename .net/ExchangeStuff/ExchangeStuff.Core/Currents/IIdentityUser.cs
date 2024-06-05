@@ -2,6 +2,6 @@
 {
     public interface IIdentityUser<T>
     {
-        public T UserId { get; }
+        public T AccountId { get; }
     }
 }

@@ -22,6 +22,21 @@ namespace ExchangeStuff.Repository.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("AccountPermissionGroup", b =>
+                {
+                    b.Property<Guid>("AccountsId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("PermissionGroupsId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("AccountsId", "PermissionGroupsId");
+
+                    b.HasIndex("PermissionGroupsId");
+
+                    b.ToTable("AccountPermissionGroup");
+                });
+
             modelBuilder.Entity("CategoryProduct", b =>
                 {
                     b.Property<Guid>("CategoriesId")
@@ -35,6 +50,60 @@ namespace ExchangeStuff.Repository.Migrations
                     b.HasIndex("ProductsId");
 
                     b.ToTable("CategoryProduct");
+                });
+
+            modelBuilder.Entity("ExchangeStuff.Core.Entities.Account", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasMaxLength(13)
+                        .HasColumnType("nvarchar(13)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<Guid>("ModifiedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("ModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Thumbnail")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Account");
+
+                    b.HasDiscriminator<string>("Discriminator").HasValue("Account");
+
+                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("ExchangeStuff.Core.Entities.Action", b =>
@@ -142,6 +211,9 @@ namespace ExchangeStuff.Repository.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid>("AccountId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Content")
                         .IsRequired()
                         .HasMaxLength(500)
@@ -162,14 +234,11 @@ namespace ExchangeStuff.Repository.Migrations
                     b.Property<Guid>("ProductId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("ProductId");
+                    b.HasIndex("AccountId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("ProductId");
 
                     b.ToTable("Comments");
                 });
@@ -366,6 +435,9 @@ namespace ExchangeStuff.Repository.Migrations
                     b.Property<double>("Price")
                         .HasColumnType("float");
 
+                    b.Property<int>("ProductStatus")
+                        .HasColumnType("int");
+
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
@@ -490,6 +562,9 @@ namespace ExchangeStuff.Repository.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid>("AccountId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
 
@@ -506,12 +581,9 @@ namespace ExchangeStuff.Repository.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("AccountId");
 
                     b.ToTable("Tokens");
                 });
@@ -553,78 +625,6 @@ namespace ExchangeStuff.Repository.Migrations
                     b.ToTable("TransactionHistories");
                 });
 
-            modelBuilder.Entity("ExchangeStuff.Core.Entities.User", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Address")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<Guid>("CampusId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("CreatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<int?>("Gender")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsActived")
-                        .HasColumnType("bit");
-
-                    b.Property<Guid>("ModifiedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("ModifiedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
-
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Phone")
-                        .HasMaxLength(12)
-                        .HasColumnType("nvarchar(12)");
-
-                    b.Property<Guid>("RoleId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("StudentId")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
-
-                    b.Property<string>("Thumbnail")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Username")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CampusId");
-
-                    b.ToTable("Users");
-                });
-
             modelBuilder.Entity("ExchangeStuff.Core.Entities.UserBalance", b =>
                 {
                     b.Property<Guid>("UserId")
@@ -653,19 +653,64 @@ namespace ExchangeStuff.Repository.Migrations
                     b.ToTable("ImageProduct");
                 });
 
-            modelBuilder.Entity("PermissionGroupUser", b =>
+            modelBuilder.Entity("ExchangeStuff.Core.Entities.Admin", b =>
                 {
-                    b.Property<Guid>("PermissionGroupsId")
+                    b.HasBaseType("ExchangeStuff.Core.Entities.Account");
+
+                    b.HasDiscriminator().HasValue("Admin");
+                });
+
+            modelBuilder.Entity("ExchangeStuff.Core.Entities.Moderator", b =>
+                {
+                    b.HasBaseType("ExchangeStuff.Core.Entities.Account");
+
+                    b.HasDiscriminator().HasValue("Moderator");
+                });
+
+            modelBuilder.Entity("ExchangeStuff.Core.Entities.User", b =>
+                {
+                    b.HasBaseType("ExchangeStuff.Core.Entities.Account");
+
+                    b.Property<string>("Address")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<Guid>("CampusId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("UsersId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int?>("Gender")
+                        .HasColumnType("int");
 
-                    b.HasKey("PermissionGroupsId", "UsersId");
+                    b.Property<bool>("IsActived")
+                        .HasColumnType("bit");
 
-                    b.HasIndex("UsersId");
+                    b.Property<string>("Phone")
+                        .HasMaxLength(12)
+                        .HasColumnType("nvarchar(12)");
 
-                    b.ToTable("PermissionGroupUser");
+                    b.Property<string>("StudentId")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.HasIndex("CampusId");
+
+                    b.HasDiscriminator().HasValue("User");
+                });
+
+            modelBuilder.Entity("AccountPermissionGroup", b =>
+                {
+                    b.HasOne("ExchangeStuff.Core.Entities.Account", null)
+                        .WithMany()
+                        .HasForeignKey("AccountsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ExchangeStuff.Core.Entities.PermissionGroup", null)
+                        .WithMany()
+                        .HasForeignKey("PermissionGroupsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("CategoryProduct", b =>
@@ -685,15 +730,15 @@ namespace ExchangeStuff.Repository.Migrations
 
             modelBuilder.Entity("ExchangeStuff.Core.Entities.Comment", b =>
                 {
-                    b.HasOne("ExchangeStuff.Core.Entities.Product", "Product")
+                    b.HasOne("ExchangeStuff.Core.Entities.Account", "User")
                         .WithMany("Comments")
-                        .HasForeignKey("ProductId")
+                        .HasForeignKey("AccountId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ExchangeStuff.Core.Entities.User", "User")
+                    b.HasOne("ExchangeStuff.Core.Entities.Product", "Product")
                         .WithMany("Comments")
-                        .HasForeignKey("UserId")
+                        .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -783,13 +828,13 @@ namespace ExchangeStuff.Repository.Migrations
 
             modelBuilder.Entity("ExchangeStuff.Core.Entities.Token", b =>
                 {
-                    b.HasOne("ExchangeStuff.Core.Entities.User", "User")
+                    b.HasOne("ExchangeStuff.Core.Entities.Account", "Account")
                         .WithMany()
-                        .HasForeignKey("UserId")
+                        .HasForeignKey("AccountId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("User");
+                    b.Navigation("Account");
                 });
 
             modelBuilder.Entity("ExchangeStuff.Core.Entities.TransactionHistory", b =>
@@ -801,17 +846,6 @@ namespace ExchangeStuff.Repository.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("ExchangeStuff.Core.Entities.User", b =>
-                {
-                    b.HasOne("ExchangeStuff.Core.Entities.Campus", "Campus")
-                        .WithMany("Users")
-                        .HasForeignKey("CampusId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Campus");
                 });
 
             modelBuilder.Entity("ExchangeStuff.Core.Entities.UserBalance", b =>
@@ -840,19 +874,20 @@ namespace ExchangeStuff.Repository.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("PermissionGroupUser", b =>
+            modelBuilder.Entity("ExchangeStuff.Core.Entities.User", b =>
                 {
-                    b.HasOne("ExchangeStuff.Core.Entities.PermissionGroup", null)
-                        .WithMany()
-                        .HasForeignKey("PermissionGroupsId")
+                    b.HasOne("ExchangeStuff.Core.Entities.Campus", "Campus")
+                        .WithMany("Users")
+                        .HasForeignKey("CampusId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ExchangeStuff.Core.Entities.User", null)
-                        .WithMany()
-                        .HasForeignKey("UsersId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("Campus");
+                });
+
+            modelBuilder.Entity("ExchangeStuff.Core.Entities.Account", b =>
+                {
+                    b.Navigation("Comments");
                 });
 
             modelBuilder.Entity("ExchangeStuff.Core.Entities.Campus", b =>
@@ -877,8 +912,6 @@ namespace ExchangeStuff.Repository.Migrations
 
             modelBuilder.Entity("ExchangeStuff.Core.Entities.User", b =>
                 {
-                    b.Navigation("Comments");
-
                     b.Navigation("FinancialTickets");
 
                     b.Navigation("PostTickets");

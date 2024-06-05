@@ -12,18 +12,18 @@ namespace ExchangeStuff.Service.Services.Impls
             _tokenService = tokenService;
         }
 
-        public T UserId
+        public T AccountId
         {
             get
             {
                 var claim = _tokenService.GetClaimDTOByAccessTokenSynchronous();
 
-                Guid userId = Guid.Empty;
+                Guid accId = Guid.Empty;
                 if (claim != null!)
                 {
-                    userId = claim.Id;
+                    accId = claim.Id;
                 }
-                return (T)Convert.ChangeType(userId, typeof(T));
+                return (T)Convert.ChangeType(accId, typeof(T));
             }
         }
     }

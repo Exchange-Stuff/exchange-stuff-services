@@ -6,7 +6,7 @@ namespace ExchangeStuff.Core.Entities
     {
         public string AccessToken { get; set; }
         public string RefreshToken { get; set; }
-        public Guid UserId { get; set; }
-        public User User { get; set; }
+        public Guid AccountId { get; set; }
+        public Account Account { get; set; }
     }
 }

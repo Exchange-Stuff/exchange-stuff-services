@@ -8,6 +8,6 @@ namespace ExchangeStuff.Core.Entities
         [MaxLength(10)]
         public string Name { get; set; }
         public bool IsActived { get; set; }
-        public ICollection<User> Users { get; set; }
+        public ICollection<Account> Accounts { get; set; }
     }
 }
