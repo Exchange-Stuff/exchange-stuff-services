@@ -14,7 +14,6 @@ namespace ExchangeStuff.Service.Services.Impls
         public ProductService(IIdentityUser<Guid> identity)
         {
             _identityUser = identity;
-         
         }
     }
 }

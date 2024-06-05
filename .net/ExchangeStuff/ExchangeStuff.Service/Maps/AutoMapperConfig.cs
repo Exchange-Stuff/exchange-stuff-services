@@ -22,7 +22,7 @@ namespace ExchangeStuff.Service.Maps
     {
         public MapperHandler()
         {
-            CreateMap<Product, ProductViewModel>();
+            CreateMap<Product, ProductViewModel>().ReverseMap();
         }
     }
 }
