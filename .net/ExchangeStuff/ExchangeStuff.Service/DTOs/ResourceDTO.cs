@@ -2,8 +2,9 @@
 
 namespace ExchangeStuff.Service.DTOs
 {
-    public class ClaimDTO:BaseEntity<Guid>
+    public class ResourceDTO:BaseEntity<Guid>
     {
-        public string Email { get; set; }
+        public string Name { get; set; }
+
     }
 }

@@ -6,6 +6,11 @@ namespace ExchangeStuff.Core.Uows
     {
         ICategoryRepository CategoryRepository { get; }
         IUserRepository UserRepository { get; }
+        ITokenRepository TokenRepository { get; }
+        IAccountRepository AccountRepository { get; }
+        IPermissionRepository PermissionRepository { get; }
+        IActionRepository ActionRepository { get; }
+
         Task<int> SaveChangeAsync();
     }
 }

@@ -18,6 +18,8 @@ namespace ExchangeStuff.Service.Extensions
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<ICacheService, CacheService>();
+
         }
     }
 }

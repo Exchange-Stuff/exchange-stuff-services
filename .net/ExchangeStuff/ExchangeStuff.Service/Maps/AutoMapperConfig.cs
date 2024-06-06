@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using ExchangeStuff.Core.Entities;
+using ExchangeStuff.Service.DTOs;
 using ExchangeStuff.Service.Models.Categories;
 using ExchangeStuff.Service.Models.Products;
 
@@ -25,6 +26,8 @@ namespace ExchangeStuff.Service.Maps
         {
             CreateMap<Product, ProductViewModel>().ReverseMap();
             CreateMap<Category, CategoryViewModel>().ReverseMap();
+            CreateMap<PermissionGroup, PermissionGroupDTO>().ReverseMap();
+            CreateMap<Permission, PermissionDTO>().ReverseMap();
         }
     }
 }
