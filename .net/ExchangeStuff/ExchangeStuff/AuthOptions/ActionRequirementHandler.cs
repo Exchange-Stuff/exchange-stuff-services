@@ -1,7 +1,6 @@
 ﻿using ExchangeStuff.AuthModels;
 using ExchangeStuff.Responses;
 using ExchangeStuff.Service.DTOs;
-using ExchangeStuff.Service.Services.Impls;
 using ExchangeStuff.Service.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Newtonsoft.Json;

@@ -1,4 +1,4 @@
-using ExchangeStuff.Repository.Data;
+using ExchangeStuff.Extensions;
 using ExchangeStuff.Service.Extensions;
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,7 +9,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.Inject(builder.Configuration);
- 
+builder.Services.InjectAPI(builder.Configuration);
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
