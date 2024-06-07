@@ -13,9 +13,18 @@ namespace ExchangeStuff.Repository.Uows
         {
             _context = exchangeStuffContext;
             UserRepository = new UserRepository(_context);
+            CommentRepository = new CommentRepository(_context);
+            ImageRepository = new ImageRepository(_context);
+            RatingRepository = new RatingRepository(_context);
         }
 
         public IUserRepository UserRepository { get; private set; }
+
+        public IImageRepository ImageRepository {  get; private set; }
+
+        public ICommentRepository CommentRepository {  get; private set; }
+
+        public IRatingRepository RatingRepository {  get; private set; }
 
         public async Task<int> SaveChangeAsync()
         => await _context.SaveChangesAsync();
