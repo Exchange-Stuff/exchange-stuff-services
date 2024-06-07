@@ -20,6 +20,8 @@
     <Folder Include="Models\Images\" />
     <Folder Include="Models\Categories\" />
     <Folder Include="Models\Comments\" />
+    <Folder Include="Models\Categories\" />
+    <Folder Include="Models\CategoryProduct\" />
   </ItemGroup>
 
 </Project>
