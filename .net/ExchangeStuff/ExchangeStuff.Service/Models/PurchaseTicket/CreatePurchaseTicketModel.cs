@@ -13,12 +13,6 @@ namespace ExchangeStuff.Service.Models.PurchaseTicket
     {
         public double Amount { get; set; }
         public Guid ProductId { get; set; }
-        public string StudentId { get; set; }
-        [MaxLength(50)]
-        public string Email { get; set; }
-        public Guid UserId { get; set; }
         public int Quantity { get; set; }
-        [MaxLength(30)]
-        public PurchaseTicketStatus Status { get; set; }
     }
 }

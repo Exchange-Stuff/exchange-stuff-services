@@ -6,6 +6,7 @@ using ExchangeStuff.Service.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Identity.Client;
 
 namespace ExchangeStuff.Service.Extensions
 {
@@ -17,6 +18,8 @@ namespace ExchangeStuff.Service.Extensions
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IProductService, ProductService>();
+            services.AddScoped<ITransactionHistoryService, TransactionHistoryService>();
+            services.AddScoped<IPurchaseTicketService, PurchaseTicketService>();
         }
     }
 }

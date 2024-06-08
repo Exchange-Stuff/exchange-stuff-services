@@ -3,7 +3,7 @@ using ExchangeStuff.Core.Repositories.Base;
 
 namespace ExchangeStuff.Core.Repositories
 {
-    public interface IPurchaseTicketRepository : IRepository<PurchaseTicket>
+    public interface IAccountRepository : IRepository<Account>
     {
     }
 }
