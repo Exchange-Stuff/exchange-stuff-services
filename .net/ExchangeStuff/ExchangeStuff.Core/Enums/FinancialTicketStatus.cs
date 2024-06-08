@@ -2,5 +2,8 @@
 {
     public enum FinancialTicketStatus
     {
+        Pending,
+        Approve,
+        Reject
     }
 }
