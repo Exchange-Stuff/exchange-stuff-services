@@ -48,9 +48,9 @@ namespace ExchangeStuff.Service.Services.Impls
                 var result = await _unitOfWork.SaveChangeAsync();
                 return result > 0 ? AutoMapperConfig.Mapper.Map<PurchaseTicketViewModel>(purchaseTicket) : throw new Exception("Create purchase ticket fail");
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw new Exception("Server error");
+                throw new Exception(ex.Message);
             }
 
         }
@@ -76,11 +76,11 @@ namespace ExchangeStuff.Service.Services.Impls
             }
             catch (Exception ex)
             {
-                throw new Exception("Server error");
+                throw new Exception(ex.Message);
             }
         }
 
-        public async Task<List<PurchaseTicketViewModel>> GetListPurchaseTicketByUserId(Guid userId, int pageSize, int pageIndex, PurchaseTicketStatus? status = null!)
+        public async Task<List<PurchaseTicketViewModel>> GetListPurchaseTicketByUserId(int pageSize, int pageIndex, PurchaseTicketStatus? status = null!)
         {
             try
             {
@@ -88,12 +88,12 @@ namespace ExchangeStuff.Service.Services.Impls
                 if (status.HasValue)
                 {
                     listTicket = await _purchaseTicketRepository.GetManyAsync(
-                        pageSize: pageSize, pageIndex: pageIndex, predicate: p => p.Status.Equals(status) && p.UserId.Equals(userId), orderBy: p => p.OrderBy(p => p.CreatedOn));
+                        pageSize: pageSize, pageIndex: pageIndex, predicate: p => p.Status.Equals(status) && p.UserId.Equals(_identityUser.AccountId), orderBy: p => p.OrderBy(p => p.CreatedOn));
                 }
                 else
                 {
                     listTicket = await _purchaseTicketRepository.GetManyAsync(
-                        pageSize: pageSize, pageIndex: pageIndex, predicate: p => p.UserId.Equals(userId), orderBy: p => p.OrderBy(p => p.CreatedOn));
+                        pageSize: pageSize, pageIndex: pageIndex, predicate: p => p.UserId.Equals(_identityUser.AccountId), orderBy: p => p.OrderBy(p => p.CreatedOn));
                 }
 
                 var result = AutoMapperConfig.Mapper.Map<List<PurchaseTicketViewModel>>(listTicket);
@@ -101,7 +101,7 @@ namespace ExchangeStuff.Service.Services.Impls
             }
             catch (Exception ex)
             {
-                throw new Exception("Server error");
+                throw new Exception(ex.Message);
             }
         }
 
@@ -116,7 +116,7 @@ namespace ExchangeStuff.Service.Services.Impls
             }
             catch (Exception ex)
             {
-                throw new Exception("Server error");
+                throw new Exception(ex.Message);
             }
         }
 
@@ -133,9 +133,9 @@ namespace ExchangeStuff.Service.Services.Impls
                 var result = await _unitOfWork.SaveChangeAsync();
                 return result > 0 ? AutoMapperConfig.Mapper.Map<PurchaseTicketViewModel>(ticket) : throw new Exception("Update purchase ticket fail");
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw new Exception("Server error");
+                throw new Exception(ex.Message);
             }
                 
         }

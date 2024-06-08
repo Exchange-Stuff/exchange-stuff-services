@@ -7,7 +7,7 @@ namespace ExchangeStuff.Service.Services.Interfaces
     {
         Task<TransactionHistoryViewModel> CreateTransactionHistory(CreateTransactionHistoryModel request);
         Task<List<TransactionHistoryViewModel>> GetAllTransactionHistory(int pageSize, int pageIndex, TransactionType? type = null!);
-        Task<List<TransactionHistoryViewModel>> GetListTransactionHistoryByUserId(Guid userId, int pageSize, int pageIndex, TransactionType? type = null!);
+        Task<List<TransactionHistoryViewModel>> GetListTransactionHistoryByUserId(int pageSize, int pageIndex, TransactionType? type = null!);
         Task<TransactionHistoryViewModel> GetTransactionHistoryDetail(Guid transactionHistoryId);
     }
 }

@@ -39,9 +39,9 @@ namespace ExchangeStuff.Service.Services.Impls
                 var result = await _unitOfWork.SaveChangeAsync();
                 return result > 0 ? AutoMapperConfig.Mapper.Map<TransactionHistoryViewModel>(transactionHistory) : throw new Exception("Create transaction history fail");
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw new Exception("Server error");
+                throw new Exception(ex.Message);
             }
         }
 
@@ -66,11 +66,11 @@ namespace ExchangeStuff.Service.Services.Impls
             }
             catch (Exception ex)
             {
-                throw new Exception("Server error");
+                throw new Exception(ex.Message);
             }
         }
 
-        public async Task<List<TransactionHistoryViewModel>> GetListTransactionHistoryByUserId(Guid userId, int pageSize, int pageIndex, TransactionType? type = null)
+        public async Task<List<TransactionHistoryViewModel>> GetListTransactionHistoryByUserId(int pageSize, int pageIndex, TransactionType? type = null)
         {
             try
             {
@@ -78,12 +78,12 @@ namespace ExchangeStuff.Service.Services.Impls
                 if (type.HasValue)
                 {
                     listTransactionHistory = await _transactionHistoryRepository.GetManyAsync(
-                        pageSize: pageSize, pageIndex: pageIndex, predicate: t => t.TransactionType.Equals(type) && t.UserId.Equals(userId), orderBy: t => t.OrderBy(t => t.CreatedOn));
+                        pageSize: pageSize, pageIndex: pageIndex, predicate: t => t.TransactionType.Equals(type) && t.UserId.Equals(_identityUser.AccountId), orderBy: t => t.OrderBy(t => t.CreatedOn));
                 }
                 else
                 {
                     listTransactionHistory = await _transactionHistoryRepository.GetManyAsync(
-                        pageSize: pageSize, pageIndex: pageIndex, predicate: t => t.UserId.Equals(userId), orderBy: t => t.OrderBy(t => t.CreatedOn));
+                        pageSize: pageSize, pageIndex: pageIndex, predicate: t => t.UserId.Equals(_identityUser.AccountId), orderBy: t => t.OrderBy(t => t.CreatedOn));
                 }
 
                 var result = AutoMapperConfig.Mapper.Map<List<TransactionHistoryViewModel>>(listTransactionHistory);
@@ -91,7 +91,7 @@ namespace ExchangeStuff.Service.Services.Impls
             }
             catch (Exception ex)
             {
-                throw new Exception("Server error");
+                throw new Exception(ex.Message);
             }
         }
 
@@ -106,7 +106,7 @@ namespace ExchangeStuff.Service.Services.Impls
             }
             catch (Exception ex)
             {
-                throw new Exception("Server error");
+                throw new Exception(ex.Message);
             }
         }
     }

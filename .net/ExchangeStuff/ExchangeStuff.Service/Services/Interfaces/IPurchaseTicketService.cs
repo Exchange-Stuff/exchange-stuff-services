@@ -7,7 +7,7 @@ namespace ExchangeStuff.Service.Services.Interfaces
     {
         Task<PurchaseTicketViewModel> CreatePurchaseTicket(CreatePurchaseTicketModel request);
         Task<PurchaseTicketViewModel> UpdatePurchaseTicket(UpdatePurchaseTicketModel request);
-        Task<List<PurchaseTicketViewModel>> GetListPurchaseTicketByUserId(Guid userId, int pageSize, int pageIndex, PurchaseTicketStatus? status = null!);
+        Task<List<PurchaseTicketViewModel>> GetListPurchaseTicketByUserId(int pageSize, int pageIndex, PurchaseTicketStatus? status = null!);
         Task<PurchaseTicketViewModel> GetPurchaseTicketDetail(Guid purchaseTicketId);
         Task<List<PurchaseTicketViewModel>> GetAllPurchaseTicket(int pageSize, int pageIndex, PurchaseTicketStatus? status = null!);
     }
