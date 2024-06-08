@@ -30,34 +30,6 @@ namespace ExchangeStuff.Service.Services.Impls
             _uow = unitOfWork;
             _actionRepository = _uow.ActionRepository;
         }
-
-        public async Task<List<ActionDTO>> GetActionDTOsCache()
-        {
-            if (_redisDTO == null!) throw new ArgumentNullException("Can't bind redis server");
-            if (_connectionMutiple.GetServer(_redisDTO.Address, _redisDTO.Port).IsConnected)
-            {
-                var actionString = await _cache.GetStringAsync(_redisConstantDTO.ActionsResource);
-
-                if (actionString != null)
-                {
-                    return JsonConvert.DeserializeObject<List<ActionDTO>>(actionString)!;
-                }
-            }
-            var actions = await _actionRepository.GetManyAsync();
-            if (actions == null! || actions.Count == 0) throw new ArgumentNullException("Not found user authorize");
-            return AutoMapperConfig.Mapper.Map<List<ActionDTO>>(actions);
-        }
-
-       
-        public async Task InvalidActionCache()
-        {
-            await _cache.RemoveAsync(_redisConstantDTO.ActionsResource);
-        }
-        public async Task SaveActionsCache()
-        {
-            var actions = await _actionRepository.GetManyAsync();
-            if (actions == null! || actions.Count == 0) throw new ArgumentNullException("Not found user authorize");
-            await _cache.SetStringAsync(_redisConstantDTO.ActionsResource, JsonConvert.SerializeObject(AutoMapperConfig.Mapper.Map<List<ActionDTO>>(actions)));
-        }
     }
 }
+ 

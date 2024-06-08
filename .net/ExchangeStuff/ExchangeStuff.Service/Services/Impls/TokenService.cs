@@ -1,7 +1,6 @@
 ﻿using ExchangeStuff.Core.Entities;
 using ExchangeStuff.Core.Repositories;
 using ExchangeStuff.Core.Uows;
-using ExchangeStuff.Repository.Repositories;
 using ExchangeStuff.Service.DTOs;
 using ExchangeStuff.Service.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
@@ -24,8 +23,10 @@ namespace ExchangeStuff.Service.Services.Impls
         private readonly IDistributedCache _distributedCache;
         private readonly IConnectionMultiplexer _connectionMutiple;
         private readonly IAccountRepository _accountRepository;
+        private readonly IUserRepository _userRepository;
         private RefreshTokenDTO _refreshTokenDTO = new();
         private JwtDTO _jwtDTO = new();
+        private GoogleAuthDTO _googleAuthDTO = new();
 
         public TokenService(IUnitOfWork unitOfWork, IConfiguration configuration, IHttpContextAccessor httpContextAccessor, IDistributedCache distributed, IConnectionMultiplexer connectionMultiplexer) : base(unitOfWork, distributed, connectionMultiplexer, configuration)
         {
@@ -36,8 +37,19 @@ namespace ExchangeStuff.Service.Services.Impls
             _uow = unitOfWork;
             _tokenRepository = _uow.TokenRepository;
             _accountRepository = _uow.AccountRepository;
+            _userRepository = _uow.UserRepository;
             _configuration.GetSection(nameof(JwtDTO)).Bind(_jwtDTO);
             _configuration.GetSection(nameof(RefreshTokenDTO)).Bind(_refreshTokenDTO);
+            _configuration.GetSection(nameof(GoogleAuthDTO)).Bind(_googleAuthDTO);
+        }
+
+        public TokenService(IConfiguration configuration, IHttpContextAccessor httpContextAccessor)
+        {
+            _configuration = configuration;
+            _httpAccessor = httpContextAccessor;
+            _configuration.GetSection(nameof(JwtDTO)).Bind(_jwtDTO);
+            _configuration.GetSection(nameof(RefreshTokenDTO)).Bind(_refreshTokenDTO);
+            _configuration.GetSection(nameof(GoogleAuthDTO)).Bind(_googleAuthDTO);
         }
 
         public async Task<bool> CheckRefreshTokenExpire(string token)
@@ -119,7 +131,6 @@ namespace ExchangeStuff.Service.Services.Impls
                     ClockSkew = TimeSpan.Zero,
                     ValidIssuer = _jwtDTO.Issuer,
                     ValidAudience = _jwtDTO.Audience,
-
                 }, out SecurityToken securityToken);
                 var jwtToken = (JwtSecurityToken)securityToken;
                 var id = jwtToken.Claims.First(x => x.Type == "nameid")!.Value;
@@ -143,6 +154,7 @@ namespace ExchangeStuff.Service.Services.Impls
                 throw new Exception(ex.Message);
             }
         }
+
 
         public ClaimDTO GetClaimDTOByAccessTokenSynchronous(string? token = null)
         {
@@ -176,6 +188,7 @@ namespace ExchangeStuff.Service.Services.Impls
                 var jwtToken = (JwtSecurityToken)securityToken;
                 var id = jwtToken.Claims.First(x => x.Type == "nameid")!.Value;
                 var email = jwtToken.Claims.First(x => x.Type == "email")!.Value;
+
                 if (Guid.TryParse(id, out Guid newId) is false ||
                     string.IsNullOrEmpty(email)
                     )
@@ -228,7 +241,7 @@ namespace ExchangeStuff.Service.Services.Impls
             tokenrf.AccessToken = await GenerateToken(account);
             _tokenRepository.Update(tokenrf);
             var rs = await _uow.SaveChangeAsync();
-            if (rs >0 )
+            if (rs > 0)
             {
                 await _distributedCache.RemoveAsync(oldToken);
                 await _distributedCache.SetStringAsync(tokenrf.AccessToken, tokenrf.ModifiedBy + "");

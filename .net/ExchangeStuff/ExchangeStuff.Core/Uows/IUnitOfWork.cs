@@ -10,7 +10,8 @@ namespace ExchangeStuff.Core.Uows
         IAccountRepository AccountRepository { get; }
         IPermissionRepository PermissionRepository { get; }
         IActionRepository ActionRepository { get; }
-
+        IPermissionGroupRepository PermissionGroupRepository { get; }
+        IResourceRepository ResourceRepository { get; }
         Task<int> SaveChangeAsync();
     }
 }

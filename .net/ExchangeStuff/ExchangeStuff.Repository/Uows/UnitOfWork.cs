@@ -16,6 +16,9 @@ namespace ExchangeStuff.Repository.Uows
             CategoryRepository = new CategoryRepository(_context);
             TokenRepository = new TokenRepository(_context);
             ActionRepository = new ActionRepository(_context);
+            AccountRepository = new AccountRepository(_context);
+            PermissionRepository = new PermissionRepository(_context);
+            PermissionGroupRepository = new PermissionGroupRepository(_context);
         }
 
         public IUserRepository UserRepository { get; private set; }
@@ -29,6 +32,10 @@ namespace ExchangeStuff.Repository.Uows
         public IPermissionRepository PermissionRepository { get; private set; }
 
         public IActionRepository ActionRepository { get; private set; }
+
+        public IPermissionGroupRepository PermissionGroupRepository { get; private set; }
+
+        public IResourceRepository ResourceRepository { get; private set; }
 
         public async Task<int> SaveChangeAsync()
         => await _context.SaveChangesAsync();

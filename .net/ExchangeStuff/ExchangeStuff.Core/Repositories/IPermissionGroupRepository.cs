@@ -3,8 +3,7 @@ using ExchangeStuff.Core.Repositories.Base;
 
 namespace ExchangeStuff.Core.Repositories
 {
-    public interface IAccountRepository : IRepository<Account>
+    public interface IPermissionGroupRepository:IRepository<PermissionGroup>
     {
-        Task<Account> GetAccountByEmail(string email);
     }
 }

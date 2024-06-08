@@ -25,6 +25,10 @@ namespace ExchangeStuff.Service.Services.Impls
         private RedisDTO _redisDTO = new();
         private RedisConstantDTO _redisConstantDTO = new();
 
+        public CacheService()
+        {
+            
+        }
         public CacheService(IUnitOfWork unitOfWork, IDistributedCache distributedCache, IConnectionMultiplexer connectionMultiplexer, IConfiguration configuration)
         {
             _configuration = configuration;
@@ -111,9 +115,10 @@ namespace ExchangeStuff.Service.Services.Impls
             await _distributedCache.SetStringAsync(token, accountId + "");
             Token newtk = new Token
             {
-                Id = accountId,
+                Id = Guid.NewGuid(),
                 AccessToken = token,
-                RefreshToken = GenerateRefreshToken()
+                RefreshToken = GenerateRefreshToken(),
+                AccountId = accountId
             };
             await _tokenRepository.AddAsync(newtk);
             await _uow.SaveChangeAsync();
@@ -121,7 +126,7 @@ namespace ExchangeStuff.Service.Services.Impls
 
         public async Task SavePermissionGroup(Guid id)
         {
-            var account = await _accountRepository.GetOneAsync(x => x.Id == id);
+            var account = await _accountRepository.GetOneAsync(x => x.Id == id, "PermissionGroups");
             if (account == null!) throw new Exception("Account not found");
             await _distributedCache.SetStringAsync(_redisConstantDTO.PermissionGroupResource + account.Id, JsonConvert.SerializeObject(account.PermissionGroups, new JsonSerializerSettings
             {

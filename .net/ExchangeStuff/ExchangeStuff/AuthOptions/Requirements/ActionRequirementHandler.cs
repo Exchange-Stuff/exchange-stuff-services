@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Newtonsoft.Json;
 using System.Text;
 
-namespace ExchangeStuff.AuthOptions
+namespace ExchangeStuff.AuthOptions.Requirements
 {
     public class ActionRequirementHandler : AuthorizationHandler<ActionRequirement>
     {
@@ -31,9 +31,8 @@ namespace ExchangeStuff.AuthOptions
                 using (var scope = _serviceScopeFactory.CreateScope())
                 {
                     var _tokenService = scope.ServiceProvider.GetRequiredService<ITokenService>();
-                    var _permissionService = scope.ServiceProvider.GetRequiredService<IPermissionService>();
+                    var _adminService = scope.ServiceProvider.GetRequiredService<IAdminService>();
                     var _cacheService = scope.ServiceProvider.GetRequiredService<ICacheService>();
-                    var _actionService = scope.ServiceProvider.GetRequiredService<IActionService>();
 
                     var claim = await _tokenService.GetClaimDTOByAccessToken();
                     if (claim == null)
@@ -42,6 +41,7 @@ namespace ExchangeStuff.AuthOptions
                         await ToErrorResult("Unauthorize", 401);
                         return;
                     }
+
                     var permissiongr = await _cacheService.GetPermissionGroupByAccountId(claim.Id);
 
                     if (permissiongr == null! || permissiongr.Count == 0)
@@ -51,7 +51,7 @@ namespace ExchangeStuff.AuthOptions
                         return;
                     }
 
-                    var permissions = await _permissionService.GetPermissionsCache(permissiongr.Select(x => x.Id).ToList());
+                    var permissions = await _adminService.GetPermissionsCache(permissiongr.Select(x => x.Id).ToList());
                     if (permissions?.Any() != true)
                     {
                         context.Fail();
@@ -75,7 +75,7 @@ namespace ExchangeStuff.AuthOptions
                         await ToErrorResult("Unauthorize", 401);
                         return;
                     }
-                    if (await ValidActionResource(_actionService, requirement.Actions, permissonActual.PermissionValue))
+                    if (await ValidActionResource(_adminService, requirement.Actions, permissonActual.PermissionValue))
                     {
                         context.Succeed(requirement);
                         isPassed = true;
@@ -108,9 +108,9 @@ namespace ExchangeStuff.AuthOptions
             }
         }
 
-        private async Task<bool> ValidActionResource(IActionService _actionService, string action, int roleValue)
+        private async Task<bool> ValidActionResource(IAdminService adminService, string action, int roleValue)
         {
-            List<ActionDTO> actionDTOs = await _actionService.GetActionDTOsCache();
+            List<ActionDTO> actionDTOs = await adminService.GetActionDTOsCache();
 
             if (actionDTOs?.Any() != true) return false;
 

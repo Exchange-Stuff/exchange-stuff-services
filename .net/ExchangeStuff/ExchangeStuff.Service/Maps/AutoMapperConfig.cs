@@ -28,6 +28,8 @@ namespace ExchangeStuff.Service.Maps
             CreateMap<Category, CategoryViewModel>().ReverseMap();
             CreateMap<PermissionGroup, PermissionGroupDTO>().ReverseMap();
             CreateMap<Permission, PermissionDTO>().ReverseMap();
+            CreateMap<ExchangeStuff.Core.Entities.Action, ActionDTO>().ReverseMap();
+            CreateMap<Resource,ResourceDTO>().ReverseMap();
         }
     }
 }

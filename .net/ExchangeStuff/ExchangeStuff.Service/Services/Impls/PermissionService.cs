@@ -30,51 +30,7 @@ namespace ExchangeStuff.Service.Services.Impls
             _configuration.GetSection(nameof(RedisDTO)).Bind(_redisDTO);
             _configuration.GetSection(nameof(RedisConstantDTO)).Bind(_redisConstantDTO);
         }
-        public async Task<List<PermissionDTO>> GetPermissionsCache(List<Guid> permissionGroupIds)
-        {
-            if (_connectionMutiple.GetServer(_redisDTO.Address, _redisDTO.Port).IsConnected)
-            {
-                var permissionString = await _distributedCache.GetStringAsync(_redisConstantDTO.PermissionResource);
-                if (permissionString != null)
-                {
-                    var permissions = JsonConvert.DeserializeObject<List<PermissionDTO>>(permissionString);
-                    if (permissions != null!)
-                    {
-                        return permissions.Where(x => permissionGroupIds.Contains(x.PermissionGroupId)).ToList();
-                    }
-                }
-            }
-            return AutoMapperConfig.Mapper.Map<List<PermissionDTO>>(await _permissionRepository.GetManyAsync(x => permissionGroupIds.Contains(x.PermissionGroupId), "PermissionGroup,Resource"));
-        }
 
-        public async Task<List<PermissionDTO>> GetPermissionsCache()
-        {
-            if (_connectionMutiple.GetServer(_redisDTO.Address, _redisDTO.Port).IsConnected)
-            {
-                var permissionString = await _distributedCache.GetStringAsync(_redisConstantDTO.PermissionResource);
-                if (permissionString != null)
-                {
-                    return JsonConvert.DeserializeObject<List<PermissionDTO>>(permissionString)!;
-                }
-            }
-            return AutoMapperConfig.Mapper.Map<List<PermissionDTO>>(await _permissionRepository.GetManyAsync(include: "PermissionGroup,Resource"));
-        }
-
-        public async Task InvalidPermissionCache()
-        {
-            await _distributedCache.RemoveAsync(_redisConstantDTO.PermissionResource);
-        }
-
-        public async Task SavePermissionCache()
-        {
-            var permission = await GetPermissionsCache();
-            var json = JsonConvert.SerializeObject(AutoMapperConfig.Mapper.Map<List<PermissionDTO>>(permission));
-            await _distributedCache.SetStringAsync(_redisConstantDTO.PermissionResource, json);
-        }
-
-        public Task<bool> ValidPermission(PermissionDTO permissionDTO, string resourceAccess)
-        {
-            throw new NotImplementedException();
-        }
+      
     }
 }
