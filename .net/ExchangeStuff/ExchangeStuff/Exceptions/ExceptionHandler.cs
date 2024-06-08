@@ -48,7 +48,7 @@ namespace ExchangeStuff.Exceptions
             if (context.Exception is RedisConnectionException)
             {
                 responseView.Error.Code = 500;
-                responseView.Error.Message = "Redis server down, call Michael now";
+                responseView.Error.Message = "Redis server down";
             }
             context.Result = new ObjectResult(responseView)
             {
