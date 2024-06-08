@@ -1,4 +1,5 @@
-﻿using ExchangeStuff.Core.Entities;
+﻿using ExchangeStuff.Core.Common;
+using ExchangeStuff.Core.Entities;
 using ExchangeStuff.Core.Enums;
 using System;
 using System.Collections.Generic;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace ExchangeStuff.Service.Models.PurchaseTicket
 {
-    public class PurchaseTicketViewModel
+    public class PurchaseTicketViewModel : BaseEntity<Guid>
     {
         public double Amount { get; set; }
         public Guid ProductId { get; set; }

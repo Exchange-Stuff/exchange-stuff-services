@@ -13,8 +13,8 @@ namespace ExchangeStuff.Service.Services.Interfaces
     {
         Task<ActionResult> CreatePurchaseTicket(CreatePurchaseTicketModel request);
         Task<ActionResult> UpdatePurchaseTicket(UpdatePurchaseTicketModel request);
-        Task<ActionResult> GetListPurchaseTicketByUserId(Guid userId, int pageSize, int pageIndex, PurchaseTicketStatus status);
+        Task<ActionResult> GetListPurchaseTicketByUserId(Guid userId, int pageSize, int pageIndex, PurchaseTicketStatus? status = null!);
         Task<ActionResult> GetPurchaseTicketDetail(Guid purchaseTicketId);
-        Task<ActionResult> GetAllPurchaseTicket(int pageSize, int pageIndex, PurchaseTicketStatus status);
+        Task<ActionResult> GetAllPurchaseTicket(int pageSize, int pageIndex, PurchaseTicketStatus? status = null!);
     }
 }
