@@ -7,6 +7,7 @@ using ExchangeStuff.Service.Models.Products;
 using System.Linq;
 using ExchangeStuff.Service.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using ExchangeStuff.Service.Models.Categories;
 
 namespace ExchangeStuff.Service.Services.Impls
 {
@@ -15,12 +16,14 @@ namespace ExchangeStuff.Service.Services.Impls
         private readonly IUnitOfWork _unitOfWork;
         private readonly IProductRepository _productRepository;
         private readonly ICategoriesRepository _categoriesRepository;
+        
 
         public ProductService(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
             _productRepository = _unitOfWork.ProductRepository;
             _categoriesRepository = _unitOfWork.CategoriesRepository;
+            
         }
 
         public async Task<List<ProductViewModel>> GetAllProductsAsync()
@@ -39,6 +42,29 @@ namespace ExchangeStuff.Service.Services.Impls
             return AutoMapperConfig.Mapper.Map<List<ProductViewModel>>(category.Products);
             
         }
+
+        public async Task<bool> CreateProductAsync(CreateProductModel model)
+        {
+           
+            if (model.CategoryId == null || !model.CategoryId.Any())
+            { 
+                throw new ArgumentException("Category Ids cannot be null or empty");
+            }
+
+            var categories = await _unitOfWork.CategoriesRepository.GetManyAsync(c => model.CategoryId.Contains(c.Id));
+
+            var product = AutoMapperConfig.Mapper.Map<Product>(model);
+            product.Id = Guid.NewGuid();
+            product.IsActived = true;
+            product.Categories = categories.ToList();
+
+            await _unitOfWork.ProductRepository.AddAsync(product);
+
+            var result = await _unitOfWork.SaveChangeAsync();
+
+            return result > 0; // Trả về true nếu có ít nhất một bản ghi được thêm thành công
+        }
+
 
 
     }

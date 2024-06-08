@@ -1,4 +1,5 @@
 ﻿using ExchangeStuff.Core.Entities;
+using ExchangeStuff.Service.Models.Categories;
 using ExchangeStuff.Service.Models.Products;
 
 namespace ExchangeStuff.Service.Services.Interfaces
@@ -7,5 +8,6 @@ namespace ExchangeStuff.Service.Services.Interfaces
     {
         Task<List<ProductViewModel>> GetAllProductsAsync();
         Task<List<ProductViewModel>> GetProductsByCategoryIdAsync(Guid categoryId);
+        Task<bool> CreateProductAsync(CreateProductModel model);
     }
 }

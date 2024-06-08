@@ -2,9 +2,8 @@
 
 namespace ExchangeStuff.Service.Models.Products
 {
-    public class ProductViewModel
+    public class ProductViewModel : BaseEntity<Guid>
     {
-        public Guid Id { get; set; }
         public string Name { get; set; }
         public double Price { get; set; }
         public string Thumbnail { get; set; }
