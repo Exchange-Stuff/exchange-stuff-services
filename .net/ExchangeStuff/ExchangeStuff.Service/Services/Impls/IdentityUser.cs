@@ -1,23 +1,21 @@
 ﻿using ExchangeStuff.CurrentUser.Users;
-using ExchangeStuff.Service.Services.Interfaces;
+using ExchangeStuff.Service.DTOs;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 
 namespace ExchangeStuff.Service.Services.Impls
 {
-    public class IdentityUser<T> : IIdentityUser<T>
+    public class IdentityUser<T> : TokenService, IIdentityUser<T>
     {
-        private readonly ITokenService _tokenService;
-
-        public IdentityUser(ITokenService tokenService)
+        public IdentityUser(IConfiguration configuration, IHttpContextAccessor httpContext) : base(configuration, httpContext)
         {
-            _tokenService = tokenService;
         }
 
         public T AccountId
         {
             get
             {
-                var claim = _tokenService.GetClaimDTOByAccessTokenSynchronous();
-
+                ClaimDTO claim = GetClaimDTOByAccessTokenSynchronous();
                 Guid accId = Guid.Empty;
                 if (claim != null!)
                 {

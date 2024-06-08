@@ -1,13 +1,18 @@
 ﻿using ExchangeStuff.AuthModels;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Options;
 
-namespace ExchangeStuff.AuthOptions
+namespace ExchangeStuff.AuthOptions.Requirements
 {
     public class ESPolicy : IAuthorizationPolicyProvider
     {
         public DefaultAuthorizationPolicyProvider FallbackPolicyProvider { get; }
-
+        public ESPolicy(IOptions<AuthorizationOptions> options)
+        {
+            options.Value.InvokeHandlersAfterFailure = false;
+            FallbackPolicyProvider = new DefaultAuthorizationPolicyProvider(options);
+        }
         public Task<AuthorizationPolicy> GetDefaultPolicyAsync()
         {
             return Task.FromResult(new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme).RequireAuthenticatedUser().Build());

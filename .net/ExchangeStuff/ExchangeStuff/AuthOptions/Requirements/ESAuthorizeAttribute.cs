@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 
-namespace ExchangeStuff.AuthOptions
+namespace ExchangeStuff.AuthOptions.Requirements
 {
     public class ESAuthorizeAttribute : AuthorizeAttribute
     {
