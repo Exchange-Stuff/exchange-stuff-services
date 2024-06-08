@@ -16,6 +16,7 @@ using Azure.Core;
 using ExchangeStuff.Core.Common;
 using Microsoft.AspNetCore.Mvc;
 using Azure.Messaging;
+using AutoMapper;
 
 namespace ExchangeStuff.Service.Services.Impls
 {
@@ -23,6 +24,7 @@ namespace ExchangeStuff.Service.Services.Impls
     {
         private readonly IIdentityUser<Guid> _identityUser;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IUserRepository _userRepository;
         private readonly IFinancialTicketsRepository _financialTicketsRepository;
 
         public FinancialTicketService(IIdentityUser<Guid> identityUser, IUnitOfWork unitOfWork)
@@ -30,11 +32,31 @@ namespace ExchangeStuff.Service.Services.Impls
             _identityUser = identityUser;
             _unitOfWork = unitOfWork;
             _financialTicketsRepository = _unitOfWork.FinancialTicketsRepository;
+            _userRepository = _unitOfWork.UserRepository;
         }
 
-        public Task<FinancialTicketViewModel> CreateFinancialTicket(CreateFinancialTicketModel request)
-        { 
-            throw new NotImplementedException();
+        public async Task<FinancialTicketViewModel> CreateFinancialTicket(CreateFinancialTicketModel request)
+        {
+            try
+            {
+                User user = await _userRepository.GetOneAsync(predicate: u => u.Id.Equals(_identityUser.AccountId));
+                FinancialTicket financialTicket = new FinancialTicket
+                {
+                    Id = Guid.NewGuid(),
+                    Amount = request.Amount,
+                    UserId = _identityUser.AccountId,
+                    IsCredit = true,
+                    Status = FinancialTicketStatus.Pending,
+                };
+                await _financialTicketsRepository.AddAsync(financialTicket);
+                var result = await _unitOfWork.SaveChangeAsync();
+                return result > 0 ? AutoMapperConfig.Mapper.Map<FinancialTicketViewModel>(financialTicket) : throw new Exception("Create financialTiket fail");
+
+            }
+            catch (Exception ex) {
+                throw new Exception("Server error");
+            }
+
         
         }
 
@@ -107,9 +129,32 @@ namespace ExchangeStuff.Service.Services.Impls
             }
         }
 
-        public Task<UpdateFinancialTicketModel> UpdateFinancialTicket(UpdateFinancialTicketModel request)
+        public async Task<FinancialTicketViewModel> UpdateFinancialTicket(UpdateFinancialTicketModel request)
         {
-            throw new NotImplementedException();
+            try
+            {
+                FinancialTicket ticket = await _financialTicketsRepository.GetOneAsync(predicate: p=> p.Id.Equals(request.Id));
+                if (ticket == null)
+                {
+                    throw new Exception("Not found ticket");
+
+
+
+                }
+                else
+                {
+                    ticket.Status = request.Status;
+                    _financialTicketsRepository.Update(ticket);
+                    var result = await _unitOfWork.SaveChangeAsync();
+                    return result > 0 ? AutoMapperConfig.Mapper.Map<FinancialTicketViewModel>(ticket) : throw new Exception("Update ticket fail");
+                }
+
+            }
+            catch (Exception ex) 
+            {
+                throw new Exception("Server error");
+            }
+
         }
 
         

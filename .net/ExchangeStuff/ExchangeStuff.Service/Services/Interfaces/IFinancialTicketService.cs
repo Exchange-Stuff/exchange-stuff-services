@@ -13,7 +13,7 @@ namespace ExchangeStuff.Service.Services.Interfaces
     public interface IFinancialTicketService
     {
         Task<FinancialTicketViewModel> CreateFinancialTicket(CreateFinancialTicketModel request);
-        Task<UpdateFinancialTicketModel> UpdateFinancialTicket(UpdateFinancialTicketModel request);
+        Task<FinancialTicketViewModel> UpdateFinancialTicket(UpdateFinancialTicketModel request);
         Task<List<FinancialTicketViewModel>> GetFinancialTicketByUserId(Guid userId, int pageSize, int pageIndex, FinancialTicketStatus status);
         Task<FinancialTicketViewModel> GetFinancialTicketDetail(Guid financialTicketId);
         Task<List<FinancialTicketViewModel>> GetAllFinancialTicket(int pageSize, int pageIndex, FinancialTicketStatus status);
