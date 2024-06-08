@@ -9,5 +9,6 @@ namespace ExchangeStuff.Service.Services.Interfaces
         Task<List<ProductViewModel>> GetAllProductsAsync();
         Task<List<ProductViewModel>> GetProductsByCategoryIdAsync(Guid categoryId);
         Task<bool> CreateProductAsync(CreateProductModel model);
+        Task<ProductViewModel> GetDetail(Guid id);
     }
 }

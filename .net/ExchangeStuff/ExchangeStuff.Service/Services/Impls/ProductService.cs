@@ -45,24 +45,37 @@ namespace ExchangeStuff.Service.Services.Impls
 
         public async Task<bool> CreateProductAsync(CreateProductModel model)
         {
-           
-            if (model.CategoryId == null || !model.CategoryId.Any())
-            { 
-                throw new ArgumentException("Category Ids cannot be null or empty");
+
+            try
+            {
+                if (model.CategoryId == null || !model.CategoryId.Any())
+                {
+                    throw new ArgumentException("Category Ids cannot be null or empty");
+                }
+
+                var categories = await _unitOfWork.CategoriesRepository.GetManyAsync(c => model.CategoryId.Contains(c.Id));
+
+                var product = AutoMapperConfig.Mapper.Map<Product>(model);
+                product.Id = Guid.NewGuid();
+                product.IsActived = true;
+                product.Categories = categories.ToList();
+
+                await _unitOfWork.ProductRepository.AddAsync(product);
+
+                var result = await _unitOfWork.SaveChangeAsync();
+
+                return result > 0;
             }
+            catch (Exception ex) 
+            {
+                throw new Exception("Error");
+            }
+        }
 
-            var categories = await _unitOfWork.CategoriesRepository.GetManyAsync(c => model.CategoryId.Contains(c.Id));
 
-            var product = AutoMapperConfig.Mapper.Map<Product>(model);
-            product.Id = Guid.NewGuid();
-            product.IsActived = true;
-            product.Categories = categories.ToList();
-
-            await _unitOfWork.ProductRepository.AddAsync(product);
-
-            var result = await _unitOfWork.SaveChangeAsync();
-
-            return result > 0; // Trả về true nếu có ít nhất một bản ghi được thêm thành công
+        public async Task<ProductViewModel> GetDetail(Guid id)
+        {
+            return AutoMapperConfig.Mapper.Map<ProductViewModel>(await _productRepository.GetOneAsync(predicate: p => p.Id == id));
         }
 
 

@@ -25,6 +25,13 @@ namespace ExchangeStuff.Controllers
             return Ok(product);
         }
 
+        [HttpGet("getDetail/{id}")]
+        public async Task<IActionResult> GetDetail(Guid id)
+        {
+            var product = await _productService.GetDetail(id);
+            return Ok(product);
+        }
+
         [HttpGet("/getProductByCategory/{categoryId}")]
         public async Task<IActionResult> GetProductByCategory(Guid categoryId)
         {

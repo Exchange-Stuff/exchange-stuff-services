@@ -20,6 +20,7 @@
     <Folder Include="Models\Images\" />
     <Folder Include="Models\Comments\" />
     <Folder Include="Models\CategoryProduct\" />
+    <Folder Include="Models\VNPayModel\" />
   </ItemGroup>
 
 </Project>

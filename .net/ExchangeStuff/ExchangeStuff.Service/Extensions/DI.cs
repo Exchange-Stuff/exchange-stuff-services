@@ -1,6 +1,7 @@
 ﻿using ExchangeStuff.Core.Uows;
 using ExchangeStuff.Repository.Data;
 using ExchangeStuff.Repository.Uows;
+using ExchangeStuff.Service.Models.VNPayModel;
 using ExchangeStuff.Service.Services.Impls;
 using ExchangeStuff.Service.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -18,6 +19,8 @@ namespace ExchangeStuff.Service.Extensions
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<IVnPayService, VNPayService>();
+            services.AddSingleton<VnPayLibrary>();
         }
     }
 }
