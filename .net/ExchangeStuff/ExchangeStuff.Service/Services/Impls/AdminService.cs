@@ -4,12 +4,14 @@ using ExchangeStuff.Core.Uows;
 using ExchangeStuff.Service.DTOs;
 using ExchangeStuff.Service.Maps;
 using ExchangeStuff.Service.Models.Actions;
+using ExchangeStuff.Service.Models.Admins;
 using ExchangeStuff.Service.Models.PermissionGroups;
 using ExchangeStuff.Service.Models.Permissions;
 using ExchangeStuff.Service.Models.Resources;
 using ExchangeStuff.Service.Models.Users;
 using ExchangeStuff.Service.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
@@ -25,6 +27,8 @@ namespace ExchangeStuff.Service.Services.Impls
         private readonly IPermissionGroupRepository _permissionGroupRepository;
         private readonly IAccountRepository _accountRepository;
         private readonly IResourceRepository _resourceRepository;
+        private readonly IAdminRepository _adminRepository;
+        private readonly ITokenRepository _tokenRepository;
         private readonly IConfiguration _configuration;
         private readonly IDistributedCache _distributedCache;
         private readonly IConnectionMultiplexer _connectionMutiple;
@@ -43,6 +47,8 @@ namespace ExchangeStuff.Service.Services.Impls
             _permissionGroupRepository = _uow.PermissionGroupRepository;
             _accountRepository = _uow.AccountRepository;
             _resourceRepository = _uow.ResourceRepository;
+            _adminRepository = _uow.AdminRepository;
+            _tokenRepository = _uow.TokenRepository;
             _configuration.GetSection(nameof(RedisDTO)).Bind(_redisDTO);
             _configuration.GetSection(nameof(RedisConstantDTO)).Bind(_redisConstantDTO);
         }
@@ -323,6 +329,45 @@ namespace ExchangeStuff.Service.Services.Impls
                 return AutoMapperConfig.Mapper.Map<List<PermisisonGroupViewModel>>(await _permissionGroupRepository.GetManyAsync(x => x.Name.ToLower().Contains(name!.ToLower()), pageIndex: pageIndex, pageSize: pageSize));
             }
             return AutoMapperConfig.Mapper.Map<List<PermisisonGroupViewModel>>(await _permissionGroupRepository.GetManyAsync(pageIndex: pageIndex, pageSize: pageSize));
+        }
+
+        public async Task<string> LoginAdmin(string username, string password)
+        {
+            var sAdmin = await _accountRepository.GetOneAsync(x => x.Username == username && x.Password == HashPassword(password));
+            if (sAdmin == null) throw new UnauthorizedAccessException("Wrong username or password");
+            var tk = await _tokenRepository.GetManyAsync(x => x.AccountId == sAdmin.Id);
+            if (tk.Any())
+            {
+                foreach (var item in tk)
+                {
+                    _tokenRepository.Remove(item);
+                    await DeleteAccessToken(item.AccessToken);
+                }
+                await _uow.SaveChangeAsync();
+                throw new UnauthorizedAccessException("Login session expired, another device online try again");
+            }
+            var tks = await GenerateToken(sAdmin);
+            await SavePermissionGroupAdmin(sAdmin.Id);
+            await SaveAccessToken(tks, sAdmin.Id);
+            return tks;
+        }
+
+        public async Task<AdminViewModel> CreateAdmin(string username, string password, string name)
+        {
+            var admin = await _adminRepository.GetOneAsync(x => x.Username == username);
+            if (admin != null) throw new Exception("Username already exist");
+
+            admin = new Admin
+            {
+                Username = username,
+                Password = password,
+                Name = name,
+                IsActived = true,
+                Id = Guid.NewGuid()
+            };
+            await _adminRepository.AddAsync(admin);
+            await _uow.SaveChangeAsync();
+            return AutoMapperConfig.Mapper.Map<AdminViewModel>(admin);
         }
     }
 }

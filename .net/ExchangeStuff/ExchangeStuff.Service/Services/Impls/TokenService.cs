@@ -10,6 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 using StackExchange.Redis;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace ExchangeStuff.Service.Services.Impls
@@ -248,6 +249,21 @@ namespace ExchangeStuff.Service.Services.Impls
                 return tokenrf.AccessToken;
             }
             return null!;
+        }
+
+        public string HashPassword(string pwd)
+        {
+            using (SHA256 hasher = SHA256.Create())
+            {
+                byte[] inputBytes = Encoding.UTF8.GetBytes(pwd);
+                byte[] hashedBytes = hasher.ComputeHash(inputBytes);
+                StringBuilder stringBuilder = new StringBuilder();
+                foreach (byte b in hashedBytes)
+                {
+                    stringBuilder.Append(b.ToString("x2"));
+                }
+                return stringBuilder.ToString();
+            }
         }
     }
 }

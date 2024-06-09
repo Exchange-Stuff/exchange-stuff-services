@@ -1,5 +1,6 @@
 ﻿using ExchangeStuff.Service.DTOs;
 using ExchangeStuff.Service.Models.Actions;
+using ExchangeStuff.Service.Models.Admins;
 using ExchangeStuff.Service.Models.PermissionGroups;
 using ExchangeStuff.Service.Models.Permissions;
 using ExchangeStuff.Service.Models.Resources;
@@ -27,5 +28,7 @@ namespace ExchangeStuff.Service.Services.Interfaces
         Task<List<PermissionViewModel>> GetPermissions(int? pageIndex = null!, int? pageSize = null!);
         Task<List<ResourceViewModel>> GetResources(string? name = null!, int? pageIndex = null!, int? pageSize = null!);
         Task<List<PermisisonGroupViewModel>> GetPermisisonGroups(string? name = null!, int? pageIndex = null!, int? pageSize = null!);
+        Task<string> LoginAdmin(string username, string password);
+        Task<AdminViewModel> CreateAdmin(string username, string password, string name);
     }
 }
