@@ -6,6 +6,10 @@ namespace ExchangeStuff.Core.Uows
     {
         ICategoryRepository CategoryRepository { get; }
         IUserRepository UserRepository { get; }
+        IImageRepository ImageRepository { get; }
+        IRatingRepository RatingRepository { get; }
+        ICommentRepository CommentRepository { get; }
+        IFinancialTicketsRepository FinancialTicketsRepository { get; }
         ITokenRepository TokenRepository { get; }
         IAccountRepository AccountRepository { get; }
         IPermissionRepository PermissionRepository { get; }
