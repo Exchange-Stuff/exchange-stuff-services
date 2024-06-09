@@ -64,5 +64,7 @@ namespace ExchangeStuff.Controllers
             }
             throw new Exception("Server can't proccess logout");
         }
+
+
     }
 }

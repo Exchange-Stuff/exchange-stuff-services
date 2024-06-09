@@ -1,6 +1,8 @@
 ﻿using ExchangeStuff.Service.DTOs;
+using ExchangeStuff.Service.Models.Actions;
 using ExchangeStuff.Service.Models.PermissionGroups;
 using ExchangeStuff.Service.Models.Permissions;
+using ExchangeStuff.Service.Models.Resources;
 using ExchangeStuff.Service.Models.Users;
 
 namespace ExchangeStuff.Service.Services.Interfaces
@@ -20,6 +22,10 @@ namespace ExchangeStuff.Service.Services.Interfaces
         Task<bool> CreatePermissionGroup(PermissionGroupCreateModel permissionGroupCreateModel);
         Task<bool> CreatePermissionGroupValue(PermissionGroupCreateValueModel permissionGroupCreateValueModel);
         Task<bool> UpdatePermissionActionValue(UpdatePermissionActionValueModel updatePermissionActionValueModel);
-        Task<bool> UpdatePermissionGroupOfUser(UpdateUserPermisisonGroupModel updateUserPermisisonGroupModel);
+        Task<bool> UpdatePermissionGroupOfAccount(UpdateUserPermisisonGroupModel updateUserPermisisonGroupModel);
+        Task<List<ActionViewModel>> GetActions(string? name = null!, int? pageIndex = null!, int? pageSize = null!);
+        Task<List<PermissionViewModel>> GetPermissions(int? pageIndex = null!, int? pageSize = null!);
+        Task<List<ResourceViewModel>> GetResources(string? name = null!, int? pageIndex = null!, int? pageSize = null!);
+        Task<List<PermisisonGroupViewModel>> GetPermisisonGroups(string? name = null!, int? pageIndex = null!, int? pageSize = null!);
     }
 }
