@@ -4,6 +4,14 @@ using ExchangeStuff.Service.Models.Comments;
 using ExchangeStuff.Service.Models.Images;
 using ExchangeStuff.Service.Models.Products;
 using ExchangeStuff.Service.Models.Rating;
+using ExchangeStuff.Service.DTOs;
+using ExchangeStuff.Service.Models.Actions;
+using ExchangeStuff.Service.Models.Admins;
+using ExchangeStuff.Service.Models.Categories;
+using ExchangeStuff.Service.Models.PermissionGroups;
+using ExchangeStuff.Service.Models.Permissions;
+using ExchangeStuff.Service.Models.Products;
+using ExchangeStuff.Service.Models.Resources;
 
 namespace ExchangeStuff.Service.Maps
 {
@@ -40,6 +48,16 @@ namespace ExchangeStuff.Service.Maps
             #region Mapper rating
             CreateMap<Rating, RatingViewModel>().ReverseMap();
             #endregion
+            CreateMap<Category, CategoryViewModel>().ReverseMap();
+            CreateMap<PermissionGroup, PermissionGroupDTO>().ReverseMap();
+            CreateMap<Permission, PermissionDTO>().ReverseMap();
+            CreateMap<ExchangeStuff.Core.Entities.Action, ActionDTO>().ReverseMap();
+            CreateMap<Resource, ResourceDTO>().ReverseMap();
+            CreateMap<Permission, PermissionViewModel>().ReverseMap();
+            CreateMap<PermissionGroup, PermisisonGroupViewModel>().ReverseMap();
+            CreateMap<Core.Entities.Action, ActionViewModel>().ReverseMap();
+            CreateMap<Resource, ResourceViewModel>().ReverseMap();
+            CreateMap<Admin, AdminViewModel>().ReverseMap();
         }
     }
 }

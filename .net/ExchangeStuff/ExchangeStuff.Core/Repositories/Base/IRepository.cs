@@ -5,6 +5,7 @@ namespace ExchangeStuff.Core.Repositories.Base
     public interface IRepository<T> where T :class
     {
         Task AddAsync(T item);
+        Task AddRangeAsync(IEnumerable<T> entities);
 
         Task<T> GetOneAsync(Expression<Func<T, bool>> predicate, string? include = null!);
 
