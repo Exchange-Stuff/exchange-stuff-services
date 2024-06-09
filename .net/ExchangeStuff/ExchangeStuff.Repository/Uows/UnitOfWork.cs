@@ -19,6 +19,7 @@ namespace ExchangeStuff.Repository.Uows
             AccountRepository = new AccountRepository(_context);
             PermissionRepository = new PermissionRepository(_context);
             PermissionGroupRepository = new PermissionGroupRepository(_context);
+            ResourceRepository = new ResourceRepository(_context);
         }
 
         public IUserRepository UserRepository { get; private set; }

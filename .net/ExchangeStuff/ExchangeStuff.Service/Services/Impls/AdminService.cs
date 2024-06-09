@@ -3,8 +3,10 @@ using ExchangeStuff.Core.Repositories;
 using ExchangeStuff.Core.Uows;
 using ExchangeStuff.Service.DTOs;
 using ExchangeStuff.Service.Maps;
+using ExchangeStuff.Service.Models.Actions;
 using ExchangeStuff.Service.Models.PermissionGroups;
 using ExchangeStuff.Service.Models.Permissions;
+using ExchangeStuff.Service.Models.Resources;
 using ExchangeStuff.Service.Models.Users;
 using ExchangeStuff.Service.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
@@ -261,7 +263,7 @@ namespace ExchangeStuff.Service.Services.Impls
             return rs > 0;
         }
 
-        public async Task<bool> UpdatePermissionGroupOfUser(UpdateUserPermisisonGroupModel updateUserPermisisonGroupModel)
+        public async Task<bool> UpdatePermissionGroupOfAccount(UpdateUserPermisisonGroupModel updateUserPermisisonGroupModel)
         {
             var permissionGrCheck = new List<PermissionGroup>();
             if (updateUserPermisisonGroupModel.PermissionGroupIds != null && updateUserPermisisonGroupModel.PermissionGroupIds.Count > 0)
@@ -289,6 +291,38 @@ namespace ExchangeStuff.Service.Services.Impls
             await InvalidPermissionGroup(updateUserPermisisonGroupModel.AccountId);
             await InvalidPermissionCache();
             return rs > 0;
+        }
+
+        public async Task<List<ActionViewModel>> GetActions(string? name = null, int? pageIndex = null, int? pageSize = null)
+        {
+            if (!string.IsNullOrEmpty((name + "").Trim()))
+            {
+                return AutoMapperConfig.Mapper.Map<List<ActionViewModel>>(await _actionRepository.GetManyAsync(x => x.Name.ToLower().Contains(name!.ToLower()), pageIndex: pageIndex, pageSize: pageSize, orderBy: x => x.OrderBy(x => x.Index)));
+            }
+            return AutoMapperConfig.Mapper.Map<List<ActionViewModel>>(await _actionRepository.GetManyAsync(pageIndex: pageIndex, pageSize: pageSize, orderBy: x => x.OrderBy(x => x.Index)));
+        }
+
+        public async Task<List<PermissionViewModel>> GetPermissions(int? pageIndex = null, int? pageSize = null)
+        {
+            return AutoMapperConfig.Mapper.Map<List<PermissionViewModel>>(await _permissionRepository.GetManyAsync(pageIndex: pageIndex, pageSize: pageSize, include: "PermissionGroup,Resource"));
+        }
+
+        public async Task<List<ResourceViewModel>> GetResources(string? name = null, int? pageIndex = null, int? pageSize = null)
+        {
+            if (!string.IsNullOrEmpty((name + "").Trim()))
+            {
+                return AutoMapperConfig.Mapper.Map<List<ResourceViewModel>>(await _resourceRepository.GetManyAsync(x => x.Name.ToLower().Contains(name!.ToLower()), pageIndex: pageIndex, pageSize: pageSize));
+            }
+            return AutoMapperConfig.Mapper.Map<List<ResourceViewModel>>(await _resourceRepository.GetManyAsync(pageIndex: pageIndex, pageSize: pageSize));
+        }
+
+        public async Task<List<PermisisonGroupViewModel>> GetPermisisonGroups(string? name = null, int? pageIndex = null, int? pageSize = null)
+        {
+            if (!string.IsNullOrEmpty((name + "").Trim()))
+            {
+                return AutoMapperConfig.Mapper.Map<List<PermisisonGroupViewModel>>(await _permissionGroupRepository.GetManyAsync(x => x.Name.ToLower().Contains(name!.ToLower()), pageIndex: pageIndex, pageSize: pageSize));
+            }
+            return AutoMapperConfig.Mapper.Map<List<PermisisonGroupViewModel>>(await _permissionGroupRepository.GetManyAsync(pageIndex: pageIndex, pageSize: pageSize));
         }
     }
 }
