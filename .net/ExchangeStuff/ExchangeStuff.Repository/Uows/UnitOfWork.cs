@@ -20,6 +20,7 @@ namespace ExchangeStuff.Repository.Uows
             PermissionRepository = new PermissionRepository(_context);
             PermissionGroupRepository = new PermissionGroupRepository(_context);
             ResourceRepository = new ResourceRepository(_context);
+            AdminRepository = new AdminRepository(_context);
         }
 
         public IUserRepository UserRepository { get; private set; }
@@ -37,6 +38,8 @@ namespace ExchangeStuff.Repository.Uows
         public IPermissionGroupRepository PermissionGroupRepository { get; private set; }
 
         public IResourceRepository ResourceRepository { get; private set; }
+
+        public IAdminRepository AdminRepository { get; private set; }
 
         public async Task<int> SaveChangeAsync()
         => await _context.SaveChangesAsync();

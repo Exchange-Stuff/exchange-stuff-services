@@ -137,5 +137,19 @@ namespace ExchangeStuff.Service.Services.Impls
                 }
             }));
         }
+
+        public async Task SavePermissionGroupAdmin(Guid id)
+        {
+            var account = await _accountRepository.GetOneAsync(x => x.Id == id, "PermissionGroups");
+            if (account == null!) throw new Exception("Account not found");
+            await _distributedCache.SetStringAsync(_redisConstantDTO.PermissionGroupResource + account.Id, JsonConvert.SerializeObject(account.PermissionGroups, new JsonSerializerSettings
+            {
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                ContractResolver = new DefaultContractResolver
+                {
+                    NamingStrategy = new CamelCaseNamingStrategy()
+                }
+            }));
+        }
     }
 }

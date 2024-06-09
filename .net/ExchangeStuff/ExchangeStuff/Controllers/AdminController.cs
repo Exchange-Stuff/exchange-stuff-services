@@ -1,22 +1,33 @@
 ﻿using ExchangeStuff.Responses;
 using ExchangeStuff.Service.Models.Actions;
+using ExchangeStuff.Service.Models.Admins;
 using ExchangeStuff.Service.Models.PermissionGroups;
 using ExchangeStuff.Service.Models.Permissions;
 using ExchangeStuff.Service.Models.Resources;
 using ExchangeStuff.Service.Models.Users;
+using ExchangeStuff.Service.Services.Impls;
 using ExchangeStuff.Service.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ExchangeStuff.Controllers
 {
+    /// <summary>
+    /// Only admin call this controller, TODO: I'll auth later
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class AdminController : ControllerBase
     {
+        private readonly ICacheService _cacheService;
         private readonly IAdminService _adminService;
 
-        public AdminController(IAdminService adminService)
+        /// <summary>
+        /// Admin behavior
+        /// </summary>
+        /// <param name="adminService"></param>
+        public AdminController(IAdminService adminService, ICacheService cacheService)
         {
+            _cacheService = cacheService;
             _adminService = adminService;
         }
 
@@ -131,5 +142,54 @@ namespace ExchangeStuff.Controllers
                 Value = await _adminService.GetResources(name, pageIndex, pageSize)
             });
         }
+
+        /// <summary>
+        /// 1 session 1 devide
+        /// </summary>
+        /// <param name="adminLoginRd"></param>
+        /// <returns></returns>
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] AdminLoginRd adminLoginRd)
+        {
+            return Ok(new ResponseResult<string>
+            {
+                Error = null!,
+                IsSuccess = true,
+                Value = await _adminService.LoginAdmin(adminLoginRd.username, adminLoginRd.password)
+            });
+        }
+
+        /// <summary>
+        /// Provice token with request
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        [HttpPost("logout")]
+        public async Task<IActionResult> Logout()
+        {
+            var token = (HttpContext.Request.Headers.Authorization.FirstOrDefault() + "").Split(" ").Last();
+            if (string.IsNullOrEmpty(token)) throw new Exception("No token in header");
+            return Ok(new ResponseResult<string>
+            {
+                Error = null!,
+                IsSuccess = true,
+                Value = (await _cacheService.DeleteAccessToken(token)) + ""
+            });
+        }
+
+        public sealed record AdminLoginRd(string username, string password);
+
+        [HttpPost("admin")]
+        public async Task<IActionResult> CreateAdmin(AdminCreateModel adminCreateModel)
+        {
+            return Ok(new ResponseResult<AdminViewModel>
+            {
+                Error = null!,
+                IsSuccess = true,
+                Value = await _adminService.CreateAdmin(adminCreateModel.Username, adminCreateModel.Password, adminCreateModel.Name)
+            });
+        }
+
     }
+
 }
