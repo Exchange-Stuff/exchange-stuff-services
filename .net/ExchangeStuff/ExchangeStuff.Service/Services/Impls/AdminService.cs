@@ -53,7 +53,6 @@ namespace ExchangeStuff.Service.Services.Impls
             _configuration.GetSection(nameof(RedisConstantDTO)).Bind(_redisConstantDTO);
         }
 
-        //****
         public async Task<bool> AddPermissionIntoPermissionGroup(UpdatePermissionActionValueModel updatePermissionActionValueModel)
         {
             if (updatePermissionActionValueModel.ResourceValueRecords.Any() is false) throw new ArgumentNullException("Action is required");

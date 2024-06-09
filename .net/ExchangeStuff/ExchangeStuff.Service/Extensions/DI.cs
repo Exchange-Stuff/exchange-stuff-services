@@ -1,4 +1,5 @@
-﻿using ExchangeStuff.Core.Uows;
+using ExchangeStuff.Core.Repositories;
+using ExchangeStuff.Core.Uows;
 using ExchangeStuff.CurrentUser.Users;
 using ExchangeStuff.Repository.Data;
 using ExchangeStuff.Repository.Uows;
@@ -19,6 +20,8 @@ namespace ExchangeStuff.Service.Extensions
             services.AddDbContext<ExchangeStuffContext>(x => x.UseSqlServer("TODO"));
             services.AddTransient<IUnitOfWork, UnitOfWork>();
             services.AddScoped<ITokenService, TokenService>();
+            services.AddScoped<IImageRepository, IImageRepository>();
+            services.AddScoped<IRatingSerivce, RatingService>();
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<ICacheService, CacheService>();
