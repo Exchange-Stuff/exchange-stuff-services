@@ -16,6 +16,7 @@ namespace ExchangeStuff.Repository.Uows
             CommentRepository = new CommentRepository(_context);
             ImageRepository = new ImageRepository(_context);
             RatingRepository = new RatingRepository(_context);
+            FinancialTicketsRepository = new FinancialTicketsRepository(_context);
             CategoryRepository = new CategoryRepository(_context);
             TokenRepository = new TokenRepository(_context);
             ActionRepository = new ActionRepository(_context);
@@ -27,6 +28,7 @@ namespace ExchangeStuff.Repository.Uows
         }
 
         public IUserRepository UserRepository { get; private set; }
+        public IFinancialTicketsRepository FinancialTicketsRepository { get; private set; }
 
         public IImageRepository ImageRepository {  get; private set; }
 
