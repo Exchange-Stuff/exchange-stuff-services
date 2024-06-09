@@ -1,4 +1,5 @@
 ﻿using ExchangeStuff.Core.Common;
+using ExchangeStuff.Service.Models.Comments;
 
 namespace ExchangeStuff.Service.Services.Interfaces;
 

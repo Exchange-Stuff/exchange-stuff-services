@@ -4,6 +4,8 @@ using ExchangeStuff.Service.DTOs;
 using ExchangeStuff.Service.Models.Actions;
 using ExchangeStuff.Service.Models.Admins;
 using ExchangeStuff.Service.Models.Categories;
+using ExchangeStuff.Service.Models.Comments;
+using ExchangeStuff.Service.Models.Images;
 using ExchangeStuff.Service.Models.PermissionGroups;
 using ExchangeStuff.Service.Models.Permissions;
 using ExchangeStuff.Service.Models.Products;

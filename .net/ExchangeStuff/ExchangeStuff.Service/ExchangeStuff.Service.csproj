@@ -16,6 +16,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="Models\Comments\CommentViewModel.cs" />
+    <Compile Include="Models\Comments\CreateCommentModel.cs" />
+    <Compile Include="Models\Comments\UpdateCommentModel.cs" />
+    <Compile Include="Models\Images\ImageViewModel.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AutoMapper" Version="13.0.1" />
     <PackageReference Include="Google.Apis.Oauth2.v2" Version="1.68.0.1869" />
     <PackageReference Include="MediatR" Version="12.2.0" />
@@ -32,8 +39,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Models\Images\" />
-    <Folder Include="Models\Comments\" />
     <Folder Include="Models\CategoryProduct\" />
     <Folder Include="Models\VNPayModel\" />
   </ItemGroup>
