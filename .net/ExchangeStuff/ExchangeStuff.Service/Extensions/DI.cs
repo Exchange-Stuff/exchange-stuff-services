@@ -4,14 +4,13 @@ using ExchangeStuff.CurrentUser.Users;
 using ExchangeStuff.Repository.Data;
 using ExchangeStuff.Repository.Uows;
 using ExchangeStuff.Service.DTOs;
-using ExchangeStuff.Service.Models.VNPayModel;
+using ExchangeStuff.Service.Library;
 using ExchangeStuff.Service.Services.Impls;
 using ExchangeStuff.Service.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using StackExchange.Redis;
-using Microsoft.Identity.Client;
 
 namespace ExchangeStuff.Service.Extensions
 {

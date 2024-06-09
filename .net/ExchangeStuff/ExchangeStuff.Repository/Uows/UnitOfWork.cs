@@ -54,13 +54,7 @@ namespace ExchangeStuff.Repository.Uows
         public IResourceRepository ResourceRepository { get; private set; }
 
         public IAdminRepository AdminRepository { get; private set; }
-            AccountRepository = new AccountRepository(_context);
-            TransactionHistoryRepository = new TransactionHistoryRepository(_context);
-            PurchaseTicketRepository = new PurchaseTicketRepository(_context);
-        }
 
-        public IUserRepository UserRepository { get; private set; }
-        public IAccountRepository AccountRepository { get; private set; }
         public IPurchaseTicketRepository PurchaseTicketRepository {  get; private set; }
         public ITransactionHistoryRepository TransactionHistoryRepository { get; private set; }
 

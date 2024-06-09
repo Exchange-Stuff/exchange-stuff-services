@@ -3,7 +3,6 @@ using ExchangeStuff.Core.Entities;
 using ExchangeStuff.Core.Repositories;
 using ExchangeStuff.Core.Uows;
 using ExchangeStuff.Service.Maps;
-using ExchangeStuff.Service.Models.Comments;
 using ExchangeStuff.Service.Services.Interfaces;
 using System.Net;
 
