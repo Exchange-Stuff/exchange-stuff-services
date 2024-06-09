@@ -3,6 +3,7 @@ using ExchangeStuff.CurrentUser.Users;
 using ExchangeStuff.Repository.Data;
 using ExchangeStuff.Repository.Uows;
 using ExchangeStuff.Service.DTOs;
+using ExchangeStuff.Service.Models.VNPayModel;
 using ExchangeStuff.Service.Services.Impls;
 using ExchangeStuff.Service.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -38,6 +39,8 @@ namespace ExchangeStuff.Service.Extensions
             {
                 throw new Exception(ex.Message);
             }
+            services.AddScoped<IVnPayService, VNPayService>();
+            services.AddSingleton<VnPayLibrary>();
         }
     }
 }

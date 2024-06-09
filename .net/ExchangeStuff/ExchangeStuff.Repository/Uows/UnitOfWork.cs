@@ -21,9 +21,13 @@ namespace ExchangeStuff.Repository.Uows
             PermissionGroupRepository = new PermissionGroupRepository(_context);
             ResourceRepository = new ResourceRepository(_context);
             AdminRepository = new AdminRepository(_context);
+            ProductRepository = new ProductRepository(_context);
+            CategoriesRepository = new CategoriesRepository(_context);
         }
 
         public IUserRepository UserRepository { get; private set; }
+        public IProductRepository ProductRepository { get; private set; }
+        public ICategoriesRepository CategoriesRepository { get; private set; }
 
         public ICategoryRepository CategoryRepository { get; private set; }
 

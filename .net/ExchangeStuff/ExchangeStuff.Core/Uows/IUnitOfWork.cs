@@ -13,6 +13,8 @@ namespace ExchangeStuff.Core.Uows
         IPermissionGroupRepository PermissionGroupRepository { get; }
         IResourceRepository ResourceRepository { get; }
         IAdminRepository AdminRepository { get; }
+        IProductRepository ProductRepository { get; }
+        ICategoriesRepository CategoriesRepository { get; }
         Task<int> SaveChangeAsync();
     }
 }

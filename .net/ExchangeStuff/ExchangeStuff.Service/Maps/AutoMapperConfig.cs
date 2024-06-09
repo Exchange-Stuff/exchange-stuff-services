@@ -6,6 +6,7 @@ using ExchangeStuff.Service.Models.Admins;
 using ExchangeStuff.Service.Models.Categories;
 using ExchangeStuff.Service.Models.PermissionGroups;
 using ExchangeStuff.Service.Models.Permissions;
+using ExchangeStuff.Service.Models.Categories;
 using ExchangeStuff.Service.Models.Products;
 using ExchangeStuff.Service.Models.Resources;
 
@@ -40,6 +41,8 @@ namespace ExchangeStuff.Service.Maps
             CreateMap<Core.Entities.Action, ActionViewModel>().ReverseMap();
             CreateMap<Resource, ResourceViewModel>().ReverseMap();
             CreateMap<Admin, AdminViewModel>().ReverseMap();
+            CreateMap<Product, CreateProductModel>().ReverseMap();
+            CreateMap<Category, CategoryViewModel>().ReverseMap();
         }
     }
 }
