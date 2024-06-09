@@ -19,6 +19,11 @@ namespace ExchangeStuff.Repository.Repositories.Base
             await _entities.AddAsync(item);
         }
 
+        public async Task AddRangeAsync(IEnumerable<T> entities)
+        {
+            await _entities.AddRangeAsync(entities);
+        }
+
         public async Task<List<T>> GetManyAsync(Expression<Func<T, bool>>? predicate = null, string? include = null, int? pageIndex = null, int? pageSize = null, Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null)
         {
             IQueryable<T> query = _entities;
