@@ -19,6 +19,10 @@ namespace ExchangeStuff.Repository.Repositories
         {
             if (string.IsNullOrEmpty(email)) return null!;
             return (await _context.Accounts.FirstOrDefaultAsync(x => x.Email == email))!;
+        private readonly DbSet<Account> _acccount;
+        public AccountRepository(ExchangeStuffContext context) : base(context)
+        {
+            _acccount = context.Set<Account>();
         }
     }
 }

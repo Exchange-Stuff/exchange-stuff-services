@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using StackExchange.Redis;
+using Microsoft.Identity.Client;
 
 namespace ExchangeStuff.Service.Extensions
 {
@@ -44,6 +45,8 @@ namespace ExchangeStuff.Service.Extensions
             }
             services.AddScoped<IVnPayService, VNPayService>();
             services.AddSingleton<VnPayLibrary>();
+            services.AddScoped<ITransactionHistoryService, TransactionHistoryService>();
+            services.AddScoped<IPurchaseTicketService, PurchaseTicketService>();
         }
     }
 }
