@@ -1,5 +1,6 @@
 ﻿using ExchangeStuff.Responses;
 using ExchangeStuff.Service.Models.Accounts;
+
 using ExchangeStuff.Service.Models.Users;
 using ExchangeStuff.Service.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -28,6 +29,7 @@ namespace ExchangeStuff.Controllers
 
         [HttpGet("user/{id}")]
         public async Task<IActionResult> GetUser([FromRoute] Guid id)
+
             => Ok(new ResponseResult<UserViewModel>
             {
                 Error = null!,
@@ -52,5 +54,6 @@ namespace ExchangeStuff.Controllers
                 IsSuccess = true,
                 Value = await _accountService.GetAccount(id)
             });
+
     }
 }
