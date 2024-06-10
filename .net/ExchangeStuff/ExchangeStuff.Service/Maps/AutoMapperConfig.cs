@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using ExchangeStuff.Core.Entities;
 using ExchangeStuff.Service.DTOs;
+using ExchangeStuff.Service.Models.Accounts;
 using ExchangeStuff.Service.Models.Actions;
 using ExchangeStuff.Service.Models.Admins;
 using ExchangeStuff.Service.Models.Campuses;
@@ -35,7 +36,7 @@ namespace ExchangeStuff.Service.Maps
         public MapperHandler()
         {
             CreateMap<Product, ProductViewModel>().ReverseMap();
-            
+
             #region Mapper Comment
             CreateMap<Comment, CommentViewModel>().ReverseMap();
             CreateMap<Comment, CreateCommentModel>().ReverseMap();
@@ -64,6 +65,7 @@ namespace ExchangeStuff.Service.Maps
             CreateMap<User, UserViewModel>().ReverseMap();
             CreateMap<UserBalance, UserBalanceViewModel>().ReverseMap();
             CreateMap<Campus, CampusViewModel>().ReverseMap();
+            CreateMap<Account, AccountViewModel>().ReverseMap();
         }
     }
 }

@@ -1,6 +1,9 @@
-﻿namespace ExchangeStuff.Core.Entities
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace ExchangeStuff.Core.Entities
 {
     public class Admin : Account
     {
+        
     }
 }

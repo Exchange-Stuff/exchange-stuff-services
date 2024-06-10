@@ -72,7 +72,7 @@ namespace ExchangeStuff.Service.Services.Impls
             {
                 Subject = new System.Security.Claims.ClaimsIdentity(new[] {
                     new Claim(ClaimTypes.NameIdentifier, account.Id + ""),
-                    new Claim(ClaimTypes.Email, account.Email)
+                    new Claim(ClaimTypes.Email, account.Email??"")
                 }),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256),
                 Audience = _jwtDTO.Audience,
@@ -91,7 +91,8 @@ namespace ExchangeStuff.Service.Services.Impls
             var tokenDescribe = new SecurityTokenDescriptor
             {
                 Subject = new System.Security.Claims.ClaimsIdentity(new[] {
-                    new Claim(ClaimTypes.NameIdentifier, admin.Id + "")
+                    new Claim(ClaimTypes.NameIdentifier, admin.Id + ""),
+                   new Claim(ClaimTypes.Email, admin.Email??"")
                 }),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256),
                 Audience = _jwtDTO.Audience,
@@ -137,8 +138,7 @@ namespace ExchangeStuff.Service.Services.Impls
                 var id = jwtToken.Claims.First(x => x.Type == "nameid")!.Value;
                 var email = jwtToken.Claims.First(x => x.Type == "email")!.Value;
 
-                if (Guid.TryParse(id, out Guid newId) is false ||
-                    string.IsNullOrEmpty(email)
+                if (Guid.TryParse(id, out Guid newId) is false
                     )
                 {
                     return null!;

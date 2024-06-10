@@ -1,4 +1,5 @@
 ﻿using ExchangeStuff.Responses;
+using ExchangeStuff.Service.Models.Accounts;
 using ExchangeStuff.Service.Models.Users;
 using ExchangeStuff.Service.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -26,12 +27,30 @@ namespace ExchangeStuff.Controllers
             });
 
         [HttpGet("user/{id}")]
-        public async Task<IActionResult> GetUsers([FromRoute] Guid id)
+        public async Task<IActionResult> GetUser([FromRoute] Guid id)
             => Ok(new ResponseResult<UserViewModel>
             {
                 Error = null!,
                 IsSuccess = true,
                 Value = await _accountService.GetUser(id)
+            });
+
+        [HttpGet("accounts")]
+        public async Task<IActionResult> GetAccounts(string? name = null!, string? username = null!, string? email = null!, int? pageIndex = null!, int? pageSize = null!)
+           => Ok(new ResponseResult<List<AccountViewModel>>
+           {
+               Error = null!,
+               IsSuccess = true,
+               Value = await _accountService.GetAccounts(name, email, username, pageIndex, pageSize)
+           });
+
+        [HttpGet("account/{id}")]
+        public async Task<IActionResult> GetAccount([FromRoute] Guid id)
+            => Ok(new ResponseResult<AccountViewModel>
+            {
+                Error = null!,
+                IsSuccess = true,
+                Value = await _accountService.GetAccount(id)
             });
     }
 }

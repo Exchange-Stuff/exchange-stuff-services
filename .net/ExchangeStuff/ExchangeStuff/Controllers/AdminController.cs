@@ -1,4 +1,6 @@
-﻿using ExchangeStuff.Responses;
+﻿using ExchangeStuff.AuthOptions.Requirements;
+using ExchangeStuff.Responses;
+using ExchangeStuff.Service.Constants;
 using ExchangeStuff.Service.Models.Actions;
 using ExchangeStuff.Service.Models.Admins;
 using ExchangeStuff.Service.Models.PermissionGroups;
@@ -60,11 +62,24 @@ namespace ExchangeStuff.Controllers
             });
         }
 
-        [HttpPost("actions")]
+        [HttpPost("action")]
         public async Task<IActionResult> CreateAction([FromBody] string name)
         {
             var rs = await _adminService.CreateAction(name);
             if (!rs) throw new Exception("Can't create action, CreateAction");
+
+            return StatusCode(StatusCodes.Status201Created, new ResponseResult<string>
+            {
+                Error = null!,
+                IsSuccess = true,
+                Value = rs.ToString()
+            });
+        }
+        [HttpPost("resource")]
+        public async Task<IActionResult> CreateResource([FromBody] string name)
+        {
+            var rs = await _adminService.CreateResource(name);
+            if (!rs) throw new Exception("Can't create resource, CreateResource");
 
             return StatusCode(StatusCodes.Status201Created, new ResponseResult<string>
             {
@@ -102,6 +117,9 @@ namespace ExchangeStuff.Controllers
             });
         }
 
+        [ESAuthorize(new string[] {
+        ActionConstant.READ
+        })]
         [HttpGet("permissions")]
         public async Task<IActionResult> GetPermissions(int? pageIndex = null!, int? pageSize = null!)
         {
