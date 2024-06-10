@@ -7,12 +7,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Models\CategoryProduct\**" />
     <Compile Remove="Models\Comments\**" />
     <Compile Remove="Models\Images\**" />
+    <Compile Remove="Models\VNPayModel\**" />
+    <EmbeddedResource Remove="Models\CategoryProduct\**" />
     <EmbeddedResource Remove="Models\Comments\**" />
     <EmbeddedResource Remove="Models\Images\**" />
+    <EmbeddedResource Remove="Models\VNPayModel\**" />
+    <None Remove="Models\CategoryProduct\**" />
     <None Remove="Models\Comments\**" />
     <None Remove="Models\Images\**" />
+    <None Remove="Models\VNPayModel\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -36,11 +42,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ExchangeStuff.Repository\ExchangeStuff.Repository.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Models\CategoryProduct\" />
-    <Folder Include="Models\VNPayModel\" />
   </ItemGroup>
 
 </Project>

@@ -21,7 +21,6 @@ namespace ExchangeStuff.Service.Extensions
             services.AddDbContext<ExchangeStuffContext>(x => x.UseSqlServer("TODO"));
             services.AddTransient<IUnitOfWork, UnitOfWork>();
             services.AddScoped<ITokenService, TokenService>();
-            services.AddScoped<IImageRepository, IImageRepository>();
             services.AddScoped<IRatingSerivce, RatingService>();
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<ICategoryService, CategoryService>();
@@ -46,6 +45,7 @@ namespace ExchangeStuff.Service.Extensions
             services.AddSingleton<VnPayLibrary>();
             services.AddScoped<ITransactionHistoryService, TransactionHistoryService>();
             services.AddScoped<IPurchaseTicketService, PurchaseTicketService>();
+            services.AddScoped<IAccountService, AccountService>();
         }
     }
 }

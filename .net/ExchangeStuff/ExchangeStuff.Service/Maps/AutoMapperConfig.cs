@@ -3,6 +3,7 @@ using ExchangeStuff.Core.Entities;
 using ExchangeStuff.Service.DTOs;
 using ExchangeStuff.Service.Models.Actions;
 using ExchangeStuff.Service.Models.Admins;
+using ExchangeStuff.Service.Models.Campuses;
 using ExchangeStuff.Service.Models.Categories;
 using ExchangeStuff.Service.Models.Comments;
 using ExchangeStuff.Service.Models.Images;
@@ -11,6 +12,7 @@ using ExchangeStuff.Service.Models.Permissions;
 using ExchangeStuff.Service.Models.Products;
 using ExchangeStuff.Service.Models.Rating;
 using ExchangeStuff.Service.Models.Resources;
+using ExchangeStuff.Service.Models.Users;
 
 namespace ExchangeStuff.Service.Maps
 {
@@ -59,6 +61,9 @@ namespace ExchangeStuff.Service.Maps
             CreateMap<Admin, AdminViewModel>().ReverseMap();
             CreateMap<Product, CreateProductModel>().ReverseMap();
             CreateMap<Category, CategoryViewModel>().ReverseMap();
+            CreateMap<User, UserViewModel>().ReverseMap();
+            CreateMap<UserBalance, UserBalanceViewModel>().ReverseMap();
+            CreateMap<Campus, CampusViewModel>().ReverseMap();
         }
     }
 }
