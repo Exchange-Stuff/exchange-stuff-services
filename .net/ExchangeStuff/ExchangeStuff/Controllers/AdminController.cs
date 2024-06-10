@@ -35,6 +35,7 @@ namespace ExchangeStuff.Controllers
         public async Task<IActionResult> CreatePermisisonGroup([FromBody] PermissionGroupCreateModel permissionGroupCreateModel)
         {
             var rs = await _adminService.CreatePermissionGroup(permissionGroupCreateModel);
+
             if (!rs) throw new Exception("Can't create permission group, CreatePermisisonGroup");
 
             return StatusCode(StatusCodes.Status201Created, new ResponseResult<string>
@@ -190,6 +191,20 @@ namespace ExchangeStuff.Controllers
             });
         }
 
+        [HttpPut("permissionGroup/permissions")]
+
+        public async Task<IActionResult> UpdatePermissionGroup([FromBody] UpdatePermissionActionValueModel updatePermissionActionValueModel)
+        {
+            var rs = await _adminService.AddPermissionIntoPermissionGroup(updatePermissionActionValueModel);
+            if (!rs) throw new Exception("Can't update permission group with action value, UpdatePermissionGroup");
+
+            return StatusCode(StatusCodes.Status200OK, new ResponseResult<string>
+            {
+                Error = null!,
+                IsSuccess = true,
+                Value = rs.ToString()
+            });
+        }
     }
 
 }

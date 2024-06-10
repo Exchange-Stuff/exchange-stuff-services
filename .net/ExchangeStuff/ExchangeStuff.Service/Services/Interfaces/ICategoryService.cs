@@ -1,9 +1,14 @@
 ﻿using ExchangeStuff.Service.Models.Categories;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace ExchangeStuff.Service.Services.Interfaces
 {
     public interface ICategoryService
     {
-        Task<CategoryViewModel> GetCategory(Guid id);
+        Task<List<CategoryViewModel>> GetCategory();
     }
 }

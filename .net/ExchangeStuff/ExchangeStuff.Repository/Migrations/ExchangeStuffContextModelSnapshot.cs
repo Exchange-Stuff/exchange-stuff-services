@@ -308,6 +308,49 @@ namespace ExchangeStuff.Repository.Migrations
                     b.ToTable("Images");
                 });
 
+            modelBuilder.Entity("ExchangeStuff.Core.Entities.Payment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<double>("Amount")
+                        .HasColumnType("float");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<Guid>("ModifiedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("ModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("PaymentDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Payments");
+                });
+
             modelBuilder.Entity("ExchangeStuff.Core.Entities.Permission", b =>
                 {
                     b.Property<Guid>("Id")
@@ -755,10 +798,21 @@ namespace ExchangeStuff.Repository.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("ExchangeStuff.Core.Entities.Payment", b =>
+                {
+                    b.HasOne("ExchangeStuff.Core.Entities.User", "User")
+                        .WithMany("Payments")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("ExchangeStuff.Core.Entities.Permission", b =>
                 {
                     b.HasOne("ExchangeStuff.Core.Entities.PermissionGroup", "PermissionGroup")
-                        .WithMany()
+                        .WithMany("Permissions")
                         .HasForeignKey("PermissionGroupId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -890,6 +944,11 @@ namespace ExchangeStuff.Repository.Migrations
                     b.Navigation("Users");
                 });
 
+            modelBuilder.Entity("ExchangeStuff.Core.Entities.PermissionGroup", b =>
+                {
+                    b.Navigation("Permissions");
+                });
+
             modelBuilder.Entity("ExchangeStuff.Core.Entities.Product", b =>
                 {
                     b.Navigation("Comments");
@@ -908,6 +967,8 @@ namespace ExchangeStuff.Repository.Migrations
             modelBuilder.Entity("ExchangeStuff.Core.Entities.User", b =>
                 {
                     b.Navigation("FinancialTickets");
+
+                    b.Navigation("Payments");
 
                     b.Navigation("PostTickets");
 

@@ -6,6 +6,9 @@ namespace ExchangeStuff.Core.Uows
     {
         ICategoryRepository CategoryRepository { get; }
         IUserRepository UserRepository { get; }
+        IImageRepository ImageRepository { get; }
+        IRatingRepository RatingRepository { get; }
+        ICommentRepository CommentRepository { get; }
         IFinancialTicketsRepository FinancialTicketsRepository { get; }
         ITokenRepository TokenRepository { get; }
         IAccountRepository AccountRepository { get; }
@@ -14,6 +17,10 @@ namespace ExchangeStuff.Core.Uows
         IPermissionGroupRepository PermissionGroupRepository { get; }
         IResourceRepository ResourceRepository { get; }
         IAdminRepository AdminRepository { get; }
+        IProductRepository ProductRepository { get; }
+        ICategoriesRepository CategoriesRepository { get; }
+        IPurchaseTicketRepository PurchaseTicketRepository { get; }
+        ITransactionHistoryRepository TransactionHistoryRepository { get; }
         Task<int> SaveChangeAsync();
     }
 }

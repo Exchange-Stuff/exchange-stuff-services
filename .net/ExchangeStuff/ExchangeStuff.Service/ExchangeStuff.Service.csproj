@@ -7,12 +7,25 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Models\CategoryProduct\**" />
     <Compile Remove="Models\Comments\**" />
     <Compile Remove="Models\Images\**" />
+    <Compile Remove="Models\VNPayModel\**" />
+    <EmbeddedResource Remove="Models\CategoryProduct\**" />
     <EmbeddedResource Remove="Models\Comments\**" />
     <EmbeddedResource Remove="Models\Images\**" />
+    <EmbeddedResource Remove="Models\VNPayModel\**" />
+    <None Remove="Models\CategoryProduct\**" />
     <None Remove="Models\Comments\**" />
     <None Remove="Models\Images\**" />
+    <None Remove="Models\VNPayModel\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="Models\Comments\CommentViewModel.cs" />
+    <Compile Include="Models\Comments\CreateCommentModel.cs" />
+    <Compile Include="Models\Comments\UpdateCommentModel.cs" />
+    <Compile Include="Models\Images\ImageViewModel.cs" />
   </ItemGroup>
 
   <ItemGroup>

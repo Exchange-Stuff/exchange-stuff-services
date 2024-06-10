@@ -1,8 +1,10 @@
-﻿using ExchangeStuff.Core.Uows;
+using ExchangeStuff.Core.Repositories;
+using ExchangeStuff.Core.Uows;
 using ExchangeStuff.CurrentUser.Users;
 using ExchangeStuff.Repository.Data;
 using ExchangeStuff.Repository.Uows;
 using ExchangeStuff.Service.DTOs;
+using ExchangeStuff.Service.Library;
 using ExchangeStuff.Service.Services.Impls;
 using ExchangeStuff.Service.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -19,6 +21,7 @@ namespace ExchangeStuff.Service.Extensions
             services.AddDbContext<ExchangeStuffContext>(x => x.UseSqlServer("TODO"));
             services.AddTransient<IUnitOfWork, UnitOfWork>();
             services.AddScoped<ITokenService, TokenService>();
+            services.AddScoped<IRatingSerivce, RatingService>();
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<ICacheService, CacheService>();
@@ -38,6 +41,11 @@ namespace ExchangeStuff.Service.Extensions
             {
                 throw new Exception(ex.Message);
             }
+            services.AddScoped<IVnPayService, VNPayService>();
+            services.AddSingleton<VnPayLibrary>();
+            services.AddScoped<ITransactionHistoryService, TransactionHistoryService>();
+            services.AddScoped<IPurchaseTicketService, PurchaseTicketService>();
+            services.AddScoped<IAccountService, AccountService>();
         }
     }
 }

@@ -1,12 +1,12 @@
 using ExchangeStuff.Exceptions;
 using ExchangeStuff.Extensions;
+
 using ExchangeStuff.Service.Extensions;
 using System.Text.Json.Serialization;
 using Newtonsoft.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowOrigin",
@@ -31,14 +31,15 @@ builder.Services.AddControllers(x =>
 
 });
 
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.InjectAPI(builder.Configuration);
 builder.Services.Inject(builder.Configuration);
 
+
 var app = builder.Build();
 app.UseCors("AllowOrigin");
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -50,6 +51,8 @@ app.UseAuthentication();
 app.UseMiddleware();
 app.UseAuthorization();
 app.UseException();
+
+app.UseCors("AllowSpecificOrigin");
 
 app.MapControllers();
 
