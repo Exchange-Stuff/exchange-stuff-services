@@ -35,6 +35,7 @@ namespace ExchangeStuff.Controllers
         public async Task<IActionResult> CreatePermisisonGroup([FromBody] PermissionGroupCreateModel permissionGroupCreateModel)
         {
             var rs = await _adminService.CreatePermissionGroup(permissionGroupCreateModel);
+
             if (!rs) throw new Exception("Can't create permission group, CreatePermisisonGroup");
 
             return StatusCode(StatusCodes.Status201Created, new ResponseResult<string>
