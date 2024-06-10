@@ -3,14 +3,14 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ExchangeStuff.Core.Entities
 {
-    public class User :Account
+    public class User : Account
     {
         [MaxLength(10)]
         public string? StudentId { get; set; }
 
         [MaxLength(100)]
         public string? Address { get; set; }
-         
+
         [MaxLength(12)]
         public string? Phone { get; set; }
 
@@ -25,6 +25,7 @@ namespace ExchangeStuff.Core.Entities
         public ICollection<FinancialTicket>? FinancialTickets { get; set; }
         public ICollection<PostTicket>? PostTickets { get; set; }
         public ICollection<PurchaseTicket>? PurchaseTickets { get; set; }
+        public ICollection<Payment>? Payments { get; set; }
 
     }
 }
