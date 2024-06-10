@@ -20,7 +20,7 @@ namespace ExchangeStuff.Repository.Data
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-            => optionsBuilder.UseSqlServer("Data Source=MSI\\SQLEXPRESS;Initial Catalog=ExchangeStuff;Integrated Security=True;Encrypt=False;Trust Server Certificate=True");
+            => optionsBuilder.UseSqlServer("Data Source=(local);Initial Catalog=ExchangeStuff;Integrated Security=True;Encrypt=False;Trust Server Certificate=True");
 
         private string GetConnectionString()
         {
