@@ -24,6 +24,7 @@ namespace ExchangeStuff.Service.Extensions
             services.AddScoped<IRatingSerivce, RatingService>();
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<ICommentService, CommentService>();
             services.AddScoped<ICacheService, CacheService>();
             services.AddScoped<IIdentityUser<Guid>, IdentityUser<Guid>>();
             services.AddScoped<IAuthService, AuthService>();
