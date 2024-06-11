@@ -47,6 +47,8 @@ namespace ExchangeStuff.Repository.Data
         public DbSet<ExchangeStuff.Core.Entities.Action> Actions { get; set; }
         public DbSet<Moderator> Moderators { get; set; }
         public DbSet<Admin> Admins { get; set; }
+        public DbSet<Account> Accounts { get; set; }
+        public DbSet<Payment> Payments { get; set; }
 
 
         /// <summary>

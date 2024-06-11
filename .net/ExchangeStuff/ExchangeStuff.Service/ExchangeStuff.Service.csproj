@@ -7,19 +7,41 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Models\CategoryProduct\**" />
+    <Compile Remove="Models\Comments\**" />
+    <Compile Remove="Models\Images\**" />
+    <Compile Remove="Models\VNPayModel\**" />
+    <EmbeddedResource Remove="Models\CategoryProduct\**" />
+    <EmbeddedResource Remove="Models\Comments\**" />
+    <EmbeddedResource Remove="Models\Images\**" />
+    <EmbeddedResource Remove="Models\VNPayModel\**" />
+    <None Remove="Models\CategoryProduct\**" />
+    <None Remove="Models\Comments\**" />
+    <None Remove="Models\Images\**" />
+    <None Remove="Models\VNPayModel\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="Models\Comments\CommentViewModel.cs" />
+    <Compile Include="Models\Comments\CreateCommentModel.cs" />
+    <Compile Include="Models\Comments\UpdateCommentModel.cs" />
+    <Compile Include="Models\Images\ImageViewModel.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AutoMapper" Version="13.0.1" />
+    <PackageReference Include="Google.Apis.Oauth2.v2" Version="1.68.0.1869" />
     <PackageReference Include="MediatR" Version="12.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.1.38" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.6" />
+    <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="8.0.6" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\ExchangeStuff.Repository\ExchangeStuff.Repository.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Models\Images\" />
-    <Folder Include="Models\Categories\" />
-    <Folder Include="Models\Comments\" />
   </ItemGroup>
 
 </Project>

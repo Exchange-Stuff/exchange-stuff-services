@@ -7,6 +7,6 @@ namespace ExchangeStuff.Core.Common
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public T Id { get; set; }
+        public virtual T Id { get; set; }
     }
 }
