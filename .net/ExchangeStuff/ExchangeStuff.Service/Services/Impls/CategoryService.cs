@@ -3,6 +3,7 @@ using ExchangeStuff.Core.Uows;
 using ExchangeStuff.Service.Maps;
 using ExchangeStuff.Service.Models.Categories;
 using ExchangeStuff.Service.Services.Interfaces;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,7 @@ namespace ExchangeStuff.Service.Services.Impls
 {
     public class CategoryService : ICategoryService
     {
+
         private readonly ICategoriesRepository _categoriesRepository;
         private readonly IUnitOfWork _unitOfWork;
 

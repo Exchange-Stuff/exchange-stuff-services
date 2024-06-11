@@ -20,7 +20,7 @@ namespace ExchangeStuff.Repository.Data
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-            => optionsBuilder.UseSqlServer("Data Source=MSI\\SQLEXPRESS;Initial Catalog=ExchangeStuff;Integrated Security=True;Encrypt=False;Trust Server Certificate=True");
+            => optionsBuilder.UseSqlServer("Data Source=(local);Initial Catalog=ExchangeStuff;Integrated Security=True;Encrypt=False;Trust Server Certificate=True");
 
         private string GetConnectionString()
         {
@@ -47,6 +47,8 @@ namespace ExchangeStuff.Repository.Data
         public DbSet<ExchangeStuff.Core.Entities.Action> Actions { get; set; }
         public DbSet<Moderator> Moderators { get; set; }
         public DbSet<Admin> Admins { get; set; }
+        public DbSet<Account> Accounts { get; set; }
+        public DbSet<Payment> Payments { get; set; }
 
 
         /// <summary>

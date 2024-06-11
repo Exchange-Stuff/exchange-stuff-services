@@ -70,9 +70,11 @@ namespace ExchangeStuff.Repository.Migrations
                         .HasColumnType("nvarchar(13)");
 
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
+
+                    b.Property<bool>("IsActived")
+                        .HasColumnType("bit");
 
                     b.Property<Guid>("ModifiedBy")
                         .HasColumnType("uniqueidentifier");
@@ -86,20 +88,18 @@ namespace ExchangeStuff.Repository.Migrations
                         .HasColumnType("nvarchar(30)");
 
                     b.Property<string>("Password")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Thumbnail")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Username")
-                        .IsRequired()
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Account");
+                    b.ToTable("Accounts");
 
                     b.HasDiscriminator<string>("Discriminator").HasValue("Account");
 
@@ -305,6 +305,49 @@ namespace ExchangeStuff.Repository.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Images");
+                });
+
+            modelBuilder.Entity("ExchangeStuff.Core.Entities.Payment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<double>("Amount")
+                        .HasColumnType("float");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<Guid>("ModifiedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("ModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("PaymentDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Payments");
                 });
 
             modelBuilder.Entity("ExchangeStuff.Core.Entities.Permission", b =>
@@ -675,21 +718,17 @@ namespace ExchangeStuff.Repository.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<Guid>("CampusId")
+                    b.Property<Guid?>("CampusId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int?>("Gender")
                         .HasColumnType("int");
-
-                    b.Property<bool>("IsActived")
-                        .HasColumnType("bit");
 
                     b.Property<string>("Phone")
                         .HasMaxLength(12)
                         .HasColumnType("nvarchar(12)");
 
                     b.Property<string>("StudentId")
-                        .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)");
 
@@ -758,10 +797,21 @@ namespace ExchangeStuff.Repository.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("ExchangeStuff.Core.Entities.Payment", b =>
+                {
+                    b.HasOne("ExchangeStuff.Core.Entities.User", "User")
+                        .WithMany("Payments")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("ExchangeStuff.Core.Entities.Permission", b =>
                 {
                     b.HasOne("ExchangeStuff.Core.Entities.PermissionGroup", "PermissionGroup")
-                        .WithMany()
+                        .WithMany("Permissions")
                         .HasForeignKey("PermissionGroupId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -878,9 +928,7 @@ namespace ExchangeStuff.Repository.Migrations
                 {
                     b.HasOne("ExchangeStuff.Core.Entities.Campus", "Campus")
                         .WithMany("Users")
-                        .HasForeignKey("CampusId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CampusId");
 
                     b.Navigation("Campus");
                 });
@@ -893,6 +941,11 @@ namespace ExchangeStuff.Repository.Migrations
             modelBuilder.Entity("ExchangeStuff.Core.Entities.Campus", b =>
                 {
                     b.Navigation("Users");
+                });
+
+            modelBuilder.Entity("ExchangeStuff.Core.Entities.PermissionGroup", b =>
+                {
+                    b.Navigation("Permissions");
                 });
 
             modelBuilder.Entity("ExchangeStuff.Core.Entities.Product", b =>
@@ -913,6 +966,8 @@ namespace ExchangeStuff.Repository.Migrations
             modelBuilder.Entity("ExchangeStuff.Core.Entities.User", b =>
                 {
                     b.Navigation("FinancialTickets");
+
+                    b.Navigation("Payments");
 
                     b.Navigation("PostTickets");
 
