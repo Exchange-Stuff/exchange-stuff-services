@@ -21,6 +21,9 @@ namespace ExchangeStuff.Core.Uows
         ICategoriesRepository CategoriesRepository { get; }
         IPurchaseTicketRepository PurchaseTicketRepository { get; }
         ITransactionHistoryRepository TransactionHistoryRepository { get; }
+        IProductBanReportRepository ProductBanReportRepository { get; }
+        IUserBanReportRepository UserBanReportRepository { get; }
+        IBanReasonRepository BanReasonRepository { get; }
         Task<int> SaveChangeAsync();
     }
 }

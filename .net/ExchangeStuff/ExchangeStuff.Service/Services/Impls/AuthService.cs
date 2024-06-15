@@ -1,6 +1,8 @@
 ﻿using ExchangeStuff.Core.Entities;
 using ExchangeStuff.Core.Repositories;
 using ExchangeStuff.Core.Uows;
+using ExchangeStuff.Repository.Repositories;
+using ExchangeStuff.Service.Constants;
 using ExchangeStuff.Service.DTOs;
 using ExchangeStuff.Service.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
@@ -22,6 +24,7 @@ namespace ExchangeStuff.Service.Services.Impls
         private readonly IUnitOfWork _uow;
         private readonly IUserRepository _userRepository;
         private readonly IAccountRepository _accountRepository;
+        private readonly IPermissionGroupRepository _permissionGroupRepository;
 
         public AuthService(IConfiguration configuration, IUnitOfWork unitOfWork, IDistributedCache distributedCache, IConnectionMultiplexer connectionMultiplexer, IHttpContextAccessor httpContextAccessor) : base(unitOfWork, configuration, httpContextAccessor, distributedCache, connectionMultiplexer)
         {
@@ -33,6 +36,7 @@ namespace ExchangeStuff.Service.Services.Impls
             _configuration.GetSection(nameof(GoogleAuthDTO)).Bind(_googleAuthDTO);
             _userRepository = _uow.UserRepository;
             _accountRepository = _uow.AccountRepository;
+            _permissionGroupRepository = _uow.PermissionGroupRepository;
         }
 
         public async Task<string> GetToken(string param)
@@ -71,6 +75,8 @@ namespace ExchangeStuff.Service.Services.Impls
                     {
                         var userindor = GetAuth(token);
                         if (userindor == null!) throw new UnauthorizedAccessException("UserInfor invalid");
+
+                      
                         var acc = await UserSigninCreate(userindor);
                         if (acc == null) throw new UnauthorizedAccessException("Not found user");
                         var tokenSystem = await GenerateToken(acc);
@@ -100,7 +106,12 @@ namespace ExchangeStuff.Service.Services.Impls
                         Thumbnail = userinfo.Thumbnail,
                         IsActived = true
                     };
+                    var permissionGroups = await _permissionGroupRepository.GetManyAsync(x => x.Name == GroupPermission.DEFAULT, forUpdate: true);
+                    if (permissionGroups.Any() is false) throw new Exception("No permission in system");
+
+                    user.PermissionGroups = permissionGroups;
                     await _userRepository.AddAsync(user);
+
                     var rs = await _uow.SaveChangeAsync();
                     if (rs > 0)
                     {

@@ -49,7 +49,9 @@ namespace ExchangeStuff.Repository.Data
         public DbSet<Admin> Admins { get; set; }
         public DbSet<Account> Accounts { get; set; }
         public DbSet<Payment> Payments { get; set; }
-
+        public DbSet<BanReason> BanReasons { get; set; }
+        public DbSet<UserBanReport> UserBanReports { get; set; }
+        public DbSet<ProductBanReport> ProductBanReports { get; set; }
 
         /// <summary>
         /// TPH
