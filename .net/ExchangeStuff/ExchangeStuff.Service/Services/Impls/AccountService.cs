@@ -2,6 +2,7 @@
 using ExchangeStuff.Core.Uows;
 using ExchangeStuff.Service.Maps;
 using ExchangeStuff.Service.Models.Accounts;
+
 using ExchangeStuff.Service.Models.Users;
 using ExchangeStuff.Service.Services.Interfaces;
 
@@ -12,6 +13,7 @@ namespace ExchangeStuff.Service.Services.Impls
         private readonly IUnitOfWork _uow;
         private readonly IUserRepository _userRepository;
         private readonly IAccountRepository _accountRepository;
+
 
         public AccountService(IUnitOfWork unitOfWork)
         {
