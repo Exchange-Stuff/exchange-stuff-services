@@ -40,9 +40,8 @@ namespace ExchangeStuff.Controllers
             return Ok(responseResult);
         }
 
-
         /// <summary>
-        /// Provide access token in header
+        /// Provide access token 
         /// </summary>
         /// <returns></returns>
         /// <exception cref="UnauthorizedAccessException"></exception>
@@ -66,6 +65,12 @@ namespace ExchangeStuff.Controllers
             throw new Exception("Server can't proccess logout");
         }
 
+        /// <summary>
+        /// Provide refreshtoken(Ex: Refresh) and accesstoken
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="UnauthorizedAccessException"></exception>
+        /// <exception cref="Exception"></exception>
         [HttpPut]
         public async Task<IActionResult> ReNewToken()
         {

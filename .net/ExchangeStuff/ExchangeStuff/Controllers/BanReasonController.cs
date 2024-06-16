@@ -29,15 +29,6 @@ namespace ExchangeStuff.Controllers
         });
 
 
-        /// <summary>
-        /// Authenticate require
-        /// </summary>
-        /// <param name="content"></param>
-        /// <param name="banReasonType"></param>
-        /// <returns></returns>
-        [ESAuthorize(new string[] {
-        ActionConstant.READ
-        })]
         [HttpGet("reasons")]
         public async Task<IActionResult> GetBanReason(string? content = null, BanReasonType? banReasonType = null!)
         => Ok(new ResponseResult<List<BanReasonViewModel>>
