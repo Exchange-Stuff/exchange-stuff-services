@@ -6,17 +6,6 @@ using ExchangeStuff.CurrentUser.Users;
 using ExchangeStuff.Service.Maps;
 using ExchangeStuff.Service.Models.FinancialTickets;
 using ExchangeStuff.Service.Services.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using Azure.Core;
-using ExchangeStuff.Core.Common;
-using Microsoft.AspNetCore.Mvc;
-using Azure.Messaging;
-using AutoMapper;
 
 namespace ExchangeStuff.Service.Services.Impls
 {
@@ -62,25 +51,26 @@ namespace ExchangeStuff.Service.Services.Impls
 
         public async Task<List<FinancialTicketViewModel>> GetAllFinancialTicket(int pageSize, int pageIndex, FinancialTicketStatus? status = null!)
         {
-            
-            List<FinancialTicket> listTicket = new List<FinancialTicket>();
+
             try
             {
-                if(status != null)
+                List<FinancialTicket> listTicket = new List<FinancialTicket>();
+                if (status.HasValue)
                 {
-                    listTicket = await _financialTicketsRepository.GetManyAsync(pageSize:  pageSize, pageIndex: pageIndex, predicate: p => p.Status == status, orderBy: p=>p.OrderBy(p=> p.CreatedOn));
+                    listTicket = await _financialTicketsRepository.GetManyAsync(pageSize: pageSize, pageIndex: pageIndex, predicate: p => p.Status == status, orderBy: p => p.OrderBy(p => p.CreatedOn));
 
                 }
                 else
                 {
-                    listTicket = await _financialTicketsRepository.GetManyAsync(pageSize: pageSize, pageIndex: pageIndex, orderBy: p=> p.OrderBy(p=>p.CreatedOn));
+                    listTicket = await _financialTicketsRepository.GetManyAsync(pageSize: pageSize, pageIndex: pageIndex, orderBy: p => p.OrderBy(p => p.CreatedOn));
 
                 }
                 var result = AutoMapperConfig.Mapper.Map<List<FinancialTicketViewModel>>(listTicket);
-               return result;
+                return result;
 
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
 
                 throw new Exception(ex.Message);
             }
@@ -117,9 +107,10 @@ namespace ExchangeStuff.Service.Services.Impls
         public async Task<FinancialTicketViewModel> GetFinancialTicketDetail(Guid financialTicketId)
         {
            
-            FinancialTicket ticket = new FinancialTicket();
+            
             try
             {
+                FinancialTicket ticket = new FinancialTicket();
                 ticket = await _financialTicketsRepository.GetOneAsync(predicate: p => p.Id == financialTicketId);
                 var result = AutoMapperConfig.Mapper.Map<FinancialTicketViewModel>(ticket);
                 return result;
