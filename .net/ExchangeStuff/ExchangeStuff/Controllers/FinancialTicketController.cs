@@ -22,7 +22,7 @@ namespace ExchangeStuff.Controllers
 
 
         [HttpGet("/getAllFinancialTicket/{pageSize}/{pageIndex}/{status}")]
-        public async Task<IActionResult> GetFinancialTicket(FinancialTicketStatus financialTicketStatus, int pageSize , int pageIndex, FinancialTicketStatus status )
+        public async Task<IActionResult> GetFinancialTicket( int pageSize , int pageIndex, FinancialTicketStatus status )
         {
             return Ok(new ResponseResult<List<FinancialTicketViewModel>>
             {

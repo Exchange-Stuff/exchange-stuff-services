@@ -6,6 +6,7 @@ using ExchangeStuff.Service.Models.Admins;
 using ExchangeStuff.Service.Models.Campuses;
 using ExchangeStuff.Service.Models.Categories;
 using ExchangeStuff.Service.Models.Comments;
+using ExchangeStuff.Service.Models.FinancialTickets;
 using ExchangeStuff.Service.Models.Images;
 using ExchangeStuff.Service.Models.PermissionGroups;
 using ExchangeStuff.Service.Models.Permissions;
@@ -64,6 +65,9 @@ namespace ExchangeStuff.Service.Maps
             CreateMap<User, UserViewModel>().ReverseMap();
             CreateMap<UserBalance, UserBalanceViewModel>().ReverseMap();
             CreateMap<Campus, CampusViewModel>().ReverseMap();
+            CreateMap<FinancialTicket, FinancialTicketViewModel>().ReverseMap();
+            CreateMap<FinancialTicket,CreateFinancialTicketModel>().ReverseMap();
+            CreateMap<FinancialTicket, UpdateFinancialTicketModel>().ReverseMap();
         }
     }
 }

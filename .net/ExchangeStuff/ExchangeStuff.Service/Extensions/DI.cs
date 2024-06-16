@@ -45,6 +45,7 @@ namespace ExchangeStuff.Service.Extensions
             services.AddSingleton<VnPayLibrary>();
             services.AddScoped<ITransactionHistoryService, TransactionHistoryService>();
             services.AddScoped<IPurchaseTicketService, PurchaseTicketService>();
+            services.AddScoped<IFinancialTicketService, FinancialTicketService>();
             services.AddScoped<IAccountService, AccountService>();
         }
     }
