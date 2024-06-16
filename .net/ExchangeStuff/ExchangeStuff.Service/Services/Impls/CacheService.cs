@@ -27,7 +27,7 @@ namespace ExchangeStuff.Service.Services.Impls
 
         public CacheService()
         {
-            
+
         }
         public CacheService(IUnitOfWork unitOfWork, IDistributedCache distributedCache, IConnectionMultiplexer connectionMultiplexer, IConfiguration configuration)
         {
@@ -110,7 +110,7 @@ namespace ExchangeStuff.Service.Services.Impls
             }
         }
 
-        public async Task SaveAccessToken(string token, Guid accountId)
+        public async Task<Token> SaveAccessToken(string token, Guid accountId)
         {
             await _distributedCache.SetStringAsync(token, accountId + "");
             Token newtk = new Token
@@ -118,10 +118,13 @@ namespace ExchangeStuff.Service.Services.Impls
                 Id = Guid.NewGuid(),
                 AccessToken = token,
                 RefreshToken = GenerateRefreshToken(),
-                AccountId = accountId
+                AccountId = accountId,
+                CreatedBy = accountId,
+                ModifiedBy = accountId
             };
             await _tokenRepository.AddAsync(newtk);
             await _uow.SaveChangeAsync();
+            return newtk;
         }
 
         public async Task SavePermissionGroup(Guid id)

@@ -24,14 +24,21 @@ namespace ExchangeStuff.Repository.Repositories.Base
             await _entities.AddRangeAsync(entities);
         }
 
-        public async Task<List<T>> GetManyAsync(Expression<Func<T, bool>>? predicate = null, string? include = null, int? pageIndex = null, int? pageSize = null, Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null)
+        public async Task<List<T>> GetManyAsync(Expression<Func<T, bool>>? predicate = null, string? include = null, int? pageIndex = null, int? pageSize = null, Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null, bool? forUpdate = null)
         {
             IQueryable<T> query = _entities;
             if (!string.IsNullOrEmpty(include))
             {
                 foreach (var item in include.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
                 {
-                    query = query.Include(item.Trim()).AsNoTracking();
+                    if (forUpdate.HasValue && forUpdate.Value)
+                    {
+                        query = query.Include(item.Trim());
+                    }
+                    else
+                    {
+                        query = query.Include(item.Trim()).AsNoTracking();
+                    }
                 }
             }
             if (predicate != null)
@@ -51,14 +58,21 @@ namespace ExchangeStuff.Repository.Repositories.Base
             return await query.ToListAsync();
         }
 
-        public async Task<T> GetOneAsync(Expression<Func<T, bool>> predicate, string? include = null)
+        public async Task<T> GetOneAsync(Expression<Func<T, bool>> predicate, string? include = null, bool? forUpdate=null!)
         {
             IQueryable<T> query = _entities;
             if (!string.IsNullOrEmpty(include))
             {
                 foreach (var item in include.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
                 {
-                    query = query.Include(item).AsNoTracking();
+                    if (forUpdate.HasValue&& forUpdate.Value)
+                    {
+                        query = query.Include(item);
+                    }
+                    else
+                    {
+                        query = query.Include(item).AsNoTracking();
+                    }
                 }
             }
             return (await query.FirstOrDefaultAsync(predicate))!;
@@ -77,7 +91,7 @@ namespace ExchangeStuff.Repository.Repositories.Base
         public void Update(T t)
         {
             var entry = _entities.Entry(t);
-            if (entry.State==EntityState.Detached)
+            if (entry.State == EntityState.Detached)
             {
                 _entities.Attach(t);
             }

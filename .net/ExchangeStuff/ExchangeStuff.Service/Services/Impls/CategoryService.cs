@@ -4,12 +4,6 @@ using ExchangeStuff.Service.Maps;
 using ExchangeStuff.Service.Models.Categories;
 using ExchangeStuff.Service.Services.Interfaces;
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace ExchangeStuff.Service.Services.Impls
 {
     public class CategoryService : ICategoryService

@@ -2,6 +2,8 @@
 using ExchangeStuff.Core.Repositories;
 using ExchangeStuff.Core.Uows;
 using ExchangeStuff.Service.DTOs;
+using ExchangeStuff.Service.Maps;
+using ExchangeStuff.Service.Models.Tokens;
 using ExchangeStuff.Service.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Distributed;
@@ -53,9 +55,9 @@ namespace ExchangeStuff.Service.Services.Impls
             _configuration.GetSection(nameof(GoogleAuthDTO)).Bind(_googleAuthDTO);
         }
 
-        public async Task<bool> CheckRefreshTokenExpire(string token)
+        public async Task<bool> CheckRefreshTokenExpire(string refreshToken, string accessToken)
         {
-            var rt = (await _tokenRepository.GetManyAsync(x => x.RefreshToken == token)).FirstOrDefault();
+            var rt = (await _tokenRepository.GetManyAsync(x => x.RefreshToken == refreshToken && x.AccessToken == accessToken)).FirstOrDefault();
             if (rt == null) throw new UnauthorizedAccessException("Refresh token invalid");
             var time = rt.CreatedOn.AddMinutes(_refreshTokenDTO.ExpireMinute);
             if (time < DateTime.Now)
@@ -72,7 +74,7 @@ namespace ExchangeStuff.Service.Services.Impls
             {
                 Subject = new System.Security.Claims.ClaimsIdentity(new[] {
                     new Claim(ClaimTypes.NameIdentifier, account.Id + ""),
-                    new Claim(ClaimTypes.Email, account.Email)
+                    new Claim(ClaimTypes.Email, account.Email??"")
                 }),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256),
                 Audience = _jwtDTO.Audience,
@@ -91,7 +93,8 @@ namespace ExchangeStuff.Service.Services.Impls
             var tokenDescribe = new SecurityTokenDescriptor
             {
                 Subject = new System.Security.Claims.ClaimsIdentity(new[] {
-                    new Claim(ClaimTypes.NameIdentifier, admin.Id + "")
+                    new Claim(ClaimTypes.NameIdentifier, admin.Id + ""),
+                   new Claim(ClaimTypes.Email, admin.Email??"")
                 }),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256),
                 Audience = _jwtDTO.Audience,
@@ -137,8 +140,7 @@ namespace ExchangeStuff.Service.Services.Impls
                 var id = jwtToken.Claims.First(x => x.Type == "nameid")!.Value;
                 var email = jwtToken.Claims.First(x => x.Type == "email")!.Value;
 
-                if (Guid.TryParse(id, out Guid newId) is false ||
-                    string.IsNullOrEmpty(email)
+                if (Guid.TryParse(id, out Guid newId) is false
                     )
                 {
                     return null!;
@@ -156,7 +158,47 @@ namespace ExchangeStuff.Service.Services.Impls
             }
         }
 
-
+        public async Task<ClaimDTO> GetClaimDTOByAccessTokenForReNew(string? token = null)
+        {
+            try
+            {
+                if (token == null)
+                {
+                    token = (_httpAccessor.HttpContext.Request.Headers["Authorization"].First() + "").Split(" ").Last();
+                }
+            }
+            catch
+            {
+                throw new UnauthorizedAccessException("Login session has expired");
+            }
+            if (token == null!) throw new UnauthorizedAccessException("Not found token, login please");
+            try
+            {
+                var handler = new JwtSecurityTokenHandler();
+                var jsonToken = handler.ReadToken(token) as JwtSecurityToken;
+                if (jsonToken != null)
+                {
+                    var id = jsonToken.Claims.First(claim => claim.Type == "nameid").Value;
+                    var email = jsonToken.Claims.First(claim => claim.Type == "email").Value;
+                    if (Guid.TryParse(id, out Guid newId) is false
+                        )
+                    {
+                        return null!;
+                    }
+                    await Task.CompletedTask;
+                    return new ClaimDTO
+                    {
+                        Id = newId,
+                        Email = email
+                    };
+                }
+                throw new UnauthorizedAccessException("Token invalid");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
         public ClaimDTO GetClaimDTOByAccessTokenSynchronous(string? token = null)
         {
             try
@@ -209,20 +251,22 @@ namespace ExchangeStuff.Service.Services.Impls
             }
         }
 
-        public async Task<string> RenewAccessToken(string refreshToken)
+        public async Task<TokenViewModel> RenewAccessToken(string refreshToken)
         {
-            var token = (await _tokenRepository.GetManyAsync(x => x.RefreshToken == refreshToken)).FirstOrDefault();
+            var otk = (_httpAccessor.HttpContext.Request.Headers["Authorization"].First() + "").Split(" ").Last();
+            if (string.IsNullOrEmpty(otk)) throw new UnauthorizedAccessException("Access token invalid");
+            var token = (await _tokenRepository.GetManyAsync(x => x.RefreshToken == refreshToken && x.AccessToken == otk, forUpdate: true)).FirstOrDefault();
             if (token == null!)
             {
-                throw new UnauthorizedAccessException("Invalid token");
+                throw new UnauthorizedAccessException("Not found token");
             }
             if (token.ModifiedOn.AddMinutes(_jwtDTO.ExpireMinute) > DateTime.Now)
             {
-                throw new UnauthorizedAccessException("Token still valid");
+                throw new SecurityTokenExpiredException("Token still valid");
             }
-            if (await CheckRefreshTokenExpire(token.RefreshToken) is false)
+            if (await CheckRefreshTokenExpire(token.RefreshToken, token.AccessToken) is false)
             {
-                await DeleteAccessToken(token.RefreshToken);
+                await DeleteAccessToken(token.AccessToken);
                 throw new SecurityTokenExpiredException("Refresh token expired");
             }
             var account = await _accountRepository.GetOneAsync(x => x.Id == token.ModifiedBy);
@@ -231,22 +275,20 @@ namespace ExchangeStuff.Service.Services.Impls
                 throw new ArgumentNullException("Not found user");
             }
             string oldToken = token.AccessToken;
-            var claim = await GetClaimDTOByAccessToken();
+            var claim = await GetClaimDTOByAccessTokenForReNew();
             if (claim == null!)
             {
                 throw new UnauthorizedAccessException();
             }
-            var tokenrf = (await _tokenRepository.GetManyAsync(x => x.RefreshToken == refreshToken)).FirstOrDefault();
-            if (tokenrf == null) throw new UnauthorizedAccessException("Not found token");
-            tokenrf.RefreshToken = GenerateRefreshToken();
-            tokenrf.AccessToken = await GenerateToken(account);
-            _tokenRepository.Update(tokenrf);
+            token.RefreshToken = GenerateRefreshToken();
+            token.AccessToken = await GenerateToken(account);
+            _tokenRepository.Update(token);
             var rs = await _uow.SaveChangeAsync();
             if (rs > 0)
             {
                 await _distributedCache.RemoveAsync(oldToken);
-                await _distributedCache.SetStringAsync(tokenrf.AccessToken, tokenrf.ModifiedBy + "");
-                return tokenrf.AccessToken;
+                await _distributedCache.SetStringAsync(token.AccessToken, token.ModifiedBy + "");
+                return AutoMapperConfig.Mapper.Map<TokenViewModel>(token);
             }
             return null!;
         }

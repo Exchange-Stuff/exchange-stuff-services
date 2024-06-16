@@ -24,6 +24,7 @@ namespace ExchangeStuff.Service.Extensions
             services.AddScoped<IRatingSerivce, RatingService>();
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<ICommentService, CommentService>();
             services.AddScoped<ICacheService, CacheService>();
             services.AddScoped<IIdentityUser<Guid>, IdentityUser<Guid>>();
             services.AddScoped<IAuthService, AuthService>();
@@ -47,6 +48,9 @@ namespace ExchangeStuff.Service.Extensions
             services.AddScoped<IPurchaseTicketService, PurchaseTicketService>();
             services.AddScoped<IFinancialTicketService, FinancialTicketService>();
             services.AddScoped<IAccountService, AccountService>();
+            services.AddScoped<IProductBanReportService, ProductBanReportService>();
+            services.AddScoped<IUserBanReportService, UserBanReportService>();
+            services.AddScoped<IBanReasonService, BanReasonService>();
         }
     }
 }
