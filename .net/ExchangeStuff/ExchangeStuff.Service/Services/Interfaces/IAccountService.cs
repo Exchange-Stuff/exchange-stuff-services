@@ -1,6 +1,7 @@
 ﻿using ExchangeStuff.Service.Models.Accounts;
 using ExchangeStuff.Service.Models.Users;
 
+
 namespace ExchangeStuff.Service.Services.Interfaces
 {
     public interface IAccountService

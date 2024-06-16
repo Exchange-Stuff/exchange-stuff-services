@@ -1,5 +1,7 @@
-﻿using ExchangeStuff.Core.Enums;
+﻿using ExchangeStuff.AuthOptions.Requirements;
+using ExchangeStuff.Core.Enums;
 using ExchangeStuff.Responses;
+using ExchangeStuff.Service.Constants;
 using ExchangeStuff.Service.Models.BanReasons;
 using ExchangeStuff.Service.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -26,6 +28,16 @@ namespace ExchangeStuff.Controllers
             Value = await _banReasonService.GetBanReason(id)
         });
 
+
+        /// <summary>
+        /// Authenticate require
+        /// </summary>
+        /// <param name="content"></param>
+        /// <param name="banReasonType"></param>
+        /// <returns></returns>
+        [ESAuthorize(new string[] {
+        ActionConstant.READ
+        })]
         [HttpGet("reasons")]
         public async Task<IActionResult> GetBanReason(string? content = null, BanReasonType? banReasonType = null!)
         => Ok(new ResponseResult<List<BanReasonViewModel>>

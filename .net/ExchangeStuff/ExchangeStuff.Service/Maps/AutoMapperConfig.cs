@@ -15,6 +15,7 @@ using ExchangeStuff.Service.Models.ProductBanReports;
 using ExchangeStuff.Service.Models.Products;
 using ExchangeStuff.Service.Models.Rating;
 using ExchangeStuff.Service.Models.Resources;
+using ExchangeStuff.Service.Models.Tokens;
 using ExchangeStuff.Service.Models.UserBanReports;
 using ExchangeStuff.Service.Models.Users;
 
@@ -72,6 +73,7 @@ namespace ExchangeStuff.Service.Maps
             CreateMap<BanReason, BanReasonViewModel>().ReverseMap();
             CreateMap<UserBanReport, UserBanReportViewModel>().ReverseMap();
             CreateMap<ProductBanReport, ProductBanReportViewModel>().ReverseMap();
+            CreateMap<Token, TokenViewModel>().ReverseMap();
         }
     }
 }

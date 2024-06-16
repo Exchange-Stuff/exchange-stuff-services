@@ -1,9 +1,10 @@
 ﻿using ExchangeStuff.Core.Entities;
 using ExchangeStuff.Core.Repositories;
 using ExchangeStuff.Core.Uows;
-using ExchangeStuff.Repository.Repositories;
 using ExchangeStuff.Service.Constants;
 using ExchangeStuff.Service.DTOs;
+using ExchangeStuff.Service.Maps;
+using ExchangeStuff.Service.Models.Tokens;
 using ExchangeStuff.Service.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Distributed;
@@ -39,7 +40,7 @@ namespace ExchangeStuff.Service.Services.Impls
             _permissionGroupRepository = _uow.PermissionGroupRepository;
         }
 
-        public async Task<string> GetToken(string param)
+        public async Task<TokenViewModel> GetToken(string param)
         {
             if (param != "")
             {
@@ -76,14 +77,14 @@ namespace ExchangeStuff.Service.Services.Impls
                         var userindor = GetAuth(token);
                         if (userindor == null!) throw new UnauthorizedAccessException("UserInfor invalid");
 
-                      
+
                         var acc = await UserSigninCreate(userindor);
                         if (acc == null) throw new UnauthorizedAccessException("Not found user");
                         var tokenSystem = await GenerateToken(acc);
 
                         await SavePermissionGroup(acc.Id);
-                        await SaveAccessToken(tokenSystem, acc.Id);
-                        return await GenerateToken(acc);
+                        var ntoken = await SaveAccessToken(tokenSystem, acc.Id);
+                        return AutoMapperConfig.Mapper.Map<TokenViewModel>(ntoken);
                     }
                 }
                 throw new UnauthorizedAccessException("Not found auth code");
