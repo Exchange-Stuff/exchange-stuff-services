@@ -33,7 +33,8 @@ namespace ExchangeStuff.Service.Services.Impls
             var vnp_HashSecret = _configuration["VNPay:vnp_HashSecret"];
             var vnp_Url = _configuration["VNPay:vnp_Url"];
             var vnp_ReturnUrl = _configuration["VNPay:vnp_ReturnUrl"];
-            var amount = 100;
+            var amount = 200;
+            var total = amount * 100000;
             var random = new Random();
             var txnRef = random.Next(1, 100000).ToString();
             var clientIp = _httpContextAccessor.HttpContext?.Connection?.RemoteIpAddress?.ToString() ?? "127.0.0.1";
@@ -43,7 +44,7 @@ namespace ExchangeStuff.Service.Services.Impls
             _vnPayLibrary.AddRequestData("vnp_Version", "2.1.0");
             _vnPayLibrary.AddRequestData("vnp_Command", "pay");
             _vnPayLibrary.AddRequestData("vnp_TmnCode", vnp_TmnCode);
-            _vnPayLibrary.AddRequestData("vnp_Amount", (amount * 100).ToString()); 
+            _vnPayLibrary.AddRequestData("vnp_Amount", total.ToString());
             _vnPayLibrary.AddRequestData("vnp_CurrCode", "VND");
             _vnPayLibrary.AddRequestData("vnp_TxnRef", txnRef);
             _vnPayLibrary.AddRequestData("vnp_OrderInfo", "Thanh toan don hang: " + txnRef);

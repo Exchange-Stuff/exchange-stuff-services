@@ -46,7 +46,7 @@ namespace ExchangeStuff.Service.Extensions
             services.AddScoped<ITransactionHistoryService, TransactionHistoryService>();
             services.AddScoped<IPurchaseTicketService, PurchaseTicketService>();
             services.AddScoped<IAccountService, AccountService>();
-            
+            services.AddScoped<IPaymentService, PaymentService>();
         }
     }
 }
