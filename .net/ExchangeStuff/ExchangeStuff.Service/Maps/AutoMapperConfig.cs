@@ -11,8 +11,10 @@ using ExchangeStuff.Service.Models.Images;
 using ExchangeStuff.Service.Models.PermissionGroups;
 using ExchangeStuff.Service.Models.Permissions;
 using ExchangeStuff.Service.Models.Products;
+using ExchangeStuff.Service.Models.PurchaseTicket;
 using ExchangeStuff.Service.Models.Rating;
 using ExchangeStuff.Service.Models.Resources;
+using ExchangeStuff.Service.Models.TransactionHistory;
 using ExchangeStuff.Service.Models.Users;
 
 namespace ExchangeStuff.Service.Maps
@@ -68,6 +70,11 @@ namespace ExchangeStuff.Service.Maps
             CreateMap<UserBalance, UserBalanceViewModel>().ReverseMap();
             CreateMap<Campus, CampusViewModel>().ReverseMap();
             CreateMap<Account, AccountViewModel>().ReverseMap();
+            CreateMap<PurchaseTicket, CreatePurchaseTicketModel>().ReverseMap();
+            CreateMap<PurchaseTicket, PurchaseTicketViewModel>().ReverseMap();
+            CreateMap<PurchaseTicket, CreatePurchaseTicketModel>().ReverseMap();
+            CreateMap<TransactionHistory, CreateTransactionHistoryModel>().ReverseMap();
+            CreateMap<TransactionHistory, TransactionHistoryViewModel>().ReverseMap();
         }
     }
 }

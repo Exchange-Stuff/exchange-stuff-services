@@ -31,6 +31,7 @@ namespace ExchangeStuff.Service.Extensions
             services.AddScoped<IPermissionService, PermissionService>();
             services.AddScoped<IActionService, ActionService>();
             services.AddScoped<IAdminService, AdminService>();
+            services.AddScoped<ITransactionHistoryService, TransactionHistoryService>();
             try
             {
                 var redisDto = new RedisDTO();
@@ -44,7 +45,6 @@ namespace ExchangeStuff.Service.Extensions
             }
             services.AddScoped<IVnPayService, VNPayService>();
             services.AddSingleton<VnPayLibrary>();
-            services.AddScoped<ITransactionHistoryService, TransactionHistoryService>();
             services.AddScoped<IPurchaseTicketService, PurchaseTicketService>();
             services.AddScoped<IAccountService, AccountService>();
         }

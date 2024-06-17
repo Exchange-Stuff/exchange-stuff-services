@@ -27,6 +27,8 @@ namespace ExchangeStuff.Repository.Uows
             AdminRepository = new AdminRepository(_context);
             ProductRepository = new ProductRepository(_context);
             CategoriesRepository = new CategoriesRepository(_context);
+            PurchaseTicketRepository = new PurchaseTicketRepository(_context);
+            TransactionHistoryRepository = new TransactionHistoryRepository(_context);
         }
 
         public IUserRepository UserRepository { get; private set; }
