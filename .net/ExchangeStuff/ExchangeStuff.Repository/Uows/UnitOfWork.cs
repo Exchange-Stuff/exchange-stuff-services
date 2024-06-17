@@ -27,6 +27,8 @@ namespace ExchangeStuff.Repository.Uows
             AdminRepository = new AdminRepository(_context);
             ProductRepository = new ProductRepository(_context);
             CategoriesRepository = new CategoriesRepository(_context);
+            PostTicketRepository = new PostTicketRepository(_context);
+            PaymentRepository = new PaymentRepository(_context);
             PurchaseTicketRepository = new PurchaseTicketRepository(_context);
             TransactionHistoryRepository = new TransactionHistoryRepository(_context);
             ProductBanReportRepository = new ProductBanReportRepository(_context);
@@ -66,6 +68,8 @@ namespace ExchangeStuff.Repository.Uows
         public IPurchaseTicketRepository PurchaseTicketRepository {  get; private set; }
 
         public ITransactionHistoryRepository TransactionHistoryRepository { get; private set; }
+        public IPostTicketRepository PostTicketRepository { get; private set; }
+        public IPaymentRepository PaymentRepository { get; private set; }
 
         public IProductBanReportRepository ProductBanReportRepository { get; private set; }
 

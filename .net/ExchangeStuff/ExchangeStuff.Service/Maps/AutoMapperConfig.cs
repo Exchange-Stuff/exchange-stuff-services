@@ -12,6 +12,7 @@ using ExchangeStuff.Service.Models.FinancialTickets;
 using ExchangeStuff.Service.Models.Images;
 using ExchangeStuff.Service.Models.PermissionGroups;
 using ExchangeStuff.Service.Models.Permissions;
+using ExchangeStuff.Service.Models.PostTicket;
 using ExchangeStuff.Service.Models.ProductBanReports;
 using ExchangeStuff.Service.Models.Products;
 using ExchangeStuff.Service.Models.PurchaseTicket;
@@ -78,6 +79,7 @@ namespace ExchangeStuff.Service.Maps
             CreateMap<FinancialTicket,CreateFinancialTicketModel>().ReverseMap();
             CreateMap<FinancialTicket, UpdateFinancialTicketModel>().ReverseMap();
             CreateMap<Account, AccountViewModel>().ReverseMap();
+            CreateMap<PostTicket, PostTicketViewModel>().ReverseMap();
             CreateMap<PurchaseTicket, CreatePurchaseTicketModel>().ReverseMap();
             CreateMap<PurchaseTicket, PurchaseTicketViewModel>().ReverseMap();
             CreateMap<PurchaseTicket, CreatePurchaseTicketModel>().ReverseMap();
