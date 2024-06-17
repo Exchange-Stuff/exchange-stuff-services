@@ -70,7 +70,6 @@ namespace ExchangeStuff.Repository.Migrations
                         .HasColumnType("nvarchar(13)");
 
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
@@ -138,6 +137,25 @@ namespace ExchangeStuff.Repository.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Actions");
+                });
+
+            modelBuilder.Entity("ExchangeStuff.Core.Entities.BanReason", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("BanReasonType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("BanReasons");
                 });
 
             modelBuilder.Entity("ExchangeStuff.Core.Entities.Campus", b =>
@@ -494,6 +512,42 @@ namespace ExchangeStuff.Repository.Migrations
                     b.ToTable("Products");
                 });
 
+            modelBuilder.Entity("ExchangeStuff.Core.Entities.ProductBanReport", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("BanReasonId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsApproved")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("ModifiedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("ModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BanReasonId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("ProductBanReports");
+                });
+
             modelBuilder.Entity("ExchangeStuff.Core.Entities.PurchaseTicket", b =>
                 {
                     b.Property<Guid>("Id")
@@ -682,6 +736,42 @@ namespace ExchangeStuff.Repository.Migrations
                     b.ToTable("UserBalances");
                 });
 
+            modelBuilder.Entity("ExchangeStuff.Core.Entities.UserBanReport", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("BanReasonId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsApproved")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("ModifiedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("ModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BanReasonId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserBanReports");
+                });
+
             modelBuilder.Entity("ImageProduct", b =>
                 {
                     b.Property<Guid>("ImagesId")
@@ -847,6 +937,25 @@ namespace ExchangeStuff.Repository.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("ExchangeStuff.Core.Entities.ProductBanReport", b =>
+                {
+                    b.HasOne("ExchangeStuff.Core.Entities.BanReason", "BanReason")
+                        .WithMany("ProductBanReports")
+                        .HasForeignKey("BanReasonId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ExchangeStuff.Core.Entities.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("BanReason");
+
+                    b.Navigation("Product");
+                });
+
             modelBuilder.Entity("ExchangeStuff.Core.Entities.PurchaseTicket", b =>
                 {
                     b.HasOne("ExchangeStuff.Core.Entities.Product", "Product")
@@ -910,6 +1019,25 @@ namespace ExchangeStuff.Repository.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("ExchangeStuff.Core.Entities.UserBanReport", b =>
+                {
+                    b.HasOne("ExchangeStuff.Core.Entities.BanReason", "BanReason")
+                        .WithMany("UserBanReports")
+                        .HasForeignKey("BanReasonId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ExchangeStuff.Core.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("BanReason");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("ImageProduct", b =>
                 {
                     b.HasOne("ExchangeStuff.Core.Entities.Image", null)
@@ -937,6 +1065,13 @@ namespace ExchangeStuff.Repository.Migrations
             modelBuilder.Entity("ExchangeStuff.Core.Entities.Account", b =>
                 {
                     b.Navigation("Comments");
+                });
+
+            modelBuilder.Entity("ExchangeStuff.Core.Entities.BanReason", b =>
+                {
+                    b.Navigation("ProductBanReports");
+
+                    b.Navigation("UserBanReports");
                 });
 
             modelBuilder.Entity("ExchangeStuff.Core.Entities.Campus", b =>

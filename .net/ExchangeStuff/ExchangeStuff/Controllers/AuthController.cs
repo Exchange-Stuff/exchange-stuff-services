@@ -1,4 +1,5 @@
 ﻿using ExchangeStuff.Responses;
+using ExchangeStuff.Service.Models.Tokens;
 using ExchangeStuff.Service.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -32,16 +33,15 @@ namespace ExchangeStuff.Controllers
             var tk = await _authService.GetToken(param);
 
             if (tk == null) throw new Exception("Can't get token");
-            ResponseResult<string> responseResult = new ResponseResult<string>();
+            ResponseResult<TokenViewModel> responseResult = new ResponseResult<TokenViewModel>();
             responseResult.Error = null!;
             responseResult.IsSuccess = true;
             responseResult.Value = tk;
             return Ok(responseResult);
         }
 
-
         /// <summary>
-        /// Provide access token in header
+        /// Provide access token 
         /// </summary>
         /// <returns></returns>
         /// <exception cref="UnauthorizedAccessException"></exception>
@@ -65,6 +65,24 @@ namespace ExchangeStuff.Controllers
             throw new Exception("Server can't proccess logout");
         }
 
-
+        /// <summary>
+        /// Provide refreshtoken(Ex: Refresh) and accesstoken
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="UnauthorizedAccessException"></exception>
+        /// <exception cref="Exception"></exception>
+        [HttpPut]
+        public async Task<IActionResult> ReNewToken()
+        {
+            var rftk = (HttpContext.Request.Headers["RefreshToken"].First() + "").Split(" ").Last();
+            if (string.IsNullOrEmpty(rftk)) throw new UnauthorizedAccessException("Refresh Token required");
+            var rs = await _tokenService.RenewAccessToken(rftk);
+            return rs != null ? Ok(new ResponseResult<TokenViewModel>
+            {
+                Error = null!,
+                IsSuccess = true,
+                Value = rs
+            }) : throw new Exception("Can't renew Token");
+        }
     }
 }

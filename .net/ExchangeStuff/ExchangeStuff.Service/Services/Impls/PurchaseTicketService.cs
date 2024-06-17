@@ -26,7 +26,7 @@ namespace ExchangeStuff.Service.Services.Impls
             _userRepository = _unitOfWork.UserRepository;
         }
 
-        public async Task<PurchaseTicketViewModel> CreatePurchaseTicket(CreatePurchaseTicketModel request)
+        public async Task<bool> CreatePurchaseTicket(CreatePurchaseTicketModel request)
         {
             try
             {
@@ -46,7 +46,7 @@ namespace ExchangeStuff.Service.Services.Impls
 
                 await _purchaseTicketRepository.AddAsync(purchaseTicket);
                 var result = await _unitOfWork.SaveChangeAsync();
-                return result > 0 ? AutoMapperConfig.Mapper.Map<PurchaseTicketViewModel>(purchaseTicket) : throw new Exception("Create purchase ticket fail");
+                return result > 0;
             }
             catch (Exception ex)
             {
@@ -120,7 +120,7 @@ namespace ExchangeStuff.Service.Services.Impls
             }
         }
 
-        public async Task<PurchaseTicketViewModel> UpdatePurchaseTicket(UpdatePurchaseTicketModel request)
+        public async Task<bool> UpdatePurchaseTicket(UpdatePurchaseTicketModel request)
         {
             try
             {
@@ -131,13 +131,12 @@ namespace ExchangeStuff.Service.Services.Impls
                 ticket.Status = request.Status;
                 _purchaseTicketRepository.Update(ticket);
                 var result = await _unitOfWork.SaveChangeAsync();
-                return result > 0 ? AutoMapperConfig.Mapper.Map<PurchaseTicketViewModel>(ticket) : throw new Exception("Update purchase ticket fail");
+                return result > 0;
             }
             catch (Exception ex)
             {
                 throw new Exception(ex.Message);
             }
-                
         }
     }
 }

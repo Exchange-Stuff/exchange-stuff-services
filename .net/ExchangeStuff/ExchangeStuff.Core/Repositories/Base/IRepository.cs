@@ -2,14 +2,14 @@
 
 namespace ExchangeStuff.Core.Repositories.Base
 {
-    public interface IRepository<T> where T :class
+    public interface IRepository<T> where T : class
     {
         Task AddAsync(T item);
         Task AddRangeAsync(IEnumerable<T> entities);
 
-        Task<T> GetOneAsync(Expression<Func<T, bool>> predicate, string? include = null!);
+        Task<T> GetOneAsync(Expression<Func<T, bool>> predicate, string? include = null!, bool? forUpdate = null!);
 
-        Task<List<T>> GetManyAsync(Expression<Func<T, bool>>? predicate = null!, string? include = null!, int? pageIndex = null, int? pageSize = null, Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null!);
+        Task<List<T>> GetManyAsync(Expression<Func<T, bool>>? predicate = null!, string? include = null!, int? pageIndex = null, int? pageSize = null, Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null!, bool? forUpdate = null!);
 
         void Remove(T entity);
 

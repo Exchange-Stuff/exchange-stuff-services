@@ -30,5 +30,6 @@ namespace ExchangeStuff.Service.Services.Interfaces
         Task<List<PermisisonGroupViewModel>> GetPermisisonGroups(string? name = null!, int? pageIndex = null!, int? pageSize = null!);
         Task<string> LoginAdmin(string username, string password);
         Task<AdminViewModel> CreateAdmin(string username, string password, string name);
+        Task<bool> CreateResource(string name);
     }
 }

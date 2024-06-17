@@ -15,9 +15,17 @@ namespace ExchangeStuff.Repository.Repositories
             _context = context;
         }
 
-        public async Task<List<User>> GetUserFilter(string? name = null!, string? email = null!, string? username = null!, string? includes = null!, int? pageIndex = null!, int? pageSize = null!)
+        public async Task<List<User>> GetUserFilter(string? name = null!, string? email = null!, string? username = null!, string? includes = null!, int? pageIndex = null!, int? pageSize = null!, bool? includeBan = null!)
         {
-            IQueryable<User> query = _context.Users;
+            IQueryable<User> query = null!;
+            if (includeBan.HasValue && includeBan.Value)
+            {
+                query = _context.Users;
+            }
+            else
+            {
+                query = _context.Users.Where(x => x.IsActived);
+            }
 
             if (!string.IsNullOrEmpty(name))
             {
@@ -25,7 +33,7 @@ namespace ExchangeStuff.Repository.Repositories
             }
             if (!string.IsNullOrEmpty(email))
             {
-                query = query.Where(x => x.Email.ToLower().Contains(email.ToLower()));
+                query = query.Where(x => x.Email != null && x.Email.ToLower().Contains(email.ToLower()));
             }
             if (!string.IsNullOrEmpty(username))
             {

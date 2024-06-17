@@ -56,8 +56,8 @@ namespace ExchangeStuff.Service.Services.Impls
         public async Task<bool> AddPermissionIntoPermissionGroup(UpdatePermissionActionValueModel updatePermissionActionValueModel)
         {
             if (updatePermissionActionValueModel.ResourceValueRecords.Any() is false) throw new ArgumentNullException("Action is required");
-            var actionSystem = await _actionRepository.GetManyAsync();
-            var permissions = await _permissionRepository.GetManyAsync(x => x.PermissionGroupId == updatePermissionActionValueModel.PermissionGroupId);
+            var actionSystem = await _actionRepository.GetManyAsync(forUpdate: true);
+            var permissions = await _permissionRepository.GetManyAsync(x => x.PermissionGroupId == updatePermissionActionValueModel.PermissionGroupId, forUpdate: true);
 
             _permissionRepository.RemoveRange(permissions);
             List<Permission> permissionList = new List<Permission>();
@@ -82,7 +82,7 @@ namespace ExchangeStuff.Service.Services.Impls
 
         public async Task<bool> CreateAction(string name)
         {
-            var actions = await _actionRepository.GetManyAsync();
+            var actions = await _actionRepository.GetManyAsync(forUpdate: true);
             if (actions.Any() is false) throw new Exception("No action in system");
             var actionCheck = actions.Where(x => x.Name.ToLower() == name.ToLower()).ToList();
             if (actionCheck.Any()) throw new Exception("Action already exist in system");
@@ -98,6 +98,20 @@ namespace ExchangeStuff.Service.Services.Impls
             await _actionRepository.AddAsync(action);
             var rs = await _uow.SaveChangeAsync();
             await InvalidActionCache();
+            return rs > 0;
+        }
+        public async Task<bool> CreateResource(string name)
+        {
+            var actions = await _resourceRepository.GetManyAsync(forUpdate: true);
+            var actionCheck = actions.Where(x => x.Name.ToLower() == name.ToLower()).ToList();
+            if (actionCheck.Any()) throw new Exception("Resource already exist in system");
+
+            Resource resource = new Resource
+            {
+                Name = name
+            };
+            await _resourceRepository.AddAsync(resource);
+            var rs = await _uow.SaveChangeAsync();
             return rs > 0;
         }
 
@@ -172,25 +186,25 @@ namespace ExchangeStuff.Service.Services.Impls
 
         public async Task SaveActionsCache()
         {
-            var actions = await _actionRepository.GetManyAsync();
+            var actions = await _actionRepository.GetManyAsync(forUpdate: true);
             if (actions == null! || actions.Count == 0) throw new ArgumentNullException("Not found user authorize");
             await _distributedCache.SetStringAsync(_redisConstantDTO.ActionsResource, JsonConvert.SerializeObject(AutoMapperConfig.Mapper.Map<List<ActionDTO>>(actions)));
         }
 
         public async Task<bool> CreatePermissionGroup(PermissionGroupCreateModel permissionGroupCreateModel)
         {
-            var roleCheck = await _permissionGroupRepository.GetManyAsync(x => x.Name.ToLower() == permissionGroupCreateModel.Name.ToLower());
+            var roleCheck = await _permissionGroupRepository.GetManyAsync(x => x.Name.ToLower() == permissionGroupCreateModel.Name.ToLower(), forUpdate: true);
             if (roleCheck.Any()) throw new Exception("Permission group name already exist");
             var newPer = new PermissionGroup
             {
                 Id = Guid.NewGuid(),
                 Name = permissionGroupCreateModel.Name
             };
-            var actionSystem = await _actionRepository.GetManyAsync();
+            var actionSystem = await _actionRepository.GetManyAsync(forUpdate: true);
             List<Permission> permissions = new List<Permission>();
             foreach (var item in permissionGroupCreateModel.ResourceRecords)
             {
-                var resource = await _resourceRepository.GetOneAsync(x => x.Id == item.ResourceId);
+                var resource = await _resourceRepository.GetOneAsync(x => x.Id == item.ResourceId, forUpdate: true);
                 if (resource == null) throw new ArgumentNullException("Resource invalid");
                 var permissionActual = actionSystem.Where(x => item.ActionIds.Contains(x.Id));
                 int permissionValue = permissionActual.Sum(x => x.Value);
@@ -204,7 +218,7 @@ namespace ExchangeStuff.Service.Services.Impls
             newPer.Permissions = permissions;
             if (permissionGroupCreateModel.AccountIds != null && permissionGroupCreateModel.AccountIds.Count > 0)
             {
-                var accs = await _accountRepository.GetManyAsync(x => permissionGroupCreateModel.AccountIds.Contains(x.Id), "PermissionGroups"); ;
+                var accs = await _accountRepository.GetManyAsync(x => permissionGroupCreateModel.AccountIds.Contains(x.Id), "PermissionGroups", forUpdate: true); ;
                 newPer.Accounts = accs;
             }
 
@@ -216,18 +230,18 @@ namespace ExchangeStuff.Service.Services.Impls
 
         public async Task<bool> CreatePermissionGroupValue(PermissionGroupCreateValueModel permissionGroupCreateValueModel)
         {
-            var roleCheck = await _permissionGroupRepository.GetManyAsync(x => x.Name.ToLower() == permissionGroupCreateValueModel.Name.ToLower());
+            var roleCheck = await _permissionGroupRepository.GetManyAsync(x => x.Name.ToLower() == permissionGroupCreateValueModel.Name.ToLower(), forUpdate: true);
             if (roleCheck.Any()) throw new Exception("Permission group name already exist");
             var newPer = new PermissionGroup
             {
                 Id = Guid.NewGuid(),
                 Name = permissionGroupCreateValueModel.Name
             };
-            var actionSystem = await _actionRepository.GetManyAsync();
+            var actionSystem = await _actionRepository.GetManyAsync(forUpdate: true);
             List<Permission> permissions = new List<Permission>();
             foreach (var item in permissionGroupCreateValueModel.ResourceRecords)
             {
-                var resource = await _resourceRepository.GetOneAsync(x => x.Id == item.ResourceId);
+                var resource = await _resourceRepository.GetOneAsync(x => x.Id == item.ResourceId, forUpdate: true);
                 if (resource == null) throw new ArgumentNullException("Resource invalid");
                 int permissionValue = item.PermissionValue;
                 permissions.Add(new Permission
@@ -240,10 +254,9 @@ namespace ExchangeStuff.Service.Services.Impls
             newPer.Permissions = permissions;
             if (permissionGroupCreateValueModel.AccountIds != null && permissionGroupCreateValueModel.AccountIds.Count > 0)
             {
-                var accs = await _accountRepository.GetManyAsync(x => permissionGroupCreateValueModel.AccountIds.Contains(x.Id), "PermissionGroups"); ;
+                var accs = await _accountRepository.GetManyAsync(x => permissionGroupCreateValueModel.AccountIds.Contains(x.Id), "PermissionGroups", forUpdate: true);
                 newPer.Accounts = accs;
             }
-
             await _permissionGroupRepository.AddAsync(newPer);
             var rs = await _uow.SaveChangeAsync();
             await InvalidPermissionCache();
@@ -252,7 +265,7 @@ namespace ExchangeStuff.Service.Services.Impls
 
         public async Task<bool> UpdatePermissionActionValue(UpdatePermissionActionValueModel updatePermissionActionValueModel)
         {
-            var permissionRoles = await _permissionRepository.GetManyAsync(x => x.PermissionGroupId == updatePermissionActionValueModel.PermissionGroupId);
+            var permissionRoles = await _permissionRepository.GetManyAsync(x => x.PermissionGroupId == updatePermissionActionValueModel.PermissionGroupId, forUpdate: true);
             List<Permission> permissionList = new List<Permission>();
             foreach (var item in updatePermissionActionValueModel.ResourceValueRecords)
             {
@@ -274,11 +287,11 @@ namespace ExchangeStuff.Service.Services.Impls
             var permissionGrCheck = new List<PermissionGroup>();
             if (updateUserPermisisonGroupModel.PermissionGroupIds != null && updateUserPermisisonGroupModel.PermissionGroupIds.Count > 0)
             {
-                permissionGrCheck = await _permissionGroupRepository.GetManyAsync(x => updateUserPermisisonGroupModel.PermissionGroupIds.Contains(x.Id));
+                permissionGrCheck = await _permissionGroupRepository.GetManyAsync(x => updateUserPermisisonGroupModel.PermissionGroupIds.Contains(x.Id), forUpdate: true);
                 if (permissionGrCheck.Any() is false) throw new ArgumentNullException("Not found role");
             }
 
-            var accountCheck = await _accountRepository.GetOneAsync(x => x.Id == updateUserPermisisonGroupModel.AccountId, "PermissionGroups");
+            var accountCheck = await _accountRepository.GetOneAsync(x => x.Id == updateUserPermisisonGroupModel.AccountId, "PermissionGroups", forUpdate: true);
             if (accountCheck == null) throw new ArgumentNullException("Not found user");
 
             if (updateUserPermisisonGroupModel.PermissionGroupIds == null || updateUserPermisisonGroupModel.PermissionGroupIds.Count <= 0)
@@ -292,6 +305,8 @@ namespace ExchangeStuff.Service.Services.Impls
             {
                 accountCheck.PermissionGroups = permissionGrCheck;
             }
+            //accountCheck.PermissionGroups.Clear();
+            //accountCheck.PermissionGroups = permissionGrCheck;
             _accountRepository.Update(accountCheck);
             var rs = await _uow.SaveChangeAsync();
             await InvalidPermissionGroup(updateUserPermisisonGroupModel.AccountId);
@@ -333,9 +348,9 @@ namespace ExchangeStuff.Service.Services.Impls
 
         public async Task<string> LoginAdmin(string username, string password)
         {
-            var sAdmin = await _accountRepository.GetOneAsync(x => x.Username == username && x.Password == HashPassword(password));
-            if (sAdmin == null) throw new UnauthorizedAccessException("Wrong username or password");
-            var tk = await _tokenRepository.GetManyAsync(x => x.AccountId == sAdmin.Id);
+            var sAdmin = await _accountRepository.GetOneAsync(x => x.Username == username && x.Password == HashPassword(password), forUpdate: true);
+            if (sAdmin == null) throw new Exception("Wrong username or password");
+            var tk = await _tokenRepository.GetManyAsync(x => x.AccountId == sAdmin.Id, forUpdate: true);
             if (tk.Any())
             {
                 foreach (var item in tk)
@@ -346,7 +361,7 @@ namespace ExchangeStuff.Service.Services.Impls
                 await _uow.SaveChangeAsync();
                 throw new UnauthorizedAccessException("Login session expired, another device online try again");
             }
-            var tks = await GenerateToken(sAdmin);
+            var tks = await GenerateToken(await _adminRepository.GetOneAsync(x => x.Id == sAdmin.Id, forUpdate: true));
             await SavePermissionGroupAdmin(sAdmin.Id);
             await SaveAccessToken(tks, sAdmin.Id);
             return tks;
@@ -354,13 +369,13 @@ namespace ExchangeStuff.Service.Services.Impls
 
         public async Task<AdminViewModel> CreateAdmin(string username, string password, string name)
         {
-            var admin = await _adminRepository.GetOneAsync(x => x.Username == username);
+            var admin = await _adminRepository.GetOneAsync(x => x.Username == username, forUpdate: true);
             if (admin != null) throw new Exception("Username already exist");
 
             admin = new Admin
             {
                 Username = username,
-                Password = password,
+                Password = HashPassword(password),
                 Name = name,
                 IsActived = true,
                 Id = Guid.NewGuid()

@@ -5,6 +5,6 @@ namespace ExchangeStuff.Core.Repositories
 {
     public interface IUserRepository : IRepository<User>
     {
-        Task<List<User>> GetUserFilter(string? name = null!, string? email = null!, string? username = null!, string? includes = null!, int? pageIndex = null!, int? pageSize = null!);
+        Task<List<User>> GetUserFilter(string? name = null!, string? email = null!, string? username = null!, string? includes = null!, int? pageIndex = null!, int? pageSize = null!, bool? includeBan=null!);
     }
 }

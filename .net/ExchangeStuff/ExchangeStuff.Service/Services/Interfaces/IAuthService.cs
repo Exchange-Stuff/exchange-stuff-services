@@ -1,8 +1,10 @@
-﻿namespace ExchangeStuff.Service.Services.Interfaces
+﻿using ExchangeStuff.Service.Models.Tokens;
+
+namespace ExchangeStuff.Service.Services.Interfaces
 {
     public interface IAuthService
     {
-        Task<string> GetToken(string authCode);
+        Task<TokenViewModel> GetToken(string param);
         Task<bool> Logout();
     }
 }
