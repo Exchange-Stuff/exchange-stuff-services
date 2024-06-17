@@ -21,7 +21,6 @@ namespace ExchangeStuff.Repository.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
             => optionsBuilder.UseSqlServer("Data Source=MSI\\SQLEXPRESS;Initial Catalog=ExchangeStuff;Integrated Security=True;Encrypt=False;Trust Server Certificate=True");
-
         private string GetConnectionString()
         {
             IConfigurationRoot configurationRoot = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("appsettings.json", true, true).Build();
@@ -49,7 +48,9 @@ namespace ExchangeStuff.Repository.Data
         public DbSet<Admin> Admins { get; set; }
         public DbSet<Account> Accounts { get; set; }
         public DbSet<Payment> Payments { get; set; }
-
+        public DbSet<BanReason> BanReasons { get; set; }
+        public DbSet<UserBanReport> UserBanReports { get; set; }
+        public DbSet<ProductBanReport> ProductBanReports { get; set; }
 
         /// <summary>
         /// TPH
@@ -74,13 +75,13 @@ namespace ExchangeStuff.Repository.Data
                 switch (entry.State)
                 {
                     case EntityState.Added:
-                        entry.Entity.CreatedBy = _identityUser.AccountId;
+                        if (entry.Entity.CreatedBy == Guid.Empty) entry.Entity.CreatedBy = _identityUser.AccountId;
                         entry.Entity.CreatedOn = DateTime.Now;
-                        entry.Entity.ModifiedBy = _identityUser.AccountId;
+                        if (entry.Entity.ModifiedBy == Guid.Empty) entry.Entity.ModifiedBy = _identityUser.AccountId;
                         entry.Entity.ModifiedOn = DateTime.Now;
                         break;
                     case EntityState.Modified:
-                        entry.Entity.ModifiedBy = _identityUser.AccountId;
+                        if(entry.Entity.ModifiedBy == Guid.Empty) entry.Entity.ModifiedBy = _identityUser.AccountId;
                         entry.Entity.ModifiedOn = DateTime.Now;
                         break;
                 }

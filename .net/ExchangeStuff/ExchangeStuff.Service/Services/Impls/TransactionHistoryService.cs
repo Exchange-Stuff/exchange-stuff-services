@@ -22,7 +22,7 @@ namespace ExchangeStuff.Service.Services.Impls
             _transactionHistoryRepository = _unitOfWork.TransactionHistoryRepository;
         }
 
-        public async Task<TransactionHistoryViewModel> CreateTransactionHistory(CreateTransactionHistoryModel request)
+        public async Task<bool> CreateTransactionHistory(CreateTransactionHistoryModel request)
         {
             try
             {
@@ -37,7 +37,7 @@ namespace ExchangeStuff.Service.Services.Impls
 
                 await _transactionHistoryRepository.AddAsync(transactionHistory);
                 var result = await _unitOfWork.SaveChangeAsync();
-                return result > 0 ? AutoMapperConfig.Mapper.Map<TransactionHistoryViewModel>(transactionHistory) : throw new Exception("Create transaction history fail");
+                return result > 0;
             }
             catch (Exception ex)
             {
@@ -49,7 +49,7 @@ namespace ExchangeStuff.Service.Services.Impls
         {
             try
             {
-                List<TransactionHistory> listTransactionHistory = new List<TransactionHistory>();
+                List<TransactionHistory> listTransactionHistory;
                 if (type.HasValue)
                 {
                     listTransactionHistory = await _transactionHistoryRepository.GetManyAsync(

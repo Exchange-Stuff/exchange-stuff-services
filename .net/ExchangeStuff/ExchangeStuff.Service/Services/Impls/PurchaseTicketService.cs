@@ -6,6 +6,7 @@ using ExchangeStuff.CurrentUser.Users;
 using ExchangeStuff.Service.Maps;
 using ExchangeStuff.Service.Models.PurchaseTicket;
 using ExchangeStuff.Service.Services.Interfaces;
+using System.Collections.Generic;
 
 namespace ExchangeStuff.Service.Services.Impls
 {
@@ -26,7 +27,7 @@ namespace ExchangeStuff.Service.Services.Impls
             _userRepository = _unitOfWork.UserRepository;
         }
 
-        public async Task<PurchaseTicketViewModel> CreatePurchaseTicket(CreatePurchaseTicketModel request)
+        public async Task<bool> CreatePurchaseTicket(CreatePurchaseTicketModel request)
         {
             try
             {
@@ -46,7 +47,7 @@ namespace ExchangeStuff.Service.Services.Impls
 
                 await _purchaseTicketRepository.AddAsync(purchaseTicket);
                 var result = await _unitOfWork.SaveChangeAsync();
-                return result > 0 ? AutoMapperConfig.Mapper.Map<PurchaseTicketViewModel>(purchaseTicket) : throw new Exception("Create purchase ticket fail");
+                return result > 0;
             }
             catch (Exception ex)
             {
@@ -59,11 +60,11 @@ namespace ExchangeStuff.Service.Services.Impls
         {
             try
             {
-                List<PurchaseTicket> listTicket = new List<PurchaseTicket>();
-                if (status.HasValue)
+                 List<PurchaseTicket> listTicket = new List<PurchaseTicket>();
+                 if (status.HasValue)
                 {
                     listTicket = await _purchaseTicketRepository.GetManyAsync(
-                        pageSize: pageSize, pageIndex: pageIndex, predicate: p => p.Status.Equals(status), orderBy: p => p.OrderBy(p => p.CreatedOn));
+                        pageSize : pageSize, pageIndex: pageIndex, predicate: p => p.Status.Equals(status), orderBy: p => p.OrderBy(p => p.CreatedOn));
                 }
                 else
                 {
@@ -84,7 +85,7 @@ namespace ExchangeStuff.Service.Services.Impls
         {
             try
             {
-                List<PurchaseTicket> listTicket = new List<PurchaseTicket>();
+                List<PurchaseTicket> listTicket;
                 if (status.HasValue)
                 {
                     listTicket = await _purchaseTicketRepository.GetManyAsync(
@@ -120,7 +121,7 @@ namespace ExchangeStuff.Service.Services.Impls
             }
         }
 
-        public async Task<PurchaseTicketViewModel> UpdatePurchaseTicket(UpdatePurchaseTicketModel request)
+        public async Task<bool> UpdatePurchaseTicket(UpdatePurchaseTicketModel request)
         {
             try
             {
@@ -131,13 +132,12 @@ namespace ExchangeStuff.Service.Services.Impls
                 ticket.Status = request.Status;
                 _purchaseTicketRepository.Update(ticket);
                 var result = await _unitOfWork.SaveChangeAsync();
-                return result > 0 ? AutoMapperConfig.Mapper.Map<PurchaseTicketViewModel>(ticket) : throw new Exception("Update purchase ticket fail");
+                return result > 0;
             }
             catch (Exception ex)
             {
                 throw new Exception(ex.Message);
             }
-                
         }
     }
 }

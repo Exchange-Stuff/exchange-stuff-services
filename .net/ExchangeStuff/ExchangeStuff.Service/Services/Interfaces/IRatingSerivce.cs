@@ -1,4 +1,5 @@
 ﻿using ExchangeStuff.Core.Common;
+using ExchangeStuff.Service.Models.Rating;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,5 +10,8 @@ namespace ExchangeStuff.Service.Services.Interfaces;
 
 public interface IRatingSerivce
 {
-    Task<ActionResult> GetRatingByUserId(Guid userId); 
+    Task<List<RatingViewModel>> GetRatingByUserId(Guid userId);
+    Task<List<RatingViewModel>> GetRatingByProductId(Guid productId);
+    Task<bool> CreatRating(CreateRatingModel createRatingModel);
+    Task<bool> UpdateRating(UpdateRatingModel updateRatingModel);
 }
