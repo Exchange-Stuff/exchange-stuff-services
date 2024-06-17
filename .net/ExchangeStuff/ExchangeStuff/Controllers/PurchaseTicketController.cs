@@ -27,8 +27,9 @@ namespace ExchangeStuff.Controllers
             {
                 Error = null!,
                 IsSuccess = true,
-                Value = await _purchaseTicketService.GetAllPurchaseTicket(pageIndex, pageSize)
+                Value = await _purchaseTicketService.GetAllPurchaseTicket(pageSize, pageIndex, status)
             });
+           
         }
 
         [HttpGet("/getListPurchaseTicketByUserId/{pageSize}/{pageIndex}/{status}")]
@@ -68,7 +69,7 @@ namespace ExchangeStuff.Controllers
             });
         }
 
-        [HttpPost("UpdatePurchaseTicket")]
+        [HttpPut("UpdatePurchaseTicket")]
         public async Task<IActionResult> UpdatePurchaseTicket([FromBody] UpdatePurchaseTicketModel purchaseTicket)
         {
             var rs = await _purchaseTicketService.UpdatePurchaseTicket(purchaseTicket);

@@ -6,6 +6,7 @@ using ExchangeStuff.CurrentUser.Users;
 using ExchangeStuff.Service.Maps;
 using ExchangeStuff.Service.Models.PurchaseTicket;
 using ExchangeStuff.Service.Services.Interfaces;
+using System.Collections.Generic;
 
 namespace ExchangeStuff.Service.Services.Impls
 {
@@ -59,11 +60,11 @@ namespace ExchangeStuff.Service.Services.Impls
         {
             try
             {
-                List<PurchaseTicket> listTicket = new List<PurchaseTicket>();
-                if (status.HasValue)
+                 List<PurchaseTicket> listTicket = new List<PurchaseTicket>();
+                 if (status.HasValue)
                 {
                     listTicket = await _purchaseTicketRepository.GetManyAsync(
-                        pageSize: pageSize, pageIndex: pageIndex, predicate: p => p.Status.Equals(status), orderBy: p => p.OrderBy(p => p.CreatedOn));
+                        pageSize : pageSize, pageIndex: pageIndex, predicate: p => p.Status.Equals(status), orderBy: p => p.OrderBy(p => p.CreatedOn));
                 }
                 else
                 {
@@ -84,7 +85,7 @@ namespace ExchangeStuff.Service.Services.Impls
         {
             try
             {
-                List<PurchaseTicket> listTicket = new List<PurchaseTicket>();
+                List<PurchaseTicket> listTicket;
                 if (status.HasValue)
                 {
                     listTicket = await _purchaseTicketRepository.GetManyAsync(

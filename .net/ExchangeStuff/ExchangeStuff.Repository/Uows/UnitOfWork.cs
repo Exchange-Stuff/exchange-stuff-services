@@ -27,6 +27,8 @@ namespace ExchangeStuff.Repository.Uows
             AdminRepository = new AdminRepository(_context);
             ProductRepository = new ProductRepository(_context);
             CategoriesRepository = new CategoriesRepository(_context);
+            PurchaseTicketRepository = new PurchaseTicketRepository(_context);
+            TransactionHistoryRepository = new TransactionHistoryRepository(_context);
             ProductBanReportRepository = new ProductBanReportRepository(_context);
             UserBanReportRepository = new UserBanReportRepository(_context);
             BanReasonRepository = new BanReasonRepository(_context);
