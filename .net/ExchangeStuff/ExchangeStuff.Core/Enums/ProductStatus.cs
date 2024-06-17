@@ -2,5 +2,9 @@
 {
     public enum ProductStatus
     {
+        Pending,
+        Approve,
+        Cancle,
+        Reject
     }
 }
