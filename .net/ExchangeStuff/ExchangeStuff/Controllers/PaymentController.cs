@@ -23,7 +23,7 @@ namespace ExchangeStuff.Controllers
         {
             var rs = await _paymentService.createPaymentAsync(userId, amount);
 
-            if (!rs) throw new Exception("Can not update product");
+            if (!rs) throw new Exception("Can not create payment");
 
             return StatusCode(StatusCodes.Status200OK, new ResponseResult<string>
             {

@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using ExchangeStuff.Service.Models.Categories;
 using ExchangeStuff.Core.Enums;
 using ExchangeStuff.Service.Models.PostTicket;
+using ExchangeStuff.Repository.Repositories;
 
 namespace ExchangeStuff.Service.Services.Impls
 {
@@ -20,6 +21,7 @@ namespace ExchangeStuff.Service.Services.Impls
         private readonly ICategoriesRepository _categoriesRepository;
         private readonly IPostTicketRepository _postTicketRepository;
         private readonly IIdentityUser<Guid> _identityUser;
+        private readonly ITransactionHistoryRepository _transactionHistoryRepository;
 
 
         public ProductService(IUnitOfWork unitOfWork, IIdentityUser<Guid> identityUser)
@@ -28,6 +30,7 @@ namespace ExchangeStuff.Service.Services.Impls
             _productRepository = _unitOfWork.ProductRepository;
             _categoriesRepository = _unitOfWork.CategoriesRepository;
             _postTicketRepository = _unitOfWork.PostTicketRepository;
+            _transactionHistoryRepository = _unitOfWork.TransactionHistoryRepository;
             _identityUser = identityUser;
         }
 
@@ -101,6 +104,7 @@ namespace ExchangeStuff.Service.Services.Impls
                     postTicketViewModel.Amount = 10;
                     await createPostTicket(postTicketViewModel);
 
+                    
 
                 }
                 

@@ -41,6 +41,16 @@ namespace ExchangeStuff.Service.Services.Impls
                
                 await _paymentRepository.AddAsync(payment);
 
+
+                TransactionHistory transactionHistory = new TransactionHistory
+                {
+                    Id = Guid.NewGuid(),
+                    UserId = userId,
+                    Amount = amount,
+                    IsCredit = true,
+                    
+                };
+
                 var rs = await _unitOfWork.SaveChangeAsync();
 
                 return rs > 0;
