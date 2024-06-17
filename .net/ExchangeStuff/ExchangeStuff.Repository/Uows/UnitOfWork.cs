@@ -29,11 +29,17 @@ namespace ExchangeStuff.Repository.Uows
             CategoriesRepository = new CategoriesRepository(_context);
             PurchaseTicketRepository = new PurchaseTicketRepository(_context);
             TransactionHistoryRepository = new TransactionHistoryRepository(_context);
+            ProductBanReportRepository = new ProductBanReportRepository(_context);
+            UserBanReportRepository = new UserBanReportRepository(_context);
+            BanReasonRepository = new BanReasonRepository(_context);
         }
 
         public IUserRepository UserRepository { get; private set; }
+
         public IProductRepository ProductRepository { get; private set; }
+
         public ICategoriesRepository CategoriesRepository { get; private set; }
+
         public IFinancialTicketsRepository FinancialTicketsRepository { get; private set; }
 
         public IImageRepository ImageRepository {  get; private set; }
@@ -58,7 +64,14 @@ namespace ExchangeStuff.Repository.Uows
         public IAdminRepository AdminRepository { get; private set; }
 
         public IPurchaseTicketRepository PurchaseTicketRepository {  get; private set; }
+
         public ITransactionHistoryRepository TransactionHistoryRepository { get; private set; }
+
+        public IProductBanReportRepository ProductBanReportRepository { get; private set; }
+
+        public IUserBanReportRepository UserBanReportRepository { get; private set; }
+
+        public IBanReasonRepository BanReasonRepository { get; private set; }
 
         public async Task<int> SaveChangeAsync()
         => await _context.SaveChangesAsync();

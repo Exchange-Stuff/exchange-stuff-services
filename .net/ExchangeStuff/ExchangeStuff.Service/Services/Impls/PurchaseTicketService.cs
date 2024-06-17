@@ -138,7 +138,6 @@ namespace ExchangeStuff.Service.Services.Impls
             {
                 throw new Exception(ex.Message);
             }
-                
         }
     }
 }
