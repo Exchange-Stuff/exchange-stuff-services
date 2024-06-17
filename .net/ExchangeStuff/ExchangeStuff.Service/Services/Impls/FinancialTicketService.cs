@@ -5,6 +5,7 @@ using ExchangeStuff.Core.Uows;
 using ExchangeStuff.CurrentUser.Users;
 using ExchangeStuff.Service.Maps;
 using ExchangeStuff.Service.Models.FinancialTickets;
+using ExchangeStuff.Service.Models.TransactionHistory;
 using ExchangeStuff.Service.Services.Interfaces;
 
 namespace ExchangeStuff.Service.Services.Impls
@@ -15,13 +16,20 @@ namespace ExchangeStuff.Service.Services.Impls
         private readonly IUnitOfWork _unitOfWork;
         private readonly IUserRepository _userRepository;
         private readonly IFinancialTicketsRepository _financialTicketsRepository;
+        private readonly ITransactionHistoryRepository _transactionHistoryRepository;
+        
 
-        public FinancialTicketService(IIdentityUser<Guid> identityUser, IUnitOfWork unitOfWork)
+
+        public FinancialTicketService(IIdentityUser<Guid> identityUser, IUnitOfWork unitOfWork, ITransactionHistoryRepository transactionHistoryRepository)
         {
             _identityUser = identityUser;
             _unitOfWork = unitOfWork;
             _financialTicketsRepository = _unitOfWork.FinancialTicketsRepository;
             _userRepository = _unitOfWork.UserRepository;
+            _transactionHistoryRepository = _unitOfWork.TransactionHistoryRepository;
+            
+
+           
         }
 
         public async Task<bool> CreateFinancialTicket(CreateFinancialTicketModel request)
@@ -87,7 +95,7 @@ namespace ExchangeStuff.Service.Services.Impls
                 if (status.HasValue)
                 {
                     listTicket = await _financialTicketsRepository.GetManyAsync(
-                        pageSize: pageSize, pageIndex: pageIndex, predicate: p => p.Status == status && p.UserId.Equals(_identityUser.AccountId), orderBy: p => p.OrderBy(p => p.CreatedOn));
+                        pageSize: 10, pageIndex: 1, predicate: p => p.Status == status && p.UserId.Equals(_identityUser.AccountId), orderBy: p => p.OrderBy(p => p.CreatedOn));
                 }
                 else
                 {
@@ -137,6 +145,19 @@ namespace ExchangeStuff.Service.Services.Impls
                 {
                     ticket.Status = request.Status;
                     _financialTicketsRepository.Update(ticket);
+                    if (request.Status == FinancialTicketStatus.Approve) 
+                    {
+                        TransactionHistory transactionHistory = new TransactionHistory
+                        {
+                            Id = Guid.NewGuid(),
+                            UserId = ticket.UserId,
+                            Amount = ticket.Amount,
+                            IsCredit = ticket.IsCredit,
+                            TransactionType = TransactionType.Financial,
+
+                        };
+                        await _transactionHistoryRepository.AddAsync(transactionHistory);
+                    }
                     var result = await _unitOfWork.SaveChangeAsync();
                     return result > 0;
                 }

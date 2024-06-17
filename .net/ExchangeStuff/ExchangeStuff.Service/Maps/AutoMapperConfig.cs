@@ -13,6 +13,7 @@ using ExchangeStuff.Service.Models.Permissions;
 using ExchangeStuff.Service.Models.Products;
 using ExchangeStuff.Service.Models.Rating;
 using ExchangeStuff.Service.Models.Resources;
+using ExchangeStuff.Service.Models.TransactionHistory;
 using ExchangeStuff.Service.Models.Users;
 
 namespace ExchangeStuff.Service.Maps
@@ -68,6 +69,7 @@ namespace ExchangeStuff.Service.Maps
             CreateMap<FinancialTicket, FinancialTicketViewModel>().ReverseMap();
             CreateMap<FinancialTicket,CreateFinancialTicketModel>().ReverseMap();
             CreateMap<FinancialTicket, UpdateFinancialTicketModel>().ReverseMap();
+            CreateMap<TransactionHistory, CreateTransactionHistoryModel>().ReverseMap();
         }
     }
 }
