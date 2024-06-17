@@ -9,6 +9,7 @@ using ExchangeStuff.Service.Models.Campuses;
 using ExchangeStuff.Service.Models.Categories;
 using ExchangeStuff.Service.Models.Comments;
 using ExchangeStuff.Service.Models.Images;
+using ExchangeStuff.Service.Models.Moderators;
 using ExchangeStuff.Service.Models.PermissionGroups;
 using ExchangeStuff.Service.Models.Permissions;
 using ExchangeStuff.Service.Models.ProductBanReports;
@@ -74,6 +75,7 @@ namespace ExchangeStuff.Service.Maps
             CreateMap<UserBanReport, UserBanReportViewModel>().ReverseMap();
             CreateMap<ProductBanReport, ProductBanReportViewModel>().ReverseMap();
             CreateMap<Token, TokenViewModel>().ReverseMap();
+            CreateMap<Moderator, ModeratorViewModel>().ReverseMap();
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using ExchangeStuff.Service.Services.Impls;
-using ExchangeStuff.Service.Services.Interfaces;
+﻿using ExchangeStuff.Service.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ExchangeStuff.Controllers

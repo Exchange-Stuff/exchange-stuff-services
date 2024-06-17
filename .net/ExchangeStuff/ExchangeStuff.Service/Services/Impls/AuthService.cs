@@ -107,6 +107,12 @@ namespace ExchangeStuff.Service.Services.Impls
                         Thumbnail = userinfo.Thumbnail,
                         IsActived = true
                     };
+                    UserBalance userBalance = new UserBalance
+                    {
+                        Balance = 0,
+                        UserId = user.Id
+                    };
+                    user.UserBalance = userBalance;
                     var permissionGroups = await _permissionGroupRepository.GetManyAsync(x => x.Name == GroupPermission.DEFAULT, forUpdate: true);
                     if (permissionGroups.Any() is false) throw new Exception("No permission in system");
 

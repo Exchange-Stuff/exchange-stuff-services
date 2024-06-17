@@ -30,6 +30,7 @@ namespace ExchangeStuff.Repository.Uows
             ProductBanReportRepository = new ProductBanReportRepository(_context);
             UserBanReportRepository = new UserBanReportRepository(_context);
             BanReasonRepository = new BanReasonRepository(_context);
+            ModeratorRepository = new ModeratorRepository(_context);    
         }
 
         public IUserRepository UserRepository { get; private set; }
@@ -70,6 +71,8 @@ namespace ExchangeStuff.Repository.Uows
         public IUserBanReportRepository UserBanReportRepository { get; private set; }
 
         public IBanReasonRepository BanReasonRepository { get; private set; }
+
+        public IModeratorRepository ModeratorRepository { get; private set; }
 
         public async Task<int> SaveChangeAsync()
         => await _context.SaveChangesAsync();
