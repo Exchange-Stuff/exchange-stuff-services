@@ -27,6 +27,7 @@ namespace ExchangeStuff.Repository.Uows
             AdminRepository = new AdminRepository(_context);
             ProductRepository = new ProductRepository(_context);
             CategoriesRepository = new CategoriesRepository(_context);
+            PostTicketRepository = new PostTicketRepository(_context);
         }
 
         public IUserRepository UserRepository { get; private set; }
@@ -57,6 +58,7 @@ namespace ExchangeStuff.Repository.Uows
 
         public IPurchaseTicketRepository PurchaseTicketRepository {  get; private set; }
         public ITransactionHistoryRepository TransactionHistoryRepository { get; private set; }
+        public IPostTicketRepository PostTicketRepository { get; private set; }
 
         public async Task<int> SaveChangeAsync()
         => await _context.SaveChangesAsync();

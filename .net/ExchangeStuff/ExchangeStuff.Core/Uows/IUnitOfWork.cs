@@ -21,6 +21,7 @@ namespace ExchangeStuff.Core.Uows
         ICategoriesRepository CategoriesRepository { get; }
         IPurchaseTicketRepository PurchaseTicketRepository { get; }
         ITransactionHistoryRepository TransactionHistoryRepository { get; }
+        IPostTicketRepository PostTicketRepository { get; }
         Task<int> SaveChangeAsync();
     }
 }

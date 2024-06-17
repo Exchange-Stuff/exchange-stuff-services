@@ -4,13 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ExchangeStuff.Core.Enums
+namespace ExchangeStuff.Service.Services.Interfaces
 {
-    public enum PostTicketStatus
+    public interface IPostTicketService
     {
-        Pending,
-        Approve,
-        Cancle,
-        Reject
     }
 }
