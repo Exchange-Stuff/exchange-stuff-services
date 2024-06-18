@@ -1,4 +1,5 @@
 ﻿using ExchangeStuff.Core.Entities;
+using ExchangeStuff.Core.Enums;
 using ExchangeStuff.Core.Repositories;
 using ExchangeStuff.Core.Uows;
 using ExchangeStuff.CurrentUser.Users;
@@ -17,12 +18,14 @@ namespace ExchangeStuff.Service.Services.Impls
         private readonly IPaymentRepository _paymentRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IIdentityUser<Guid> _identityUser;
+        private readonly ITransactionHistoryRepository _transactionHistoryRepository;
 
         public PaymentService(IUnitOfWork unitOfWork, IIdentityUser<Guid> identityUser)
         {
             _unitOfWork = unitOfWork;
             _paymentRepository = _unitOfWork.PaymentRepository;
             _identityUser = identityUser;
+            _transactionHistoryRepository = _unitOfWork.TransactionHistoryRepository;
         }
 
         public async Task<bool> createPaymentAsync(Guid userId, int amount)
@@ -33,7 +36,7 @@ namespace ExchangeStuff.Service.Services.Impls
                 {
                     Id = Guid.NewGuid(),
                     UserId = userId,
-                    Amount = amount,
+                    Amount = amount * 1000,
                     Status = "Đã thanh toán",
                     PaymentDate = DateTime.Now,
                     Description = "Nạp tiền"
@@ -48,8 +51,10 @@ namespace ExchangeStuff.Service.Services.Impls
                     UserId = userId,
                     Amount = amount,
                     IsCredit = true,
-                    
+                    TransactionType = TransactionType.Payment
                 };
+
+                await _transactionHistoryRepository.AddAsync(transactionHistory);
 
                 var rs = await _unitOfWork.SaveChangeAsync();
 

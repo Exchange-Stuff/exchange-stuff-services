@@ -27,13 +27,13 @@ namespace ExchangeStuff.Service.Services.Impls
             _identityUser = identityUser;
         }
 
-        public string CreatePaymentUrl()
+        public string CreatePaymentUrl(int amount)
         {
             var vnp_TmnCode = _configuration["VNPay:vnp_TmnCode"];
             var vnp_HashSecret = _configuration["VNPay:vnp_HashSecret"];
             var vnp_Url = _configuration["VNPay:vnp_Url"];
             var vnp_ReturnUrl = _configuration["VNPay:vnp_ReturnUrl"];
-            var amount = 200;
+
             var total = amount * 100000;
             var random = new Random();
             var txnRef = random.Next(1, 100000).ToString();
@@ -48,7 +48,7 @@ namespace ExchangeStuff.Service.Services.Impls
             _vnPayLibrary.AddRequestData("vnp_CurrCode", "VND");
             _vnPayLibrary.AddRequestData("vnp_TxnRef", txnRef);
             _vnPayLibrary.AddRequestData("vnp_OrderInfo", "Thanh toan don hang: " + txnRef);
-            _vnPayLibrary.AddRequestData("vnp_OrderType", "other");
+            _vnPayLibrary.AddRequestData("vnp_OrderType", "Mua dong");
             _vnPayLibrary.AddRequestData("vnp_Locale", "vn");
             _vnPayLibrary.AddRequestData("vnp_ReturnUrl", vnp_ReturnUrl);
             _vnPayLibrary.AddRequestData("vnp_IpAddr", clientIp);
