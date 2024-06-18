@@ -59,11 +59,7 @@ namespace ExchangeStuff.Exceptions
                 responseView.Error.Code = 500;
                 responseView.Error.Message = "Redis server down";
             }
-            var exception = context.Exception;
-            var requestId = context.HttpContext.TraceIdentifier;
-            var controllerName = context.RouteData.Values["controller"]?.ToString();
-            var actionName = context.RouteData.Values["action"]?.ToString();
-            _logger.LogError(exception, "An error occurred in {Controller}.{Action} with RequestId {RequestId}: {Message}", controllerName, actionName, requestId, exception.Message);
+            _logger.LogError(context.Exception, "An error occurred in {Controller}.{Action} with RequestId {RequestId}: {Message}", context.RouteData.Values["controller"]?.ToString(), context.RouteData.Values["action"]?.ToString(), context.HttpContext.TraceIdentifier, context.Exception.Message);
 
             context.Result = new ObjectResult(responseView)
             {
