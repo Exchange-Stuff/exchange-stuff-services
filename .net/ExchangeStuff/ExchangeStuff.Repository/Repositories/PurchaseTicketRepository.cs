@@ -8,11 +8,9 @@ namespace ExchangeStuff.Repository.Repositories
 {
     public class PurchaseTicketRepository : Repository<PurchaseTicket>, IPurchaseTicketRepository
     {
-        private readonly DbSet<PurchaseTicket> _purchaseTicketRepository;
 
         public PurchaseTicketRepository(ExchangeStuffContext context) : base(context)
         {
-            _purchaseTicketRepository = context.Set<PurchaseTicket>();
         }
     }
 }

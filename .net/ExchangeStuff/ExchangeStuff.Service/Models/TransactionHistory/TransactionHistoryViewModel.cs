@@ -1,9 +1,10 @@
 ﻿using ExchangeStuff.Core.Common;
+using ExchangeStuff.Core.Entities;
 using ExchangeStuff.Core.Enums;
 
 namespace ExchangeStuff.Service.Models.TransactionHistory
 {
-    public class TransactionHistoryViewModel : Auditable<Guid>
+    public class TransactionHistoryViewModel : BaseEntity<Guid>
     {
         public Guid UserId { get; set; }
         public double Amount { get; set; }

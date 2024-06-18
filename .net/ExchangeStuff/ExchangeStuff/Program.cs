@@ -33,7 +33,7 @@ builder.Services.AddControllers(x =>
 
 });
 
-
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.InjectAPI(builder.Configuration);
 builder.Services.Inject(builder.Configuration);

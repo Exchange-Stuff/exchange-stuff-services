@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ExchangeStuff.Service.Models.PurchaseTicket
 {
-    public class PurchaseTicketViewModel : Auditable<Guid>
+    public class PurchaseTicketViewModel : BaseEntity<Guid>
     {
         public double Amount { get; set; }
         public Guid ProductId { get; set; }

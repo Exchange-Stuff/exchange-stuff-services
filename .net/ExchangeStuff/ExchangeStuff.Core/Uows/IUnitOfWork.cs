@@ -21,11 +21,13 @@ namespace ExchangeStuff.Core.Uows
         ICategoriesRepository CategoriesRepository { get; }
         IPurchaseTicketRepository PurchaseTicketRepository { get; }
         ITransactionHistoryRepository TransactionHistoryRepository { get; }
+        IPostTicketRepository PostTicketRepository { get; }
+        IPaymentRepository PaymentRepository { get; }
         IProductBanReportRepository ProductBanReportRepository { get; }
         IUserBanReportRepository UserBanReportRepository { get; }
         IBanReasonRepository BanReasonRepository { get; }
         IModeratorRepository ModeratorRepository { get; }
-
+        IUserBalanceRepository UserBalanceRepository { get; }
         Task<int> SaveChangeAsync();
     }
 }
