@@ -49,7 +49,7 @@ namespace ExchangeStuff.Service.Services.Impls
         {
             try
             {
-                List<TransactionHistory> listTransactionHistory = new List<TransactionHistory>();
+                List<TransactionHistory> listTransactionHistory;
                 if (type.HasValue)
                 {
                     listTransactionHistory = await _transactionHistoryRepository.GetManyAsync(

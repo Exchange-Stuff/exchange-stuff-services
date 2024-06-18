@@ -3,6 +3,7 @@ using ExchangeStuff.Core.Repositories;
 using ExchangeStuff.Repository.Data;
 using ExchangeStuff.Repository.Repositories.Base;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 
 namespace ExchangeStuff.Repository.Repositories
 {
@@ -21,17 +22,24 @@ namespace ExchangeStuff.Repository.Repositories
             return (await _context.Accounts.FirstOrDefaultAsync(x => x.Email == email))!;
         }
 
-        public async Task<List<Account>> GetAccountsFilter(string? name = null!, string? email = null!, string? username = null!, string? includes = null!, int? pageIndex = null!, int? pageSize = null!)
+        public async Task<List<Account>> GetAccountsFilter(string? name = null!, string? email = null!, string? username = null!, string? includes = null!, int? pageIndex = null!, int? pageSize = null!, bool? includeBan = null!)
         {
-            IQueryable<Account> query = _context.Accounts;
-
+            IQueryable<Account> query = null!;
+            if (includeBan.HasValue && includeBan.Value)
+            {
+                query = _context.Accounts;
+            }
+            else
+            {
+                query = _context.Accounts.Where(x => x.IsActived);
+            }
             if (!string.IsNullOrEmpty(name))
             {
                 query = query.Where(x => x.Name.ToLower().Contains(name.ToLower()));
             }
             if (!string.IsNullOrEmpty(email))
             {
-                query = query.Where(x => x.Email.ToLower().Contains(email.ToLower()));
+                query = query.Where(x => x.Email != null! && x.Email.ToLower().Contains(email.ToLower()));
             }
             if (!string.IsNullOrEmpty(username))
             {

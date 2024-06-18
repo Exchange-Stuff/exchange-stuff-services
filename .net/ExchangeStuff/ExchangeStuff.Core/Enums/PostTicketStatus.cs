@@ -8,5 +8,9 @@ namespace ExchangeStuff.Core.Enums
 {
     public enum PostTicketStatus
     {
+        Pending,
+        Approve,
+        Cancle,
+        Reject
     }
 }
