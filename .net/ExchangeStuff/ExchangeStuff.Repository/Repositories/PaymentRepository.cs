@@ -10,9 +10,9 @@ using System.Threading.Tasks;
 
 namespace ExchangeStuff.Repository.Repositories
 {
-    public class UserBalanceRepository : Repository<UserBalance>, IUserBalanceRepository
+    public class PaymentRepository : Repository<Payment>, IPaymentRepository
     {
-        public UserBalanceRepository(ExchangeStuffContext context) : base(context)
+        public PaymentRepository(ExchangeStuffContext context) : base(context)
         {
         }
     }

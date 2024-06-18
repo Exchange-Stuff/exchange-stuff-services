@@ -15,9 +15,9 @@ namespace ExchangeStuff.Controllers
         }
 
         [HttpGet]
-        public IActionResult CreatePayment()
+        public IActionResult CreatePayment([FromQuery] int amount)
         {
-            var paymentUrl = _vnPayService.CreatePaymentUrl();
+            var paymentUrl = _vnPayService.CreatePaymentUrl(amount);
             return Redirect(paymentUrl);
         }
     }

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ExchangeStuff.Core.Repositories
 {
-    public interface IUserBalanceRepository : IRepository<UserBalance>
+    public interface IPaymentRepository : IRepository<Payment>
     {
     }
 }
