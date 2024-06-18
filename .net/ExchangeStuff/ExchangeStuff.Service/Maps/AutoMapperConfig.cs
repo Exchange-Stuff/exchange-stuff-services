@@ -16,12 +16,9 @@ using ExchangeStuff.Service.Models.ProductBanReports;
 using ExchangeStuff.Service.Models.Products;
 using ExchangeStuff.Service.Models.Rating;
 using ExchangeStuff.Service.Models.Resources;
-<<<<<<< HEAD
 using ExchangeStuff.Service.Models.TransactionHistory;
-=======
 using ExchangeStuff.Service.Models.Tokens;
 using ExchangeStuff.Service.Models.UserBanReports;
->>>>>>> 0a58c5796bca07917b6dd90cdf35d0533d567c40
 using ExchangeStuff.Service.Models.Users;
 
 namespace ExchangeStuff.Service.Maps
@@ -79,15 +76,12 @@ namespace ExchangeStuff.Service.Maps
             CreateMap<FinancialTicket, FinancialTicketViewModel>().ReverseMap();
             CreateMap<FinancialTicket,CreateFinancialTicketModel>().ReverseMap();
             CreateMap<FinancialTicket, UpdateFinancialTicketModel>().ReverseMap();
-<<<<<<< HEAD
             CreateMap<TransactionHistory, CreateTransactionHistoryModel>().ReverseMap();
-=======
             CreateMap<Account, AccountViewModel>().ReverseMap();
             CreateMap<BanReason, BanReasonViewModel>().ReverseMap();
             CreateMap<UserBanReport, UserBanReportViewModel>().ReverseMap();
             CreateMap<ProductBanReport, ProductBanReportViewModel>().ReverseMap();
             CreateMap<Token, TokenViewModel>().ReverseMap();
->>>>>>> 0a58c5796bca07917b6dd90cdf35d0533d567c40
         }
     }
 }
