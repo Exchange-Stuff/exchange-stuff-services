@@ -8,6 +8,8 @@ using System.Linq;
 using ExchangeStuff.Service.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using ExchangeStuff.Service.Models.Categories;
+using ExchangeStuff.Core.Enums;
+using ExchangeStuff.Service.Models.PostTicket;
 
 namespace ExchangeStuff.Service.Services.Impls
 {
@@ -16,19 +18,23 @@ namespace ExchangeStuff.Service.Services.Impls
         private readonly IUnitOfWork _unitOfWork;
         private readonly IProductRepository _productRepository;
         private readonly ICategoriesRepository _categoriesRepository;
-        
+        private readonly IPostTicketRepository _postTicketRepository;
+        private readonly IIdentityUser<Guid> _identityUser;
 
-        public ProductService(IUnitOfWork unitOfWork)
+
+        public ProductService(IUnitOfWork unitOfWork, IIdentityUser<Guid> identityUser)
         {
             _unitOfWork = unitOfWork;
             _productRepository = _unitOfWork.ProductRepository;
             _categoriesRepository = _unitOfWork.CategoriesRepository;
-            
+            _postTicketRepository = _unitOfWork.PostTicketRepository;
+            _identityUser = identityUser;
         }
 
         public async Task<List<ProductViewModel>> GetAllProductsAsync()
         {
-            return AutoMapperConfig.Mapper.Map<List<ProductViewModel>>(await _productRepository.GetManyAsync(orderBy: p => p.OrderBy(p => p.CreatedOn)));
+
+            return AutoMapperConfig.Mapper.Map<List<ProductViewModel>>(await _productRepository.GetManyAsync(predicate: p => p.ProductStatus.Equals(ProductStatus.Approve), orderBy: p => p.OrderBy(p => p.CreatedOn)));
         }
 
 
@@ -40,7 +46,7 @@ namespace ExchangeStuff.Service.Services.Impls
             );
 
             return AutoMapperConfig.Mapper.Map<List<ProductViewModel>>(category.Products);
-            
+
         }
 
         public async Task<bool> CreateProductAsync(CreateProductModel model)
@@ -57,8 +63,9 @@ namespace ExchangeStuff.Service.Services.Impls
 
                 var product = AutoMapperConfig.Mapper.Map<Product>(model);
                 product.Id = Guid.NewGuid();
-                product.IsActived = true;
+                product.IsActived = false;
                 product.Categories = categories.ToList();
+                product.ProductStatus = ProductStatus.Pending;
 
                 await _unitOfWork.ProductRepository.AddAsync(product);
 
@@ -66,17 +73,64 @@ namespace ExchangeStuff.Service.Services.Impls
 
                 return result > 0;
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
-                throw new Exception("Error");
+                throw new Exception(ex.Message);
             }
         }
 
+        public async Task<bool> updateStatusProduct(UpdateProductViewModel updateProductViewModel)
+        {
+            try
+            {
+                var product = await _productRepository.GetOneAsync(predicate: p => p.Id.Equals(updateProductViewModel.Id));
+
+                if (product == null) 
+                {
+                    throw new Exception("Not found product");
+                }
+
+                product.ProductStatus = updateProductViewModel.ProductStatus;
+
+                _productRepository.Update(product);
+
+                if (product.ProductStatus.Equals(ProductStatus.Approve)) 
+                {
+                    PostTicketViewModel postTicketViewModel = new PostTicketViewModel();
+                    postTicketViewModel.productId = product.Id;
+                    postTicketViewModel.Amount = 10;
+                    await createPostTicket(postTicketViewModel);
+
+
+                }
+                
+                var result = await _unitOfWork.SaveChangeAsync();
+
+                return result > 0;
+
+            }
+            catch (Exception ex) 
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task createPostTicket(PostTicketViewModel postTicketViewModel)
+        {
+            var postTicket = AutoMapperConfig.Mapper.Map<PostTicket>(postTicketViewModel);
+            postTicket.Id = Guid.NewGuid();
+            postTicket.Status = PostTicketStatus.Approve;
+            postTicket.UserId = _identityUser.AccountId;
+            await _postTicketRepository.AddAsync(postTicket);
+
+        }
 
         public async Task<ProductViewModel> GetDetail(Guid id)
         {
             return AutoMapperConfig.Mapper.Map<ProductViewModel>(await _productRepository.GetOneAsync(predicate: p => p.Id == id));
         }
+
+
 
 
     }

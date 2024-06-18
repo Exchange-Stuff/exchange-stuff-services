@@ -6,6 +6,7 @@ using ExchangeStuff.CurrentUser.Users;
 using ExchangeStuff.Service.Maps;
 using ExchangeStuff.Service.Models.PurchaseTicket;
 using ExchangeStuff.Service.Services.Interfaces;
+using System.Collections.Generic;
 
 namespace ExchangeStuff.Service.Services.Impls
 {
@@ -16,6 +17,9 @@ namespace ExchangeStuff.Service.Services.Impls
         private readonly IUserRepository _userRepository;
         private readonly IPurchaseTicketRepository _purchaseTicketRepository;
         private readonly IIdentityUser<Guid> _identityUser;
+        private readonly ITransactionHistoryRepository _transactionHistoryRepository;
+        private readonly IUserBalanceRepository _userBalanceRepository;
+        private readonly IPostTicketRepository _postTicketRepository;
 
         public PurchaseTicketService(IIdentityUser<Guid> identityUser, IUnitOfWork unitOfWork)
         {
@@ -24,9 +28,12 @@ namespace ExchangeStuff.Service.Services.Impls
             _purchaseTicketRepository = _unitOfWork.PurchaseTicketRepository;
             _accountRepository = _unitOfWork.AccountRepository;
             _userRepository = _unitOfWork.UserRepository;
+            _transactionHistoryRepository = _unitOfWork.TransactionHistoryRepository;
+            _userBalanceRepository = _unitOfWork.UserBalanceRepository;
+            _postTicketRepository = _unitOfWork.PostTicketRepository;
         }
 
-        public async Task<PurchaseTicketViewModel> CreatePurchaseTicket(CreatePurchaseTicketModel request)
+        public async Task<bool> CreatePurchaseTicket(CreatePurchaseTicketModel request)
         {
             try
             {
@@ -43,10 +50,24 @@ namespace ExchangeStuff.Service.Services.Impls
                     Quantity = request.Quantity,
                     Status = PurchaseTicketStatus.Processing
                 };
-
                 await _purchaseTicketRepository.AddAsync(purchaseTicket);
+
+                TransactionHistory transactionHistory = new TransactionHistory
+                {
+                    Id = Guid.NewGuid(),
+                    UserId = _identityUser.AccountId,
+                    Amount = request.Amount,
+                    IsCredit = false,
+                    TransactionType = TransactionType.Purchase
+                };
+                await _transactionHistoryRepository.AddAsync(transactionHistory);
+
+                UserBalance balance = await _userBalanceRepository.GetOneAsync(predicate: b => b.UserId.Equals(_identityUser.AccountId));
+                balance.Balance = balance.Balance - request.Amount;
+                _userBalanceRepository.Update(balance);
+
                 var result = await _unitOfWork.SaveChangeAsync();
-                return result > 0 ? AutoMapperConfig.Mapper.Map<PurchaseTicketViewModel>(purchaseTicket) : throw new Exception("Create purchase ticket fail");
+                return result > 0;
             }
             catch (Exception ex)
             {
@@ -59,11 +80,11 @@ namespace ExchangeStuff.Service.Services.Impls
         {
             try
             {
-                List<PurchaseTicket> listTicket = new List<PurchaseTicket>();
-                if (status.HasValue)
+                 List<PurchaseTicket> listTicket = new List<PurchaseTicket>();
+                 if (status.HasValue)
                 {
                     listTicket = await _purchaseTicketRepository.GetManyAsync(
-                        pageSize: pageSize, pageIndex: pageIndex, predicate: p => p.Status.Equals(status), orderBy: p => p.OrderBy(p => p.CreatedOn));
+                        pageSize : pageSize, pageIndex: pageIndex, predicate: p => p.Status.Equals(status), orderBy: p => p.OrderBy(p => p.CreatedOn));
                 }
                 else
                 {
@@ -84,7 +105,7 @@ namespace ExchangeStuff.Service.Services.Impls
         {
             try
             {
-                List<PurchaseTicket> listTicket = new List<PurchaseTicket>();
+                List<PurchaseTicket> listTicket;
                 if (status.HasValue)
                 {
                     listTicket = await _purchaseTicketRepository.GetManyAsync(
@@ -120,7 +141,7 @@ namespace ExchangeStuff.Service.Services.Impls
             }
         }
 
-        public async Task<PurchaseTicketViewModel> UpdatePurchaseTicket(UpdatePurchaseTicketModel request)
+        public async Task<bool> UpdatePurchaseTicket(UpdatePurchaseTicketModel request)
         {
             try
             {
@@ -130,8 +151,44 @@ namespace ExchangeStuff.Service.Services.Impls
 
                 ticket.Status = request.Status;
                 _purchaseTicketRepository.Update(ticket);
+
+                if(request.Status.Equals(PurchaseTicketStatus.Cancelled))
+                {
+                    TransactionHistory transactionHistory = new TransactionHistory
+                    {
+                        Id = Guid.NewGuid(),
+                        UserId = ticket.UserId,
+                        Amount = ticket.Amount,
+                        IsCredit = true,
+                        TransactionType = TransactionType.Purchase
+                    };
+                    await _transactionHistoryRepository.AddAsync(transactionHistory);
+
+                    UserBalance balance = await _userBalanceRepository.GetOneAsync(predicate: b => b.UserId.Equals(_identityUser.AccountId));
+                    balance.Balance = balance.Balance + ticket.Amount;
+                    _userBalanceRepository.Update(balance);
+                }
+
+                else if (request.Status.Equals(PurchaseTicketStatus.Confirmed))
+                {
+                    PostTicket postTicket = await _postTicketRepository.GetOneAsync(predicate: p => p.ProductId.Equals(ticket.ProductId));
+                    TransactionHistory transactionHistory = new TransactionHistory
+                    {
+                        Id = Guid.NewGuid(),
+                        UserId = postTicket.UserId,
+                        Amount = ticket.Amount,
+                        IsCredit = true,
+                        TransactionType = TransactionType.Purchase
+                    };
+                    await _transactionHistoryRepository.AddAsync(transactionHistory);
+
+                    UserBalance balance = await _userBalanceRepository.GetOneAsync(predicate: b => b.UserId.Equals(postTicket.UserId));
+                    balance.Balance = balance.Balance + ticket.Amount;
+                    _userBalanceRepository.Update(balance);
+                }
+
                 var result = await _unitOfWork.SaveChangeAsync();
-                return result > 0 ? AutoMapperConfig.Mapper.Map<PurchaseTicketViewModel>(ticket) : throw new Exception("Update purchase ticket fail");
+                return result > 0;
             }
             catch (Exception ex)
             {

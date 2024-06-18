@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace ExchangeStuff.Service.Services.Interfaces
 {
-    public interface IVnPayService
+    public interface IPaymentService
     {
-        string CreatePaymentUrl(int amount);
+        Task<bool> createPaymentAsync(Guid userId, int amount);
     }
 }

@@ -1,4 +1,5 @@
-﻿using ExchangeStuff.Core.Common;
+﻿
+using ExchangeStuff.Core.Common;
 using ExchangeStuff.Core.Enums;
 
 namespace ExchangeStuff.Core.Entities
