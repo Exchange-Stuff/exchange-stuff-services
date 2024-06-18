@@ -27,7 +27,6 @@ namespace ExchangeStuff.Core.Uows
         IUserBanReportRepository UserBanReportRepository { get; }
         IBanReasonRepository BanReasonRepository { get; }
         IUserBalanceRepository UserBalanceRepository { get; }
-
         Task<int> SaveChangeAsync();
     }
 }
