@@ -27,13 +27,13 @@ namespace ExchangeStuff.Service.Services.Impls
             _identityUser = identityUser;
         }
 
-        public string CreatePaymentUrl()
+        public string CreatePaymentUrl(int amount)
         {
             var vnp_TmnCode = _configuration["VNPay:vnp_TmnCode"];
             var vnp_HashSecret = _configuration["VNPay:vnp_HashSecret"];
             var vnp_Url = _configuration["VNPay:vnp_Url"];
             var vnp_ReturnUrl = _configuration["VNPay:vnp_ReturnUrl"];
-            var amount = 200;
+        
             var total = amount * 100000;
             var random = new Random();
             var txnRef = random.Next(1, 100000).ToString();
