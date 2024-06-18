@@ -37,27 +37,28 @@ namespace ExchangeStuff.Service.Services.Impls
 
         public async Task<FinancialTicketViewModel> CreateFinancialTicket(CreateFinancialTicketModel request)
         {
-            try
-            {
-                User user = await _userRepository.GetOneAsync(predicate: u => u.Id.Equals(_identityUser.AccountId));
-                FinancialTicket financialTicket = new FinancialTicket
-                {
-                    Id = Guid.NewGuid(),
-                    Amount = request.Amount,
-                    UserId = _identityUser.AccountId,
-                    IsCredit = true,
-                    Status = FinancialTicketStatus.Pending,
-                };
-                await _financialTicketsRepository.AddAsync(financialTicket);
-                var result = await _unitOfWork.SaveChangeAsync();
-                return result > 0 ? AutoMapperConfig.Mapper.Map<FinancialTicketViewModel>(financialTicket) : throw new Exception("Create financialTiket fail");
+            //try
+            //{
+            //    User user = await _userRepository.GetOneAsync(predicate: u => u.Id.Equals(_identityUser.AccountId));
+            //    FinancialTicket financialTicket = new FinancialTicket
+            //    {
+            //        Id = Guid.NewGuid(),
+            //        Amount = request.Amount,
+            //        UserId = _identityUser.AccountId,
+            //        IsCredit = true,
+            //        Status = FinancialTicketStatus.Pending,
+            //    };
+            //    await _financialTicketsRepository.AddAsync(financialTicket);
+            //    var result = await _unitOfWork.SaveChangeAsync();
+            //    return result > 0 ? AutoMapperConfig.Mapper.Map<FinancialTicketViewModel>(financialTicket) : throw new Exception("Create financialTiket fail");
 
-            }
-            catch (Exception ex) {
+            //}
+            //catch (Exception ex) {
+            //    throw new Exception("Server error");
+            //}
+
                 throw new Exception("Server error");
-            }
 
-        
         }
 
         public async Task<List<FinancialTicketViewModel>> GetAllFinancialTicket(int pageSize, int pageIndex, FinancialTicketStatus status)

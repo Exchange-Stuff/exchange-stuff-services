@@ -4,6 +4,7 @@ using ExchangeStuff.Extensions;
 using ExchangeStuff.Service.Extensions;
 using System.Text.Json.Serialization;
 using Newtonsoft.Json.Serialization;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +18,7 @@ builder.Services.AddCors(options =>
                    .AllowAnyHeader();
         });
 });
+builder.AddLogging();
 builder.Services.AddControllers(x =>
 {
     x.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true;
@@ -45,6 +47,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+app.UseSerilogRequestLogging();
 app.UseRouting();
 app.UseAuthentication();
 
