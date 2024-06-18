@@ -78,6 +78,7 @@ namespace ExchangeStuff.Service.Maps
             CreateMap<FinancialTicket, FinancialTicketViewModel>().ReverseMap();
             CreateMap<FinancialTicket,CreateFinancialTicketModel>().ReverseMap();
             CreateMap<FinancialTicket, UpdateFinancialTicketModel>().ReverseMap();
+            CreateMap<TransactionHistory, CreateTransactionHistoryModel>().ReverseMap();
             CreateMap<Account, AccountViewModel>().ReverseMap();
             CreateMap<PostTicket, PostTicketViewModel>().ReverseMap();
             CreateMap<PurchaseTicket, CreatePurchaseTicketModel>().ReverseMap();

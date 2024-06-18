@@ -72,7 +72,7 @@ namespace ExchangeStuff.Controllers
         }
 
         [HttpPost("UpdateFinancialTicket")]
-        public async Task<IActionResult> UpdatePurchaseTicket([FromBody] UpdateFinancialTicketModel financialTicket)
+        public async Task<IActionResult> UpdateFinancialTicket([FromBody] UpdateFinancialTicketModel financialTicket)
         {
             var rs = await _financialTicketService.UpdateFinancialTicket(financialTicket);
 

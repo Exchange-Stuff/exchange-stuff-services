@@ -5,6 +5,7 @@ using ExchangeStuff.Core.Uows;
 using ExchangeStuff.CurrentUser.Users;
 using ExchangeStuff.Service.Maps;
 using ExchangeStuff.Service.Models.FinancialTickets;
+using ExchangeStuff.Service.Models.TransactionHistory;
 using ExchangeStuff.Service.Services.Interfaces;
 
 namespace ExchangeStuff.Service.Services.Impls
@@ -15,6 +16,11 @@ namespace ExchangeStuff.Service.Services.Impls
         private readonly IUnitOfWork _unitOfWork;
         private readonly IUserRepository _userRepository;
         private readonly IFinancialTicketsRepository _financialTicketsRepository;
+        private readonly ITransactionHistoryRepository _transactionHistoryRepository;
+        private readonly IUserBalanceRepository _userBalanceRepository;
+        
+        
+
 
         public FinancialTicketService(IIdentityUser<Guid> identityUser, IUnitOfWork unitOfWork)
         {
@@ -22,6 +28,11 @@ namespace ExchangeStuff.Service.Services.Impls
             _unitOfWork = unitOfWork;
             _financialTicketsRepository = _unitOfWork.FinancialTicketsRepository;
             _userRepository = _unitOfWork.UserRepository;
+            _transactionHistoryRepository = _unitOfWork.TransactionHistoryRepository;
+            _userBalanceRepository = _unitOfWork.UserBalanceRepository;
+            
+
+           
         }
 
         public async Task<bool> CreateFinancialTicket(CreateFinancialTicketModel request)
@@ -87,7 +98,7 @@ namespace ExchangeStuff.Service.Services.Impls
                 if (status.HasValue)
                 {
                     listTicket = await _financialTicketsRepository.GetManyAsync(
-                        pageSize: pageSize, pageIndex: pageIndex, predicate: p => p.Status == status && p.UserId.Equals(_identityUser.AccountId), orderBy: p => p.OrderBy(p => p.CreatedOn));
+                        pageSize: 10, pageIndex: 1, predicate: p => p.Status == status && p.UserId.Equals(_identityUser.AccountId), orderBy: p => p.OrderBy(p => p.CreatedOn));
                 }
                 else
                 {
@@ -125,7 +136,7 @@ namespace ExchangeStuff.Service.Services.Impls
         {
             try
             {
-                FinancialTicket ticket = await _financialTicketsRepository.GetOneAsync(predicate: p=> p.Id.Equals(request.Id));
+                FinancialTicket ticket = await  _financialTicketsRepository.GetOneAsync(predicate: p => p.Id.Equals(request.Id), forUpdate:true);
                 if (ticket == null)
                 {
                     throw new Exception("Not found ticket");
@@ -137,18 +148,53 @@ namespace ExchangeStuff.Service.Services.Impls
                 {
                     ticket.Status = request.Status;
                     _financialTicketsRepository.Update(ticket);
+                    if (request.Status == FinancialTicketStatus.Approve)
+                    {
+                        TransactionHistory transactionHistory = new TransactionHistory
+                        {
+                            Id = Guid.NewGuid(),
+                            UserId = ticket.UserId,
+                            Amount = ticket.Amount,
+                            IsCredit = ticket.IsCredit,
+                            TransactionType = TransactionType.Financial,
+
+                        };
+                        await _transactionHistoryRepository.AddAsync(transactionHistory);
+                    }
+                    UserBalance userBalance = await _userBalanceRepository.GetOneAsync(predicate: b => b.UserId.Equals(ticket.UserId), forUpdate: true);
+                    if (userBalance == null)
+                    {
+                        throw new Exception("User balance not found");
+                    }
+                    else
+                    {
+                        if(ticket.IsCredit == true)
+                        {
+                            userBalance.Balance += ticket.Amount;
+
+                        }
+                        else
+                        {
+                            userBalance.Balance -= ticket.Amount;
+                        }
+                        _userBalanceRepository.Update(userBalance);
+                    }
+                    // Update the user's balance
+                   
+                   
+
                     var result = await _unitOfWork.SaveChangeAsync();
                     return result > 0;
                 }
 
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 throw new Exception(ex.Message);
             }
 
         }
 
-        
+
     }
 }

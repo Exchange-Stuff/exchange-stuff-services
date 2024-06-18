@@ -8,6 +8,6 @@ namespace ExchangeStuff.Service.Services.Interfaces
 {
     public interface IVnPayService
     {
-        string CreatePaymentUrl();
+        string CreatePaymentUrl(int amount);
     }
 }
