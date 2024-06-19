@@ -138,63 +138,63 @@ namespace ExchangeStuff.Service.Services.Impls
         {
             try
             {
-                FinancialTicket ticket = await  _financialTicketsRepository.GetOneAsync(predicate: p => p.Id.Equals(request.Id), forUpdate:true);
-                if (ticket == null)
-                {
-                    throw new Exception("Not found ticket");
+                //FinancialTicket ticket = await  _financialTicketsRepository.GetOneAsync(predicate: p => p.Id.Equals(request.Id), forUpdate:true);
+                //if (ticket == null)
+                //{
+                //    throw new Exception("Not found ticket");
 
 
 
-                }
-                else
-                {
-                    ticket.Status = request.Status;
-                    _financialTicketsRepository.Update(ticket);
-                    if (request.Status == FinancialTicketStatus.Approve)
-                    {
-                        TransactionHistory transactionHistory = new TransactionHistory
-                        {
-                            Id = Guid.NewGuid(),
-                            UserId = ticket.UserId,
-                            Amount = ticket.Amount,
-                            IsCredit = ticket.IsCredit,
-                            TransactionType = TransactionType.Financial,
+                //}
+                //else
+                //{
+                //    ticket.Status = request.Status;
+                //    _financialTicketsRepository.Update(ticket);
+                //    if (request.Status == FinancialTicketStatus.Approve)
+                //    {
+                //        TransactionHistory transactionHistory = new TransactionHistory
+                //        {
+                //            Id = Guid.NewGuid(),
+                //            UserId = ticket.UserId,
+                //            Amount = ticket.Amount,
+                //            IsCredit = ticket.IsCredit,
+                //            TransactionType = TransactionType.Financial,
 
-                        };
-                        await _transactionHistoryRepository.AddAsync(transactionHistory);
-                    }
-                    UserBalance userBalance = await _userBalanceRepository.GetOneAsync(predicate: b => b.UserId.Equals(ticket.UserId), forUpdate: true);
-                    if (userBalance == null)
-                    {
-                        throw new Exception("User balance not found");
-                    }
-                    else
-                    {
-                        if(ticket.IsCredit == true)
-                        {
-                            userBalance.Balance += ticket.Amount;
+                //        };
+                //        await _transactionHistoryRepository.AddAsync(transactionHistory);
+                //    }
+                //    UserBalance userBalance = await _userBalanceRepository.GetOneAsync(predicate: b => b.UserId.Equals(ticket.UserId), forUpdate: true);
+                //    if (userBalance == null)
+                //    {
+                //        throw new Exception("User balance not found");
+                //    }
+                //    else
+                //    {
+                //        if(ticket.IsCredit == true)
+                //        {
+                //            userBalance.Balance += ticket.Amount;
 
-                        }
-                        else
-                        {
-                            userBalance.Balance -= ticket.Amount;
-                        }
-                        _userBalanceRepository.Update(userBalance);
-                    }
+                //        }
+                //        else
+                //        {
+                //            userBalance.Balance -= ticket.Amount;
+                //        }
+                //        _userBalanceRepository.Update(userBalance);
+                //    }
                     // Update the user's balance
                    
                    
 
-                    var result = await _unitOfWork.SaveChangeAsync();
-                    return result > 0;
-                }
+                    //var result = await _unitOfWork.SaveChangeAsync();
+                    //return result > 0;
+                //}
 
             }
             catch (Exception ex)
             {
                 throw new Exception(ex.Message);
             }
-
+            throw new NotImplementedException();
         }
 
 

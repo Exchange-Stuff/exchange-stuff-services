@@ -4,14 +4,17 @@ using ExchangeStuff.Core.Uows;
 using ExchangeStuff.Service.Constants;
 using ExchangeStuff.Service.DTOs;
 using ExchangeStuff.Service.Maps;
+using ExchangeStuff.Service.Models.Moderators;
 using ExchangeStuff.Service.Models.Tokens;
 using ExchangeStuff.Service.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
 using StackExchange.Redis;
 using System.IdentityModel.Tokens.Jwt;
+using System.Text;
 
 namespace ExchangeStuff.Service.Services.Impls
 {
@@ -25,7 +28,11 @@ namespace ExchangeStuff.Service.Services.Impls
         private readonly IUnitOfWork _uow;
         private readonly IUserRepository _userRepository;
         private readonly IAccountRepository _accountRepository;
+        private readonly IModeratorRepository _moderatorRepository;
         private readonly IPermissionGroupRepository _permissionGroupRepository;
+        private readonly IResourceRepository _resourceRepository;
+        private readonly IPermissionRepository _permissionRepository;
+        private readonly IActionRepository _actionRepository;
 
         public AuthService(IConfiguration configuration, IUnitOfWork unitOfWork, IDistributedCache distributedCache, IConnectionMultiplexer connectionMultiplexer, IHttpContextAccessor httpContextAccessor) : base(unitOfWork, configuration, httpContextAccessor, distributedCache, connectionMultiplexer)
         {
@@ -37,9 +44,114 @@ namespace ExchangeStuff.Service.Services.Impls
             _configuration.GetSection(nameof(GoogleAuthDTO)).Bind(_googleAuthDTO);
             _userRepository = _uow.UserRepository;
             _accountRepository = _uow.AccountRepository;
+            _moderatorRepository = _uow.ModeratorRepository;
             _permissionGroupRepository = _uow.PermissionGroupRepository;
+            _resourceRepository = _uow.ResourceRepository;
+            _permissionRepository = _uow.PermissionRepository;
+            _actionRepository = _uow.ActionRepository;
         }
 
+        public async Task<bool> ValidScreen(string resource)
+        {
+            if (string.IsNullOrEmpty(resource)) return false;
+
+            var claim = await GetClaimDTOByAccessToken();
+            if (claim == null!) throw new UnauthorizedAccessException("Access denial");
+
+            var rsrc = await _resourceRepository.GetOneAsync(x => x.Name == resource);
+            if (rsrc == null) throw new UnauthorizedAccessException("Access denial");
+
+            var acc = await _accountRepository.GetOneAsync(x => x.Id == claim.Id, "PermissionGroups");
+            if (acc == null) throw new UnauthorizedAccessException("Access denial");
+            var permissiongids = acc.PermissionGroups.Select(x => x.Id);
+
+            if (permissiongids.Any() is false) return false;
+            var permissionGroups = await _permissionGroupRepository.GetManyAsync(x => permissiongids.Contains(x.Id));
+
+            if (permissionGroups.Any() is false) return false;
+            var permissionId1 = permissionGroups.Select(x => x.Id);
+
+            var permissions = await _permissionRepository.GetManyAsync(x => permissionId1.Contains(x.PermissionGroupId) && x.ResourceId == rsrc.Id);
+            if (permissions.Any() is false) return false;
+
+            var actions = await _actionRepository.GetManyAsync();
+            if (actions.Any() is false) throw new Exception("No action in system");
+            if (permissions != null && permissions.Count > 0)
+            {
+                bool access = false;
+                foreach (var item in permissions)
+                {
+                    access = ValidActionResource(actions, "Access", item.PermissionValue);
+                    if (!access) throw new UnauthorizedAccessException("Access denial");
+                }
+                return access;
+            }
+            return false;
+        }
+
+        private bool ValidActionResource(List<ExchangeStuff.Core.Entities.Action> actions, string action, int roleValue)
+        {
+            if (actions?.Any() != true) return false;
+
+            actions = actions.OrderBy(x => x.Index).ToList();
+
+            char[] authorizeString = ReverseString(DecimalToBinary(roleValue)).ToArray();
+
+            Dictionary<string, bool> actionKey = new Dictionary<string, bool>();
+            int i = 0;
+            foreach (var item in authorizeString)
+            {
+                bool vlue;
+                if (item == '0')
+                {
+                    vlue = false;
+                }
+                else if (item == '1')
+                {
+                    vlue = true;
+                }
+                else
+                {
+                    return false;
+                }
+                actionKey.Add(actions[i].Name.ToLower(), vlue);
+                i++;
+            }
+            if (actionKey.ContainsKey(action.ToLower()))
+            {
+                return actionKey[action.ToLower()];
+            }
+            return false;
+        }
+
+        private string DecimalToBinary(int decimalNumber)
+        {
+            if (decimalNumber == 0)
+                return "0";
+
+            StringBuilder binary = new StringBuilder();
+
+            while (decimalNumber > 0)
+            {
+                binary.Insert(0, decimalNumber % 2);
+                decimalNumber /= 2;
+            }
+
+            return binary.ToString();
+        }
+
+        private char[] ReverseString(string str)
+        {
+            char[] chars = str.ToCharArray();
+            int length = str.Length;
+            for (int i = 0; i < length / 2; i++)
+            {
+                char temp = chars[i];
+                chars[i] = chars[length - 1 - i];
+                chars[length - 1 - i] = temp;
+            }
+            return chars;
+        }
         public async Task<TokenViewModel> GetToken(string param)
         {
             if (param != "")
@@ -105,7 +217,8 @@ namespace ExchangeStuff.Service.Services.Impls
                         Email = userinfo.Email,
                         Name = userinfo.Name,
                         Thumbnail = userinfo.Thumbnail,
-                        IsActived = true
+                        IsActived = true,
+                        Username = userinfo.Email
                     };
                     UserBalance userBalance = new UserBalance
                     {
@@ -175,6 +288,8 @@ namespace ExchangeStuff.Service.Services.Impls
                 using (var content = new FormUrlEncodedContent(dicData))
                 {
                     HttpResponseMessage response = await client.PostAsync(url, content);
+                    string strcontenst = await response.Content.ReadAsStringAsync();
+
                     if (response.IsSuccessStatusCode)
                     {
                         string strcontent = await response.Content.ReadAsStringAsync();
@@ -195,6 +310,54 @@ namespace ExchangeStuff.Service.Services.Impls
                 throw new UnauthorizedAccessException(ex.Message);
             }
         }
+        public async Task<ModeratorViewModel> CreateModerator(ModeratorCreateModel moderatorCreateModel)
+        {
+            var mopderatorCheck = await _moderatorRepository.GetOneAsync(x => x.Username == moderatorCreateModel.Username);
+            if (mopderatorCheck != null!) throw new Exception("Moderator username already exist");
+            Moderator moderator = new Moderator
+            {
+                Username = moderatorCreateModel.Username,
+                Name = moderatorCreateModel.Name,
+                Password = HashPassword(moderatorCreateModel.Password),
+                IsActived = true
+            };
+
+            var permissionGroups = await _permissionGroupRepository.GetManyAsync(x => x.Name == GroupPermission.MODERATOR, forUpdate: true);
+            if (permissionGroups.Any() is false) throw new Exception("No permission group in system");
+            moderator.PermissionGroups = permissionGroups;
+
+            await _moderatorRepository.AddAsync(moderator);
+            var rs = await _uow.SaveChangeAsync();
+            return rs > 0 ? AutoMapperConfig.Mapper.Map<ModeratorViewModel>(moderator) : throw new Exception("Can't create new moderator");
+        }
+
+        public async Task<TokenViewModel> LoginUsernameAndPwd(LoginRd loginRd)
+        {
+            if (string.IsNullOrEmpty(loginRd.Username) || string.IsNullOrEmpty(loginRd.Password)) throw new Exception("Username and password required");
+            Account account = null!;
+            account = await _accountRepository.GetOneAsync(x => x.Email != null && x.Email == loginRd.Username && x.Password == HashPassword(loginRd.Password) && x.IsActived);
+            if (account == null)
+            {
+                account = await _accountRepository.GetOneAsync(x => x.Username != null && x.Username == loginRd.Username && x.Password == HashPassword(loginRd.Password) && x.IsActived);
+            }
+            if (account == null!) throw new Exception("Wrong username or password");
+            var tokenSystem = await GenerateToken(account);
+
+            await SavePermissionGroup(account.Id);
+            var ntoken = await SaveAccessToken(tokenSystem, account.Id);
+            return AutoMapperConfig.Mapper.Map<TokenViewModel>(ntoken);
+        }
+
+        public async Task<bool> DeleteAccount(Guid id)
+        {
+            var account = await _accountRepository.GetOneAsync(x => x.Id == id, forUpdate: true);
+            if (account == null!) throw new Exception("Not found this account");
+            account.IsActived = false;
+            return (await _uow.SaveChangeAsync()) > 0;
+        }
     }
+
     public sealed record UserGGInfo(string Email, string Name, string Thumbnail);
+
+    public sealed record LoginRd(string Username, string Password);
 }
