@@ -30,9 +30,6 @@ public class CommentService : ICommentService
         var product = await _productRepository.GetOneAsync(predicate: p => p.Id.Equals(request.ProductId));
         if (product == null) throw new Exception("Not found product!");
 
-        var account = await _accountRepository.GetOneAsync(predicate: a => a.Id.Equals(request.AccountId));
-        if (account == null) throw new Exception("Not found account!");
-
         var user = await _userRepository.GetOneAsync(predicate: u => u.Id.Equals(request.AccountId));
         if (user == null) throw new Exception("Not found user!");
 

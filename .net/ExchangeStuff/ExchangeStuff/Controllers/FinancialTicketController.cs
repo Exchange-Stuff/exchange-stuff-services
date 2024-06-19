@@ -21,8 +21,8 @@ namespace ExchangeStuff.Controllers
         }
 
 
-        [HttpGet("/getAllFinancialTicket/{pageSize}/{pageIndex}/{status}")]
-        public async Task<IActionResult> GetFinancialTicket( int pageSize , int pageIndex, FinancialTicketStatus status )
+        [HttpGet("/getAllFinancialTicket")]
+        public async Task<IActionResult> GetFinancialTicket([FromQuery] int pageSize, [FromQuery] int pageIndex, [FromQuery] FinancialTicketStatus status )
         {
             return Ok(new ResponseResult<List<FinancialTicketViewModel>>
             {
@@ -34,8 +34,8 @@ namespace ExchangeStuff.Controllers
         }
        
 
-        [HttpGet("/getListFinancialTicketByUserId/{pageSize}/{pageIndex}/{status}")]
-        public async Task<IActionResult> GetListFinancialTicketByUserId( int pageSize,int pageIndex, FinancialTicketStatus status)
+        [HttpGet("/getListFinancialTicketByUserId")]
+        public async Task<IActionResult> GetListFinancialTicketByUserId([FromQuery] int pageSize, [FromQuery] int pageIndex, [FromQuery] FinancialTicketStatus status)
         {
             return Ok(new ResponseResult<List<FinancialTicketViewModel>>
             {
@@ -46,14 +46,14 @@ namespace ExchangeStuff.Controllers
             });
 
         }
-        [HttpGet("/getFinancialTicketDetail/{financialTicketId}")]
-        public async Task<IActionResult> GetFinancialTicketDetail(Guid financialTicketId)
+        [HttpGet("/getFinancialTicketDetail/{id}")]
+        public async Task<IActionResult> GetFinancialTicketDetail(Guid id)
         {
             return Ok(new ResponseResult<FinancialTicketViewModel>
             {
                 Error = null,
                 IsSuccess = true,
-                Value = await _financialTicketService.GetFinancialTicketDetail(financialTicketId),
+                Value = await _financialTicketService.GetFinancialTicketDetail(id),
             });
         }
         [HttpPost("createFinancialTicket")]

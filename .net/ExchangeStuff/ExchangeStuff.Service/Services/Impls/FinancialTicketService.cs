@@ -18,10 +18,6 @@ namespace ExchangeStuff.Service.Services.Impls
         private readonly IFinancialTicketsRepository _financialTicketsRepository;
         private readonly ITransactionHistoryRepository _transactionHistoryRepository;
         private readonly IUserBalanceRepository _userBalanceRepository;
-        
-        
-
-
         public FinancialTicketService(IIdentityUser<Guid> identityUser, IUnitOfWork unitOfWork)
         {
             _identityUser = identityUser;
@@ -30,36 +26,24 @@ namespace ExchangeStuff.Service.Services.Impls
             _userRepository = _unitOfWork.UserRepository;
             _transactionHistoryRepository = _unitOfWork.TransactionHistoryRepository;
             _userBalanceRepository = _unitOfWork.UserBalanceRepository;
-            
-
-           
         }
 
         public async Task<bool> CreateFinancialTicket(CreateFinancialTicketModel request)
         {
-            //try
-            //{
-            //    User user = await _userRepository.GetOneAsync(predicate: u => u.Id.Equals(_identityUser.AccountId));
-            //    FinancialTicket financialTicket = new FinancialTicket
-            //    {
-            //        Id = Guid.NewGuid(),
-            //        Amount = request.Amount,
-            //        UserId = _identityUser.AccountId,
-            //        IsCredit = true,
-            //        Status = FinancialTicketStatus.Pending,
-            //    };
-            //    await _financialTicketsRepository.AddAsync(financialTicket);
-            //    var result = await _unitOfWork.SaveChangeAsync();
-            //    return result > 0 ? AutoMapperConfig.Mapper.Map<FinancialTicketViewModel>(financialTicket) : throw new Exception("Create financialTiket fail");
+            var user = await _userRepository.GetOneAsync(predicate: u => u.Id.Equals(request.UserId), include: "UserBalance");
+            if (user == null) throw new Exception("Not found user!");
 
-            //}
-            //catch (Exception ex) {
-            //    throw new Exception("Server error");
-            //}
+            if (user.UserBalance.Balance < request.Amount) throw new Exception("Not enough blance!");
 
-                throw new Exception("Server error");
-
-
+            FinancialTicket financialTicket = new FinancialTicket();
+            financialTicket.UserId = request.UserId;
+            financialTicket.Amount = request.Amount;
+            financialTicket.ImageQRCode = request.ImageQRCode;
+            financialTicket.Status = FinancialTicketStatus.Pending;
+            
+            await _financialTicketsRepository.AddAsync(financialTicket);
+            var result = await _unitOfWork.SaveChangeAsync();
+            return result > 0;
         }
 
         public async Task<List<FinancialTicketViewModel>> GetAllFinancialTicket(int pageSize, int pageIndex, FinancialTicketStatus? status = null!)
@@ -92,8 +76,6 @@ namespace ExchangeStuff.Service.Services.Impls
 
         public async Task<List<FinancialTicketViewModel>> GetFinancialTicketByUserId( int pageSize, int pageIndex, FinancialTicketStatus? status = null!)
         {
-           
-           
             try
             {
                 List<FinancialTicket> listTicket = new List<FinancialTicket>(); 
@@ -119,8 +101,6 @@ namespace ExchangeStuff.Service.Services.Impls
 
         public async Task<FinancialTicketViewModel> GetFinancialTicketDetail(Guid financialTicketId)
         {
-           
-            
             try
             {
                 FinancialTicket ticket = new FinancialTicket();
@@ -142,9 +122,6 @@ namespace ExchangeStuff.Service.Services.Impls
                 if (ticket == null)
                 {
                     throw new Exception("Not found ticket");
-
-
-
                 }
                 else
                 {
@@ -157,7 +134,7 @@ namespace ExchangeStuff.Service.Services.Impls
                             Id = Guid.NewGuid(),
                             UserId = ticket.UserId,
                             Amount = ticket.Amount,
-                            IsCredit = ticket.IsCredit,
+                            IsCredit = false,
                             TransactionType = TransactionType.Financial,
 
                         };
@@ -170,21 +147,16 @@ namespace ExchangeStuff.Service.Services.Impls
                     }
                     else
                     {
-                        if(ticket.IsCredit == true)
+                        if(ticket.Amount <= userBalance.Balance)
                         {
-                            userBalance.Balance += ticket.Amount;
-
-                        }
-                        else
-                        {
-                            userBalance.Balance -= ticket.Amount;
-                        }
+                        userBalance.Balance -= ticket.Amount;
                         _userBalanceRepository.Update(userBalance);
+                        } else
+                        {
+                            throw new Exception("Not enough blance!");
+                        }
                     }
                     // Update the user's balance
-                   
-                   
-
                     var result = await _unitOfWork.SaveChangeAsync();
                     return result > 0;
                 }
@@ -196,7 +168,5 @@ namespace ExchangeStuff.Service.Services.Impls
             }
 
         }
-
-
     }
 }
