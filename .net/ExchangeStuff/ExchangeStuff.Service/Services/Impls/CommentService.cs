@@ -13,6 +13,7 @@ public class CommentService : ICommentService
     private readonly ICommentRepository _commentRepository;
     private readonly IProductRepository _productRepository;
     private readonly IUserRepository _userRepository;
+    private readonly IAccountRepository _accountRepository;
     private readonly IUnitOfWork _unitOfWork;
 
     public CommentService(IUnitOfWork unitOfWork)
@@ -21,15 +22,16 @@ public class CommentService : ICommentService
         _commentRepository = _unitOfWork.CommentRepository;
         _userRepository = _unitOfWork.UserRepository;
         _productRepository = _unitOfWork.ProductRepository;
+        _accountRepository = _unitOfWork.AccountRepository;
     }
 
     public async Task<bool> CreateComment(CreateCommentModel request)
     {
         var product = await _productRepository.GetOneAsync(predicate: p => p.Id.Equals(request.ProductId));
-        if (product == null) throw new Exception("Not found!");
+        if (product == null) throw new Exception("Not found product!");
 
         var user = await _userRepository.GetOneAsync(predicate: u => u.Id.Equals(request.AccountId));
-        if (user == null) throw new Exception("Not found user");
+        if (user == null) throw new Exception("Not found user!");
 
         var comment = AutoMapperConfig.Mapper.Map<Comment>(request);
         await _commentRepository.AddAsync(comment);
