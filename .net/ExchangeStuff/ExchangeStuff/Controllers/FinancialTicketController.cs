@@ -1,5 +1,6 @@
 ﻿using ExchangeStuff.Core.Enums;
 using ExchangeStuff.Responses;
+using ExchangeStuff.Service.Models.Comments;
 using ExchangeStuff.Service.Models.FinancialTickets;
 using ExchangeStuff.Service.Models.PurchaseTicket;
 using ExchangeStuff.Service.Services.Impls;
@@ -85,6 +86,15 @@ namespace ExchangeStuff.Controllers
                 Value = rs.ToString()
             });
         }
-
+        [HttpGet("get-all-filter")]
+        public async Task<IActionResult> GetAllFilter([FromQuery] int pageSize, [FromQuery] int pageIndex, [FromQuery] DateTime? from, [FromQuery] DateTime? to, [FromQuery] FinancialTicketStatus? status, [FromQuery] int? sort)
+        {
+            return Ok(new ResponseResult<List<FinancialTicketViewModel>>
+            {
+                Error = null!,
+                IsSuccess = true,
+                Value = await _financialTicketService.GetAllFilter(pageSize, pageIndex, from, to, status, sort)
+            }); ;
+        }
     }
 }
