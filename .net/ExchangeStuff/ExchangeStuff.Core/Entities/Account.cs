@@ -8,7 +8,7 @@ namespace ExchangeStuff.Core.Entities
         [MaxLength(30)]
         public string? Username { get; set; }
 
-        [MaxLength(30)]
+        [MaxLength(50)]
         public string Name { get; set; }
 
         [MaxLength(50)]
