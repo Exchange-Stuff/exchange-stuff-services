@@ -1,4 +1,5 @@
 ﻿using ExchangeStuff.Service.DTOs;
+using ExchangeStuff.Service.Models.Accounts;
 using ExchangeStuff.Service.Models.Actions;
 using ExchangeStuff.Service.Models.Admins;
 using ExchangeStuff.Service.Models.PermissionGroups;
@@ -31,5 +32,7 @@ namespace ExchangeStuff.Service.Services.Interfaces
         Task<string> LoginAdmin(string username, string password);
         Task<AdminViewModel> CreateAdmin(string username, string password, string name);
         Task<bool> CreateResource(string name);
+        Task<bool> CreateAccount(AccountCreateModel accountCreateModel);
+        Task<bool> DeletePermissionGroup(Guid id);
     }
 }
