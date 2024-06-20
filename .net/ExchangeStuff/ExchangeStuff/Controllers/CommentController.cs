@@ -19,7 +19,7 @@ namespace ExchangeStuff.Controllers
         {
             _commentService = commentService;
         }
-        [HttpGet("comment/{id}")]
+        [HttpGet("product/{id}")]
         public async Task<IActionResult> GetCommentByProductId([FromRoute] Guid id, int? pageSize, int? pageIndex)
         {
             return Ok(new ResponseResult<List<CommentViewModel>>
@@ -29,7 +29,7 @@ namespace ExchangeStuff.Controllers
                 Value = await _commentService.GetCommentByProductId(id, pageSize, pageIndex)
             });
         }
-        [HttpPost("comment/create")]
+        [HttpPost("create")]
         public async Task<IActionResult> CreateComment(CreateCommentModel createModel)
         {
             bool result = await _commentService.CreateComment(createModel);
@@ -40,7 +40,7 @@ namespace ExchangeStuff.Controllers
                 Value = result.ToString()
             });
         }
-        [HttpPut("comment/update")]
+        [HttpPut("update")]
         public async Task<IActionResult> UpdateComment(UpdateCommentModel updateModel)
         {
             bool result = await _commentService.UpdateComment(updateModel);

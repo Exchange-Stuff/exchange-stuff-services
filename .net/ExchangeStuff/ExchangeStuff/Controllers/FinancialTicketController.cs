@@ -1,5 +1,6 @@
 ﻿using ExchangeStuff.Core.Enums;
 using ExchangeStuff.Responses;
+using ExchangeStuff.Service.Models.Comments;
 using ExchangeStuff.Service.Models.FinancialTickets;
 using ExchangeStuff.Service.Models.PurchaseTicket;
 using ExchangeStuff.Service.Services.Impls;
@@ -21,8 +22,8 @@ namespace ExchangeStuff.Controllers
         }
 
 
-        [HttpGet("/getAllFinancialTicket/{pageSize}/{pageIndex}/{status}")]
-        public async Task<IActionResult> GetFinancialTicket( int pageSize , int pageIndex, FinancialTicketStatus status )
+        [HttpGet("/getAllFinancialTicket")]
+        public async Task<IActionResult> GetFinancialTicket([FromQuery] int pageSize, [FromQuery] int pageIndex, [FromQuery] FinancialTicketStatus status )
         {
             return Ok(new ResponseResult<List<FinancialTicketViewModel>>
             {
@@ -34,8 +35,8 @@ namespace ExchangeStuff.Controllers
         }
        
 
-        [HttpGet("/getListFinancialTicketByUserId/{pageSize}/{pageIndex}/{status}")]
-        public async Task<IActionResult> GetListFinancialTicketByUserId( int pageSize,int pageIndex, FinancialTicketStatus status)
+        [HttpGet("/getListFinancialTicketByUserId")]
+        public async Task<IActionResult> GetListFinancialTicketByUserId([FromQuery] int pageSize, [FromQuery] int pageIndex, [FromQuery] FinancialTicketStatus status)
         {
             return Ok(new ResponseResult<List<FinancialTicketViewModel>>
             {
@@ -46,14 +47,14 @@ namespace ExchangeStuff.Controllers
             });
 
         }
-        [HttpGet("/getFinancialTicketDetail/{financialTicketId}")]
-        public async Task<IActionResult> GetFinancialTicketDetail(Guid financialTicketId)
+        [HttpGet("/getFinancialTicketDetail/{id}")]
+        public async Task<IActionResult> GetFinancialTicketDetail(Guid id)
         {
             return Ok(new ResponseResult<FinancialTicketViewModel>
             {
                 Error = null,
                 IsSuccess = true,
-                Value = await _financialTicketService.GetFinancialTicketDetail(financialTicketId),
+                Value = await _financialTicketService.GetFinancialTicketDetail(id),
             });
         }
         [HttpPost("createFinancialTicket")]
@@ -72,7 +73,7 @@ namespace ExchangeStuff.Controllers
         }
 
         [HttpPost("UpdateFinancialTicket")]
-        public async Task<IActionResult> UpdatePurchaseTicket([FromBody] UpdateFinancialTicketModel financialTicket)
+        public async Task<IActionResult> UpdateFinancialTicket([FromBody] UpdateFinancialTicketModel financialTicket)
         {
             var rs = await _financialTicketService.UpdateFinancialTicket(financialTicket);
 
@@ -85,6 +86,15 @@ namespace ExchangeStuff.Controllers
                 Value = rs.ToString()
             });
         }
-
+        [HttpGet("get-all-filter")]
+        public async Task<IActionResult> GetAllFilter([FromQuery] int pageSize, [FromQuery] int pageIndex, [FromQuery] DateTime? from, [FromQuery] DateTime? to, [FromQuery] FinancialTicketStatus? status, [FromQuery] int? sort)
+        {
+            return Ok(new ResponseResult<List<FinancialTicketViewModel>>
+            {
+                Error = null!,
+                IsSuccess = true,
+                Value = await _financialTicketService.GetAllFilter(pageSize, pageIndex, from, to, status, sort)
+            }); ;
+        }
     }
 }

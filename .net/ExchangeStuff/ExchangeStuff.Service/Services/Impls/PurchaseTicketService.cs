@@ -17,6 +17,9 @@ namespace ExchangeStuff.Service.Services.Impls
         private readonly IUserRepository _userRepository;
         private readonly IPurchaseTicketRepository _purchaseTicketRepository;
         private readonly IIdentityUser<Guid> _identityUser;
+        private readonly ITransactionHistoryRepository _transactionHistoryRepository;
+        private readonly IUserBalanceRepository _userBalanceRepository;
+        private readonly IPostTicketRepository _postTicketRepository;
 
         public PurchaseTicketService(IIdentityUser<Guid> identityUser, IUnitOfWork unitOfWork)
         {
@@ -25,6 +28,9 @@ namespace ExchangeStuff.Service.Services.Impls
             _purchaseTicketRepository = _unitOfWork.PurchaseTicketRepository;
             _accountRepository = _unitOfWork.AccountRepository;
             _userRepository = _unitOfWork.UserRepository;
+            _transactionHistoryRepository = _unitOfWork.TransactionHistoryRepository;
+            _userBalanceRepository = _unitOfWork.UserBalanceRepository;
+            _postTicketRepository = _unitOfWork.PostTicketRepository;
         }
 
         public async Task<bool> CreatePurchaseTicket(CreatePurchaseTicketModel request)
@@ -44,8 +50,22 @@ namespace ExchangeStuff.Service.Services.Impls
                     Quantity = request.Quantity,
                     Status = PurchaseTicketStatus.Processing
                 };
-
                 await _purchaseTicketRepository.AddAsync(purchaseTicket);
+
+                TransactionHistory transactionHistory = new TransactionHistory
+                {
+                    Id = Guid.NewGuid(),
+                    UserId = _identityUser.AccountId,
+                    Amount = request.Amount,
+                    IsCredit = false,
+                    TransactionType = TransactionType.Purchase
+                };
+                await _transactionHistoryRepository.AddAsync(transactionHistory);
+
+                UserBalance balance = await _userBalanceRepository.GetOneAsync(predicate: b => b.UserId.Equals(_identityUser.AccountId));
+                balance.Balance = balance.Balance - request.Amount;
+                _userBalanceRepository.Update(balance);
+
                 var result = await _unitOfWork.SaveChangeAsync();
                 return result > 0;
             }
@@ -131,6 +151,42 @@ namespace ExchangeStuff.Service.Services.Impls
 
                 ticket.Status = request.Status;
                 _purchaseTicketRepository.Update(ticket);
+
+                if(request.Status.Equals(PurchaseTicketStatus.Cancelled))
+                {
+                    TransactionHistory transactionHistory = new TransactionHistory
+                    {
+                        Id = Guid.NewGuid(),
+                        UserId = ticket.UserId,
+                        Amount = ticket.Amount,
+                        IsCredit = true,
+                        TransactionType = TransactionType.Purchase
+                    };
+                    await _transactionHistoryRepository.AddAsync(transactionHistory);
+
+                    UserBalance balance = await _userBalanceRepository.GetOneAsync(predicate: b => b.UserId.Equals(_identityUser.AccountId));
+                    balance.Balance = balance.Balance + ticket.Amount;
+                    _userBalanceRepository.Update(balance);
+                }
+
+                else if (request.Status.Equals(PurchaseTicketStatus.Confirmed))
+                {
+                    PostTicket postTicket = await _postTicketRepository.GetOneAsync(predicate: p => p.ProductId.Equals(ticket.ProductId));
+                    TransactionHistory transactionHistory = new TransactionHistory
+                    {
+                        Id = Guid.NewGuid(),
+                        UserId = postTicket.UserId,
+                        Amount = ticket.Amount,
+                        IsCredit = true,
+                        TransactionType = TransactionType.Purchase
+                    };
+                    await _transactionHistoryRepository.AddAsync(transactionHistory);
+
+                    UserBalance balance = await _userBalanceRepository.GetOneAsync(predicate: b => b.UserId.Equals(postTicket.UserId));
+                    balance.Balance = balance.Balance + ticket.Amount;
+                    _userBalanceRepository.Update(balance);
+                }
+
                 var result = await _unitOfWork.SaveChangeAsync();
                 return result > 0;
             }

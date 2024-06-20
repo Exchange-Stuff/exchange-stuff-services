@@ -20,7 +20,7 @@ namespace ExchangeStuff.Repository.Data
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-            => optionsBuilder.UseSqlServer("Data Source=MSI\\SQLEXPRESS;Initial Catalog=ExchangeStuff;Integrated Security=True;Encrypt=False;Trust Server Certificate=True");
+            => optionsBuilder.UseSqlServer("Data Source=(local);Initial Catalog=ExchangeStuff;Integrated Security=True;Encrypt=False;Trust Server Certificate=True");
         private string GetConnectionString()
         {
             IConfigurationRoot configurationRoot = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("appsettings.json", true, true).Build();
@@ -81,7 +81,7 @@ namespace ExchangeStuff.Repository.Data
                         entry.Entity.ModifiedOn = DateTime.Now;
                         break;
                     case EntityState.Modified:
-                        if(entry.Entity.ModifiedBy == Guid.Empty) entry.Entity.ModifiedBy = _identityUser.AccountId;
+                        if (entry.Entity.ModifiedBy == Guid.Empty) entry.Entity.ModifiedBy = _identityUser.AccountId;
                         entry.Entity.ModifiedOn = DateTime.Now;
                         break;
                 }

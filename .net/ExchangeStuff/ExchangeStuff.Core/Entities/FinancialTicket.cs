@@ -8,7 +8,7 @@ namespace ExchangeStuff.Core.Entities
     {
         public double Amount { get; set; }
         public Guid UserId { get; set; }
-        public bool IsCredit { get; set; }
+        public string ImageQRCode { get; set; }
         public FinancialTicketStatus Status { get; set; }
         public User User { get; set; }
     }
