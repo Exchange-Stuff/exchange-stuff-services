@@ -9,6 +9,7 @@ namespace ExchangeStuff.Service.Models.FinancialTickets
 {
     public class FinancialTicketViewModel
     {
+        public Guid Id { get; set; }
         public double Amount { get; set; }
         public Guid UserId { get; set; }
         public string ImageQRCode { get; set; }
