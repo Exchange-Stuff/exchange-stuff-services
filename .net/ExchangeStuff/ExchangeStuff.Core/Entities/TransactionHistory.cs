@@ -12,4 +12,3 @@ namespace ExchangeStuff.Core.Entities
         public User User { get; set; }
     }
 }
-

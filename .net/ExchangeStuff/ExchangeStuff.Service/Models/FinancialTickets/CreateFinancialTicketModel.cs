@@ -11,8 +11,6 @@ namespace ExchangeStuff.Service.Models.FinancialTickets
     {
         public double Amount { get; set; }
         public Guid UserId { get; set; }
-        public  Boolean IsCredit {  get; set; }
-        public FinancialTicketStatus Status { get; set; }
-
+        public  string ImageQRCode {  get; set; }
     }
 }
