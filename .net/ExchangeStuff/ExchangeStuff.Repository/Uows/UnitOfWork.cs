@@ -78,6 +78,7 @@ namespace ExchangeStuff.Repository.Uows
         public IUserBanReportRepository UserBanReportRepository { get; private set; }
 
         public IBanReasonRepository BanReasonRepository { get; private set; }
+        public IUserBalanceRepository UserBalanceRepository { get; private set; }
 
         public IModeratorRepository ModeratorRepository { get; private set; }
         public IUserBalanceRepository UserBalanceRepository { get; private set; }

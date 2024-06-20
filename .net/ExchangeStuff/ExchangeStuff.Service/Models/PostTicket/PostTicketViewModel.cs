@@ -10,5 +10,6 @@ namespace ExchangeStuff.Service.Models.PostTicket
     {
         public Guid productId { get; set; }
         public double Amount { get; set; }
+        public Guid UserId { get; set; }
     }
 }

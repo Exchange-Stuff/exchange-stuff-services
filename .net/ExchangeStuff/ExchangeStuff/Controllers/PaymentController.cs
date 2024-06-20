@@ -3,6 +3,7 @@ using ExchangeStuff.Service.Models.Products;
 using ExchangeStuff.Service.Services.Impls;
 using ExchangeStuff.Service.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using static System.Net.WebRequestMethods;
 
 namespace ExchangeStuff.Controllers
 {
@@ -23,14 +24,10 @@ namespace ExchangeStuff.Controllers
         {
             var rs = await _paymentService.createPaymentAsync(userId, amount);
 
-            if (!rs) throw new Exception("Can not update product");
+            if (!rs) throw new Exception("Can not create payment");
 
-            return StatusCode(StatusCodes.Status200OK, new ResponseResult<string>
-            {
-                Error = null!,
-                IsSuccess = true,
-                Value = rs.ToString()
-            });
+            var redirectUrl = $"http://localhost:3000/payment?status=success";
+            return Redirect(redirectUrl);
         }
     }
 }
