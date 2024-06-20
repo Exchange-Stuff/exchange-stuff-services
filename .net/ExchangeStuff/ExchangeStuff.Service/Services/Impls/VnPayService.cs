@@ -33,7 +33,7 @@ namespace ExchangeStuff.Service.Services.Impls
             var vnp_HashSecret = _configuration["VNPay:vnp_HashSecret"];
             var vnp_Url = _configuration["VNPay:vnp_Url"];
             var vnp_ReturnUrl = _configuration["VNPay:vnp_ReturnUrl"];
-
+            var vnp_CancelUrl = _configuration["VNPay:vnp_CancelUrl"];
             var total = amount * 100000;
             var random = new Random();
             var txnRef = random.Next(1, 100000).ToString();

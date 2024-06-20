@@ -19,6 +19,7 @@ namespace ExchangeStuff.Service.Services.Impls
         private readonly IUnitOfWork _unitOfWork;
         private readonly IIdentityUser<Guid> _identityUser;
         private readonly ITransactionHistoryRepository _transactionHistoryRepository;
+        private readonly IUserBalanceRepository _userBalanceRepository;
 
         public PaymentService(IUnitOfWork unitOfWork, IIdentityUser<Guid> identityUser)
         {
@@ -26,6 +27,7 @@ namespace ExchangeStuff.Service.Services.Impls
             _paymentRepository = _unitOfWork.PaymentRepository;
             _identityUser = identityUser;
             _transactionHistoryRepository = _unitOfWork.TransactionHistoryRepository;
+            _userBalanceRepository = _unitOfWork.UserBalanceRepository;
         }
 
         public async Task<bool> createPaymentAsync(Guid userId, int amount)
@@ -55,6 +57,15 @@ namespace ExchangeStuff.Service.Services.Impls
                 };
 
                 await _transactionHistoryRepository.AddAsync(transactionHistory);
+
+                var userBl = await _userBalanceRepository.GetOneAsync(predicate: p => p.UserId.Equals(userId));
+
+                if (userBl != null) 
+                {
+                    userBl.Balance = userBl.Balance + amount;
+                }
+
+                _userBalanceRepository.Update(userBl);
 
                 var rs = await _unitOfWork.SaveChangeAsync();
 

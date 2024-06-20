@@ -71,7 +71,7 @@ namespace ExchangeStuff.Controllers
         /// <returns></returns>
         /// <exception cref="UnauthorizedAccessException"></exception>
         /// <exception cref="Exception"></exception>
-        [HttpPut]
+        [HttpPut("refresh")]
         public async Task<IActionResult> ReNewToken()
         {
             var rftk = (HttpContext.Request.Headers["RefreshToken"].First() + "").Split(" ").Last();
