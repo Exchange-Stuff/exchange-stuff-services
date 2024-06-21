@@ -33,6 +33,7 @@ namespace ExchangeStuff.Service.Services.Interfaces
         Task<AdminViewModel> CreateAdmin(string username, string password, string name);
         Task<bool> CreateResource(string name);
         Task<bool> CreateModerator(AccountCreateModel accountCreateModel);
+
         Task<bool> DeletePermissionGroup(Guid id);
     }
 }

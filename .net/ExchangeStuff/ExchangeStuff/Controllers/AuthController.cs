@@ -74,6 +74,7 @@ namespace ExchangeStuff.Controllers
         /// <returns></returns>
         /// <exception cref="UnauthorizedAccessException"></exception>
         /// <exception cref="Exception"></exception>
+
         [HttpPost("renew")]
         public async Task<IActionResult> ReNewToken([FromBody] RenewRd renewRd)
         {

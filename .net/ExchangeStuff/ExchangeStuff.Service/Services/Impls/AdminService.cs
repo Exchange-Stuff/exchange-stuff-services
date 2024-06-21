@@ -395,11 +395,13 @@ namespace ExchangeStuff.Service.Services.Impls
         }
 
         public async Task<bool> CreateModerator(AccountCreateModel accountCreateModel)
+
         {
             if (accountCreateModel.Username.Split(" ").Length > 0) throw new Exception("Username not allow [space]");
             var account = await _accountRepository.GetOneAsync(x => x.Username == accountCreateModel.Username);
             if (account != null) throw new Exception("Username already exist");
             Moderator moderator = new Moderator
+
             {
                 Username = accountCreateModel.Username,
                 Password = HashPassword(accountCreateModel.Password),
@@ -417,6 +419,7 @@ namespace ExchangeStuff.Service.Services.Impls
                 moderator.PermissionGroups = permissionGroup;
             }
             await _moderatorRepository.AddAsync(moderator);
+
             return (await _uow.SaveChangeAsync()) > 0;
         }
 
@@ -428,6 +431,7 @@ namespace ExchangeStuff.Service.Services.Impls
             {
                 throw new Exception($"Can't delete primary role ({permissionGroup.Name})");
             }
+
             if (permissionGroup.Permissions != null)
             {
                 permissionGroup.Permissions.Clear();

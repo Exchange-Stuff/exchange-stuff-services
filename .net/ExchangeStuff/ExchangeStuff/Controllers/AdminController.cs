@@ -227,6 +227,7 @@ namespace ExchangeStuff.Controllers
         public async Task<IActionResult> CreateAccount([FromBody] AccountCreateModel accountCreateModel)
         {
             var rs = await _adminService.CreateModerator(accountCreateModel);
+
             return rs ? StatusCode(StatusCodes.Status201Created, new ResponseResult<string>
             {
                 Error = null!,
