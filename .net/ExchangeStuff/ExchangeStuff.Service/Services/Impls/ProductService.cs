@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using ExchangeStuff.Service.Models.Categories;
 using ExchangeStuff.Core.Enums;
 using ExchangeStuff.Service.Models.PostTicket;
+using ExchangeStuff.Repository.Repositories;
 
 namespace ExchangeStuff.Service.Services.Impls
 {
@@ -20,6 +21,8 @@ namespace ExchangeStuff.Service.Services.Impls
         private readonly ICategoriesRepository _categoriesRepository;
         private readonly IPostTicketRepository _postTicketRepository;
         private readonly IIdentityUser<Guid> _identityUser;
+        private readonly ITransactionHistoryRepository _transactionHistoryRepository;
+        private readonly IUserBalanceRepository _userBalanceRepository;
 
 
         public ProductService(IUnitOfWork unitOfWork, IIdentityUser<Guid> identityUser)
@@ -28,6 +31,8 @@ namespace ExchangeStuff.Service.Services.Impls
             _productRepository = _unitOfWork.ProductRepository;
             _categoriesRepository = _unitOfWork.CategoriesRepository;
             _postTicketRepository = _unitOfWork.PostTicketRepository;
+            _transactionHistoryRepository = _unitOfWork.TransactionHistoryRepository;
+            _userBalanceRepository = _unitOfWork.UserBalanceRepository;
             _identityUser = identityUser;
         }
 
@@ -99,10 +104,26 @@ namespace ExchangeStuff.Service.Services.Impls
                     PostTicketViewModel postTicketViewModel = new PostTicketViewModel();
                     postTicketViewModel.productId = product.Id;
                     postTicketViewModel.Amount = 10;
+                    postTicketViewModel.UserId = product.CreatedBy;
                     await createPostTicket(postTicketViewModel);
 
+                    var userBl = await _userBalanceRepository.GetOneAsync(predicate: p => p.UserId.Equals(product.CreatedBy));
+
+                    if (userBl != null) 
+                    {
+                        if (userBl.Balance < 0)
+                        {
+                            throw new Exception("Not enough money");
+                        }
+                        else 
+                        {
+                            userBl.Balance = userBl.Balance - 10;
+                        }
+                    }
 
                 }
+
+                
                 
                 var result = await _unitOfWork.SaveChangeAsync();
 
@@ -120,7 +141,7 @@ namespace ExchangeStuff.Service.Services.Impls
             var postTicket = AutoMapperConfig.Mapper.Map<PostTicket>(postTicketViewModel);
             postTicket.Id = Guid.NewGuid();
             postTicket.Status = PostTicketStatus.Approve;
-            postTicket.UserId = _identityUser.AccountId;
+
             await _postTicketRepository.AddAsync(postTicket);
 
         }

@@ -4,6 +4,7 @@
     {
         Post,
         Purchase,
-        Financial
+        Financial,
+        Payment
     }
 }

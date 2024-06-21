@@ -1,6 +1,7 @@
 ﻿using ExchangeStuff.AuthOptions.Requirements;
 using ExchangeStuff.Responses;
 using ExchangeStuff.Service.Constants;
+using ExchangeStuff.Service.Models.Accounts;
 using ExchangeStuff.Service.Models.Actions;
 using ExchangeStuff.Service.Models.Admins;
 using ExchangeStuff.Service.Models.PermissionGroups;
@@ -223,6 +224,29 @@ namespace ExchangeStuff.Controllers
                 Value = rs.ToString()
             });
         }
-    }
 
+        [HttpPost("create/account")]
+        public async Task<IActionResult> CreateAccount([FromBody] AccountCreateModel accountCreateModel)
+        {
+            var rs = await _adminService.CreateAccount(accountCreateModel);
+            return rs ? StatusCode(StatusCodes.Status201Created, new ResponseResult<string>
+            {
+                Error = null!,
+                IsSuccess = true,
+                Value = rs + ""
+            }) : throw new Exception("Create account fail, something wrong");
+        }
+
+        [HttpDelete("permissionGroup/{id}")]
+        public async Task<IActionResult> DeletePermissionGroup([FromRoute] Guid id)
+        {
+            var rs = await _adminService.DeletePermissionGroup(id);
+            return rs ? StatusCode(StatusCodes.Status204NoContent, new ResponseResult<string>
+            {
+                Error = null!,
+                IsSuccess = true,
+                Value = rs + ""
+            }) : throw new Exception("Delete permission group fail");
+        }
+    }
 }

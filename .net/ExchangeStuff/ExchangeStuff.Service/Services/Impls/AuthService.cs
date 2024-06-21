@@ -312,6 +312,7 @@ namespace ExchangeStuff.Service.Services.Impls
         }
         public async Task<ModeratorViewModel> CreateModerator(ModeratorCreateModel moderatorCreateModel)
         {
+            if (moderatorCreateModel.Username.Split(" ").Length > 0) throw new Exception("Username not allow [space]");
             var mopderatorCheck = await _moderatorRepository.GetOneAsync(x => x.Username == moderatorCreateModel.Username);
             if (mopderatorCheck != null!) throw new Exception("Moderator username already exist");
             Moderator moderator = new Moderator
