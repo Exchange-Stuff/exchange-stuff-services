@@ -12,5 +12,6 @@ namespace ExchangeStuff.Service.Services.Interfaces
         Task InvalidPermissionGroup(Guid id);
         Task<List<PermissionGroupDTO>> GetPermissionGroupByAccountId(Guid id);
         Task SavePermissionGroupAdmin(Guid id);
+        Task InvalidAllSession(Guid accId);
     }
 }

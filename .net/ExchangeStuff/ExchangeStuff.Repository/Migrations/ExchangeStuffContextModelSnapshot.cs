@@ -34,7 +34,7 @@ namespace ExchangeStuff.Repository.Migrations
 
                     b.HasIndex("PermissionGroupsId");
 
-                    b.ToTable("AccountPermissionGroup");
+                    b.ToTable("AccountPermissionGroup", (string)null);
                 });
 
             modelBuilder.Entity("CategoryProduct", b =>
@@ -49,7 +49,7 @@ namespace ExchangeStuff.Repository.Migrations
 
                     b.HasIndex("ProductsId");
 
-                    b.ToTable("CategoryProduct");
+                    b.ToTable("CategoryProduct", (string)null);
                 });
 
             modelBuilder.Entity("ExchangeStuff.Core.Entities.Account", b =>
@@ -99,7 +99,7 @@ namespace ExchangeStuff.Repository.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Accounts");
+                    b.ToTable("Accounts", (string)null);
 
                     b.HasDiscriminator<string>("Discriminator").HasValue("Account");
 
@@ -136,7 +136,7 @@ namespace ExchangeStuff.Repository.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Actions");
+                    b.ToTable("Actions", (string)null);
                 });
 
             modelBuilder.Entity("ExchangeStuff.Core.Entities.BanReason", b =>
@@ -155,7 +155,7 @@ namespace ExchangeStuff.Repository.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("BanReasons");
+                    b.ToTable("BanReasons", (string)null);
                 });
 
             modelBuilder.Entity("ExchangeStuff.Core.Entities.Campus", b =>
@@ -186,7 +186,7 @@ namespace ExchangeStuff.Repository.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Campuses");
+                    b.ToTable("Campuses", (string)null);
                 });
 
             modelBuilder.Entity("ExchangeStuff.Core.Entities.Category", b =>
@@ -221,7 +221,7 @@ namespace ExchangeStuff.Repository.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
                 });
 
             modelBuilder.Entity("ExchangeStuff.Core.Entities.Comment", b =>
@@ -259,7 +259,7 @@ namespace ExchangeStuff.Repository.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("Comments");
+                    b.ToTable("Comments", (string)null);
                 });
 
             modelBuilder.Entity("ExchangeStuff.Core.Entities.FinancialTicket", b =>
@@ -297,7 +297,7 @@ namespace ExchangeStuff.Repository.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("FinancialTickets");
+                    b.ToTable("FinancialTickets", (string)null);
                 });
 
             modelBuilder.Entity("ExchangeStuff.Core.Entities.Image", b =>
@@ -324,7 +324,7 @@ namespace ExchangeStuff.Repository.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Images");
+                    b.ToTable("Images", (string)null);
                 });
 
             modelBuilder.Entity("ExchangeStuff.Core.Entities.Payment", b =>
@@ -367,7 +367,7 @@ namespace ExchangeStuff.Repository.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Payments");
+                    b.ToTable("Payments", (string)null);
                 });
 
             modelBuilder.Entity("ExchangeStuff.Core.Entities.Permission", b =>
@@ -391,7 +391,7 @@ namespace ExchangeStuff.Repository.Migrations
 
                     b.HasIndex("ResourceId");
 
-                    b.ToTable("Permissions");
+                    b.ToTable("Permissions", (string)null);
                 });
 
             modelBuilder.Entity("ExchangeStuff.Core.Entities.PermissionGroup", b =>
@@ -422,7 +422,7 @@ namespace ExchangeStuff.Repository.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("PermissionGroups");
+                    b.ToTable("PermissionGroups", (string)null);
                 });
 
             modelBuilder.Entity("ExchangeStuff.Core.Entities.PostTicket", b =>
@@ -461,7 +461,7 @@ namespace ExchangeStuff.Repository.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("PostTickets");
+                    b.ToTable("PostTickets", (string)null);
                 });
 
             modelBuilder.Entity("ExchangeStuff.Core.Entities.Product", b =>
@@ -510,7 +510,7 @@ namespace ExchangeStuff.Repository.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Products");
+                    b.ToTable("Products", (string)null);
                 });
 
             modelBuilder.Entity("ExchangeStuff.Core.Entities.ProductBanReport", b =>
@@ -546,7 +546,7 @@ namespace ExchangeStuff.Repository.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ProductBanReports");
+                    b.ToTable("ProductBanReports", (string)null);
                 });
 
             modelBuilder.Entity("ExchangeStuff.Core.Entities.PurchaseTicket", b =>
@@ -603,7 +603,7 @@ namespace ExchangeStuff.Repository.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("PurchaseTickets");
+                    b.ToTable("PurchaseTickets", (string)null);
                 });
 
             modelBuilder.Entity("ExchangeStuff.Core.Entities.Rating", b =>
@@ -621,7 +621,7 @@ namespace ExchangeStuff.Repository.Migrations
 
                     b.HasKey("PurchaseTicketId");
 
-                    b.ToTable("Ratings");
+                    b.ToTable("Ratings", (string)null);
                 });
 
             modelBuilder.Entity("ExchangeStuff.Core.Entities.Resource", b =>
@@ -648,7 +648,7 @@ namespace ExchangeStuff.Repository.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Resources");
+                    b.ToTable("Resources", (string)null);
                 });
 
             modelBuilder.Entity("ExchangeStuff.Core.Entities.Token", b =>
@@ -684,7 +684,7 @@ namespace ExchangeStuff.Repository.Migrations
 
                     b.HasIndex("AccountId");
 
-                    b.ToTable("Tokens");
+                    b.ToTable("Tokens", (string)null);
                 });
 
             modelBuilder.Entity("ExchangeStuff.Core.Entities.TransactionHistory", b =>
@@ -721,7 +721,7 @@ namespace ExchangeStuff.Repository.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("TransactionHistories");
+                    b.ToTable("TransactionHistories", (string)null);
                 });
 
             modelBuilder.Entity("ExchangeStuff.Core.Entities.UserBalance", b =>
@@ -734,7 +734,7 @@ namespace ExchangeStuff.Repository.Migrations
 
                     b.HasKey("UserId");
 
-                    b.ToTable("UserBalances");
+                    b.ToTable("UserBalances", (string)null);
                 });
 
             modelBuilder.Entity("ExchangeStuff.Core.Entities.UserBanReport", b =>
@@ -770,7 +770,7 @@ namespace ExchangeStuff.Repository.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserBanReports");
+                    b.ToTable("UserBanReports", (string)null);
                 });
 
             modelBuilder.Entity("ImageProduct", b =>
@@ -785,7 +785,7 @@ namespace ExchangeStuff.Repository.Migrations
 
                     b.HasIndex("ProductsId");
 
-                    b.ToTable("ImageProduct");
+                    b.ToTable("ImageProduct", (string)null);
                 });
 
             modelBuilder.Entity("ExchangeStuff.Core.Entities.Admin", b =>

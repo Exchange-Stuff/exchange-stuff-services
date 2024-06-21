@@ -1,6 +1,8 @@
 ﻿using ExchangeStuff.Core.Entities;
 using ExchangeStuff.Core.Repositories;
 using ExchangeStuff.Core.Uows;
+using ExchangeStuff.CurrentUser.Users;
+using ExchangeStuff.Service.Constants;
 using ExchangeStuff.Service.DTOs;
 using ExchangeStuff.Service.Maps;
 using ExchangeStuff.Service.Models.Accounts;
@@ -22,6 +24,7 @@ namespace ExchangeStuff.Service.Services.Impls
 {
     public class AdminService : TokenService, IAdminService
     {
+        private readonly IIdentityUser<Guid> _identity;
         private readonly IUnitOfWork _uow;
         private readonly IActionRepository _actionRepository;
         private readonly IPermissionRepository _permissionRepository;
@@ -30,14 +33,16 @@ namespace ExchangeStuff.Service.Services.Impls
         private readonly IResourceRepository _resourceRepository;
         private readonly IAdminRepository _adminRepository;
         private readonly ITokenRepository _tokenRepository;
+        private readonly IModeratorRepository _moderatorRepository;
         private readonly IConfiguration _configuration;
         private readonly IDistributedCache _distributedCache;
         private readonly IConnectionMultiplexer _connectionMutiple;
         private readonly RedisDTO _redisDTO = new();
         private readonly RedisConstantDTO _redisConstantDTO = new RedisConstantDTO();
 
-        public AdminService(IUnitOfWork unitOfWork, IConfiguration configuration, IDistributedCache distributedCache, IConnectionMultiplexer connectionMultiplexer, IHttpContextAccessor httpContextAccessor) : base(unitOfWork, configuration, httpContextAccessor, distributedCache, connectionMultiplexer)
+        public AdminService(IUnitOfWork unitOfWork, IConfiguration configuration, IDistributedCache distributedCache, IConnectionMultiplexer connectionMultiplexer, IHttpContextAccessor httpContextAccessor, IIdentityUser<Guid> identityUser) : base(unitOfWork, configuration, httpContextAccessor, distributedCache, connectionMultiplexer, identityUser)
         {
+            _identity=identityUser;
             _uow = unitOfWork;
             _actionRepository = _uow.ActionRepository;
             _permissionRepository = _uow.PermissionRepository;
@@ -50,6 +55,7 @@ namespace ExchangeStuff.Service.Services.Impls
             _resourceRepository = _uow.ResourceRepository;
             _adminRepository = _uow.AdminRepository;
             _tokenRepository = _uow.TokenRepository;
+            _moderatorRepository= _uow.ModeratorRepository;
             _configuration.GetSection(nameof(RedisDTO)).Bind(_redisDTO);
             _configuration.GetSection(nameof(RedisConstantDTO)).Bind(_redisConstantDTO);
         }
@@ -388,12 +394,12 @@ namespace ExchangeStuff.Service.Services.Impls
             return AutoMapperConfig.Mapper.Map<AdminViewModel>(admin);
         }
 
-        public async Task<bool> CreateAccount(AccountCreateModel accountCreateModel)
+        public async Task<bool> CreateModerator(AccountCreateModel accountCreateModel)
         {
             if (accountCreateModel.Username.Split(" ").Length > 0) throw new Exception("Username not allow [space]");
             var account = await _accountRepository.GetOneAsync(x => x.Username == accountCreateModel.Username);
             if (account != null) throw new Exception("Username already exist");
-            Account account1 = new Account
+            Moderator moderator = new Moderator
             {
                 Username = accountCreateModel.Username,
                 Password = HashPassword(accountCreateModel.Password),
@@ -403,9 +409,14 @@ namespace ExchangeStuff.Service.Services.Impls
             if (accountCreateModel.PermisisonGroupIds != null && accountCreateModel.PermisisonGroupIds.Count > 0)
             {
                 var permisisonGr = await _permissionGroupRepository.GetManyAsync(x => accountCreateModel.PermisisonGroupIds.Contains(x.Id), forUpdate: true);
-                account1.PermissionGroups = permisisonGr;
+                moderator.PermissionGroups = permisisonGr;
             }
-            await _accountRepository.AddAsync(account1);
+            else
+            {
+                var permissionGroup = await _permissionGroupRepository.GetManyAsync(x => x.Name == GroupPermission.MODERATOR);
+                moderator.PermissionGroups = permissionGroup;
+            }
+            await _moderatorRepository.AddAsync(moderator);
             return (await _uow.SaveChangeAsync()) > 0;
         }
 
@@ -413,6 +424,10 @@ namespace ExchangeStuff.Service.Services.Impls
         {
             var permissionGroup = await _permissionGroupRepository.GetOneAsync(x => x.Id == id, include: "Accounts,Permissions", forUpdate: true);
             if (permissionGroup == null) throw new Exception("Not found permission group");
+            if (permissionGroup.Name == GroupPermission.ADMIN || permissionGroup.Name == GroupPermission.DEFAULT || permissionGroup.Name == GroupPermission.MODERATOR)
+            {
+                throw new Exception($"Can't delete primary role ({permissionGroup.Name})");
+            }
             if (permissionGroup.Permissions != null)
             {
                 permissionGroup.Permissions.Clear();

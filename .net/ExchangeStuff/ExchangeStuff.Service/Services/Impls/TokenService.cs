@@ -1,6 +1,7 @@
 ﻿using ExchangeStuff.Core.Entities;
 using ExchangeStuff.Core.Repositories;
 using ExchangeStuff.Core.Uows;
+using ExchangeStuff.CurrentUser.Users;
 using ExchangeStuff.Service.DTOs;
 using ExchangeStuff.Service.Maps;
 using ExchangeStuff.Service.Models.Tokens;
@@ -24,6 +25,7 @@ namespace ExchangeStuff.Service.Services.Impls
         private readonly IUnitOfWork _uow;
         private readonly ITokenRepository _tokenRepository;
         private readonly IDistributedCache _distributedCache;
+        private readonly IIdentityUser<Guid> _identityUser;
         private readonly IConnectionMultiplexer _connectionMutiple;
         private readonly IAccountRepository _accountRepository;
         private readonly IUserRepository _userRepository;
@@ -31,8 +33,9 @@ namespace ExchangeStuff.Service.Services.Impls
         private JwtDTO _jwtDTO = new();
         private GoogleAuthDTO _googleAuthDTO = new();
 
-        public TokenService(IUnitOfWork unitOfWork, IConfiguration configuration, IHttpContextAccessor httpContextAccessor, IDistributedCache distributed, IConnectionMultiplexer connectionMultiplexer) : base(unitOfWork, distributed, connectionMultiplexer, configuration)
+        public TokenService(IUnitOfWork unitOfWork, IConfiguration configuration, IHttpContextAccessor httpContextAccessor, IDistributedCache distributed, IConnectionMultiplexer connectionMultiplexer, IIdentityUser<Guid> identityUser) : base(unitOfWork, distributed, connectionMultiplexer, configuration)
         {
+            _identityUser=identityUser;
             _connectionMutiple = connectionMultiplexer;
             _distributedCache = distributed;
             _configuration = configuration;
@@ -232,8 +235,7 @@ namespace ExchangeStuff.Service.Services.Impls
                 var id = jwtToken.Claims.First(x => x.Type == "nameid")!.Value;
                 var email = jwtToken.Claims.First(x => x.Type == "email")!.Value;
 
-                if (Guid.TryParse(id, out Guid newId) is false ||
-                    string.IsNullOrEmpty(email)
+                if (Guid.TryParse(id, out Guid newId) is false 
                     )
                 {
                     return null!;

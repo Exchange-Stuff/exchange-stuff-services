@@ -118,9 +118,7 @@ namespace ExchangeStuff.Controllers
             });
         }
 
-        [ESAuthorize(new string[] {
-        ActionConstant.READ
-        })]
+
         [HttpGet("permissions")]
         public async Task<IActionResult> GetPermissions(int? pageIndex = null!, int? pageSize = null!)
         {
@@ -228,7 +226,7 @@ namespace ExchangeStuff.Controllers
         [HttpPost("create/account")]
         public async Task<IActionResult> CreateAccount([FromBody] AccountCreateModel accountCreateModel)
         {
-            var rs = await _adminService.CreateAccount(accountCreateModel);
+            var rs = await _adminService.CreateModerator(accountCreateModel);
             return rs ? StatusCode(StatusCodes.Status201Created, new ResponseResult<string>
             {
                 Error = null!,

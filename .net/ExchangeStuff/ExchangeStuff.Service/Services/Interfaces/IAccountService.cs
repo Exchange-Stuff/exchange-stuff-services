@@ -13,6 +13,7 @@ namespace ExchangeStuff.Service.Services.Interfaces
         Task<AccountViewModel> GetAccount(Guid id, bool? includeBan = null!);
         Task<List<ModeratorViewModel>> GetModerators(string? name = null, string? email = null, string? username = null, int? pageIndex = null, int? pageSize = null, bool? includeBan = null!);
         Task<ModeratorViewModel> GetModerator(Guid id, bool? includeBan = null!);
+        Task<ModeratorViewModel> UpdateModerator(ModeratorUpdateModel moderatorUpdateModel);
+        Task<UserViewModel> UpdateUser(UserUpdateModel userUpdateModel);
     }
 }
- 

@@ -1,5 +1,4 @@
 ﻿using ExchangeStuff.Responses;
-using ExchangeStuff.Service.Models.Accounts;
 using ExchangeStuff.Service.Models.Moderators;
 using ExchangeStuff.Service.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -62,6 +61,17 @@ namespace ExchangeStuff.Controllers
             if (user == null) throw new Exception("Not found user");
             var rs = await _authService.DeleteAccount(id);
             return rs ? StatusCode(StatusCodes.Status204NoContent) : throw new Exception("Can't delete account");
+        }
+
+        [HttpPatch("update/moderator")]
+        public async Task<IActionResult> UpdateModerator([FromBody] ModeratorUpdateModel moderatorUpdateModel)
+        {
+            return Ok(new ResponseResult<ModeratorViewModel>
+            {
+                Error = null!,
+                IsSuccess = true,
+                Value = await _accountService.UpdateModerator(moderatorUpdateModel)
+            });
         }
     }
 }

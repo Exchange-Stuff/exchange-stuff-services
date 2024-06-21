@@ -1,4 +1,6 @@
-﻿using ExchangeStuff.Responses;
+﻿using ExchangeStuff.AuthOptions.Requirements;
+using ExchangeStuff.Responses;
+using ExchangeStuff.Service.Constants;
 using ExchangeStuff.Service.Models.Accounts;
 using ExchangeStuff.Service.Models.Users;
 using ExchangeStuff.Service.Services.Interfaces;
@@ -25,7 +27,6 @@ namespace ExchangeStuff.Controllers
                 IsSuccess = true,
                 Value = await _accountService.GetUsers(name, email, username, pageIndex, pageSize, includeBan)
             });
-
         [HttpGet("user/{id}")]
         public async Task<IActionResult> GetUser([FromRoute] Guid id, bool? includeBan = null!)
             => Ok(new ResponseResult<UserViewModel>
@@ -34,7 +35,6 @@ namespace ExchangeStuff.Controllers
                 IsSuccess = true,
                 Value = await _accountService.GetUser(id, includeBan)
             });
-
         [HttpGet("accounts")]
         public async Task<IActionResult> GetAccounts(string? name = null!, string? username = null!, string? email = null!, int? pageIndex = null!, int? pageSize = null!, bool? includeBan = null!)
            => Ok(new ResponseResult<List<AccountViewModel>>
@@ -43,7 +43,6 @@ namespace ExchangeStuff.Controllers
                IsSuccess = true,
                Value = await _accountService.GetAccounts(name, email, username, pageIndex, pageSize, includeBan)
            });
-
         [HttpGet("account/{id}")]
         public async Task<IActionResult> GetAccount([FromRoute] Guid id, bool? includeBan = null!)
             => Ok(new ResponseResult<AccountViewModel>
@@ -52,5 +51,17 @@ namespace ExchangeStuff.Controllers
                 IsSuccess = true,
                 Value = await _accountService.GetAccount(id, includeBan)
             });
+
+        [HttpPatch("update/user")]
+        public async Task<IActionResult> UpdateUser([FromBody] UserUpdateModel userUpdateModel)
+        {
+            return Ok(new ResponseResult<UserViewModel>
+            {
+                Error = null!,
+                IsSuccess = true,
+                Value = await _accountService.UpdateUser(userUpdateModel)
+            });
+        }
+
     }
 }
