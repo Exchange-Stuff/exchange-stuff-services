@@ -148,7 +148,7 @@ namespace ExchangeStuff.Service.Services.Impls
 
         public async Task<ProductViewModel> GetDetail(Guid id)
         {
-            return AutoMapperConfig.Mapper.Map<ProductViewModel>(await _productRepository.GetOneAsync(predicate: p => p.Id == id));
+            return AutoMapperConfig.Mapper.Map<ProductViewModel>(await _productRepository.GetOneAsync(predicate: p => p.Id == id, include: "Images"));
         }
 
 
