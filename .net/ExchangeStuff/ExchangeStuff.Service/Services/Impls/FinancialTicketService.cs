@@ -120,12 +120,12 @@ namespace ExchangeStuff.Service.Services.Impls
                 List<FinancialTicket> listTicket = new List<FinancialTicket>();
                 if (status.HasValue)
                 {
-                    listTicket = await _financialTicketsRepository.GetManyAsync(pageSize: pageSize, pageIndex: pageIndex, predicate: p => p.Status == status, orderBy: p => p.OrderBy(p => p.CreatedOn));
+                    listTicket = await _financialTicketsRepository.GetManyAsync(pageSize: pageSize, pageIndex: pageIndex, predicate: p => p.Status == status, orderBy: p => p.OrderBy(p => p.CreatedOn), include: "User");
 
                 }
                 else
                 {
-                    listTicket = await _financialTicketsRepository.GetManyAsync(pageSize: pageSize, pageIndex: pageIndex, orderBy: p => p.OrderBy(p => p.CreatedOn));
+                    listTicket = await _financialTicketsRepository.GetManyAsync(pageSize: pageSize, pageIndex: pageIndex, orderBy: p => p.OrderBy(p => p.CreatedOn), include: "User");
 
                 }
                 var result = AutoMapperConfig.Mapper.Map<List<FinancialTicketViewModel>>(listTicket);
