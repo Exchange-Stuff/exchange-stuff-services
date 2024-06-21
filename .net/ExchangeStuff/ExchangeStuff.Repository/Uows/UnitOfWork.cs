@@ -81,7 +81,7 @@ namespace ExchangeStuff.Repository.Uows
         public IUserBalanceRepository UserBalanceRepository { get; private set; }
 
         public IModeratorRepository ModeratorRepository { get; private set; }
-        public IUserBalanceRepository UserBalanceRepository { get; private set; }
+       
 
 
         public async Task<int> SaveChangeAsync()
