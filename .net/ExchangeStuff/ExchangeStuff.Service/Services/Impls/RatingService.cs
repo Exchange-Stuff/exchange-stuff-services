@@ -35,7 +35,7 @@ public class RatingService : IRatingSerivce
         return result;
     }
 
-    public async Task<bool> CreatRating(CreateRatingModel createRatingModel)
+    public async Task<bool> CreateRating(CreateRatingModel createRatingModel)
     {
         var createModel = AutoMapperConfig.Mapper.Map<Rating>(createRatingModel);
         await _ratingRepo.AddAsync(createModel);

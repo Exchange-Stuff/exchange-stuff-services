@@ -12,7 +12,7 @@ public interface IRatingSerivce
 {
     Task<List<RatingViewModel>> GetRatingByUserId(Guid userId);
     Task<List<RatingViewModel>> GetRatingByProductId(Guid productId);
-    Task<bool> CreatRating(CreateRatingModel createRatingModel);
+    Task<bool> CreateRating(CreateRatingModel createRatingModel);
     Task<bool> UpdateRating(UpdateRatingModel updateRatingModel);
     Task<RatingAvgViewModel> GetRatingAvg(Guid userId);
 }
