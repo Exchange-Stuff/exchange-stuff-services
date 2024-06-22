@@ -27,12 +27,13 @@ public class RatingService : IRatingSerivce
 
     public async Task<List<RatingViewModel>> GetRatingByUserId(Guid userId)
     {
-        var user = await _userRepo.GetOneAsync(u => u.Id.Equals(userId));
-        if (user == null) throw new Exception("Not found user!");
+        //var user = await _userRepo.GetOneAsync(u => u.Id.Equals(userId));
+        //if (user == null) throw new Exception("Not found user!");
 
-        var listPurchaseTicket = await _purchaseTicketRepo.GetManyAsync(include: "Ratings", predicate: p => p.User.Equals(userId));
-        var result = AutoMapperConfig.Mapper.Map<List<RatingViewModel>>(listPurchaseTicket.SelectMany(p => p.Ratings));
-        return result;
+        //var listPurchaseTicket = await _purchaseTicketRepo.GetManyAsync(include: "Ratings", predicate: p => p.User.Equals(userId));
+        //var result = AutoMapperConfig.Mapper.Map<List<RatingViewModel>>(listPurchaseTicket.SelectMany(p => p.Ratings));
+        //return result;
+        throw new NotImplementedException();
     }
 
     public async Task<bool> CreatRating(CreateRatingModel createRatingModel)
@@ -45,12 +46,14 @@ public class RatingService : IRatingSerivce
 
     public async Task<List<RatingViewModel>> GetRatingByProductId(Guid productId)
     {
-        var product = await _productRepo.GetOneAsync(predicate: p => p.Id.Equals(productId));
-        if (product == null) throw new Exception("Not found product!");
+        //var product = await _productRepo.GetOneAsync(predicate: p => p.Id.Equals(productId));
+        //if (product == null) throw new Exception("Not found product!");
 
-        var listPurchaseTicket = await _purchaseTicketRepo.GetManyAsync(predicate: p => p.ProductId.Equals(productId));
-        var result = AutoMapperConfig.Mapper.Map<List<RatingViewModel>>(listPurchaseTicket.SelectMany(p => p.Ratings));
-        return result;
+        //var listPurchaseTicket = await _purchaseTicketRepo.GetManyAsync(predicate: p => p.ProductId.Equals(productId));
+        //var result = AutoMapperConfig.Mapper.Map<List<RatingViewModel>>(listPurchaseTicket.SelectMany(p => p.Ratings));
+        //return result;
+        throw new NotImplementedException();
+
     }
 
     public async Task<bool> UpdateRating(UpdateRatingModel updateRatingModel)
