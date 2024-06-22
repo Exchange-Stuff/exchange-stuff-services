@@ -49,7 +49,7 @@ namespace ExchangeStuff.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateRating(CreateRatingModel createModel)
         {
-            var result = await _ratingSerivce.CreatRating(createModel);
+            var result = await _ratingSerivce.CreateRating(createModel);
             return StatusCode(StatusCodes.Status201Created, new ResponseResult<string>
             {
                 Error = null!,
