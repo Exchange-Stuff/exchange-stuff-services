@@ -36,6 +36,16 @@ namespace ExchangeStuff.Controllers
                 Value = await _ratingSerivce.GetRatingByUserId(userId)
             });
         }
+        [HttpGet("rating-avg-user/{id}")]
+        public async Task<IActionResult> GetRatingAvg([FromRoute] Guid id)
+        {
+            return Ok(new ResponseResult<RatingAvgViewModel>
+            {
+                Error = null!,
+                IsSuccess = true,
+                Value = await _ratingSerivce.GetRatingAvg(id)
+            });
+        }
         [HttpPost]
         public async Task<IActionResult> CreateRating(CreateRatingModel createModel)
         {

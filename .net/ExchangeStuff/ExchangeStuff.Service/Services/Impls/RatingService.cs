@@ -30,8 +30,8 @@ public class RatingService : IRatingSerivce
         var user = await _userRepo.GetOneAsync(u => u.Id.Equals(userId));
         if (user == null) throw new Exception("Not found user!");
 
-        var listPurchaseTicket = await _purchaseTicketRepo.GetManyAsync(include: "Ratings", predicate: p => p.User.Equals(userId));
-        var result = AutoMapperConfig.Mapper.Map<List<RatingViewModel>>(listPurchaseTicket.SelectMany(p => p.Ratings));
+        var listPurchaseTicket = await _purchaseTicketRepo.GetManyAsync(include: "Rating", predicate: p => p.User.Equals(userId));
+        var result = AutoMapperConfig.Mapper.Map<List<RatingViewModel>>(listPurchaseTicket.Select(p => p.Rating));
         return result;
     }
 
@@ -49,7 +49,7 @@ public class RatingService : IRatingSerivce
         if (product == null) throw new Exception("Not found product!");
 
         var listPurchaseTicket = await _purchaseTicketRepo.GetManyAsync(predicate: p => p.ProductId.Equals(productId));
-        var result = AutoMapperConfig.Mapper.Map<List<RatingViewModel>>(listPurchaseTicket.SelectMany(p => p.Ratings));
+        var result = AutoMapperConfig.Mapper.Map<List<RatingViewModel>>(listPurchaseTicket.Select(p => p.Rating));
         return result;
     }
 
@@ -59,5 +59,29 @@ public class RatingService : IRatingSerivce
         _ratingRepo.Update(updateModel);
         var result = await _unitOfWork.SaveChangeAsync();
         return result > 0;
+    }
+
+    public async Task<RatingAvgViewModel> GetRatingAvg(Guid userId)
+    {
+        // check user existing
+        var user = await _userRepo.GetOneAsync(predicate: u => u.Id.Equals(userId));
+        if (user == null) throw new Exception("Not found user!");
+
+        // get list product create by user
+        var listProduct = await _productRepo.GetManyAsync(predicate: p => p.CreatedBy == user.Id);
+
+        // get list rating
+        List<Rating> listRating = new List<Rating>();
+        foreach (var product in listProduct)
+        {
+            var purchaseTicket = await _purchaseTicketRepo.GetOneAsync(predicate: pt => pt.ProductId == product.Id, include: "Rating");
+            if (purchaseTicket.Rating != null)
+                listRating.Add(purchaseTicket.Rating);
+        }
+        var ratingCount = listRating.Count;
+        var totalRating = listRating.Sum(p => (int)p.EvaluateType);
+
+        var avgRating = (decimal)totalRating / ratingCount;
+        return new RatingAvgViewModel { RatingAvg = Math.Round(avgRating, 2), RatingCount = ratingCount };
     }
 }
