@@ -33,7 +33,7 @@ namespace ExchangeStuff.Controllers
         [HttpGet("getDetail/{id}")]
         public async Task<IActionResult> GetDetail(Guid id)
         {
-            return Ok(new ResponseResult<ProductViewModel>
+            return Ok(new ResponseResult<ProductImageUserViewModel>
             {
                 Error = null,
                 IsSuccess = true,

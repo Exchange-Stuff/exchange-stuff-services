@@ -10,5 +10,6 @@ namespace ExchangeStuff.Core.Repositories
 {
     public interface IUserBalanceRepository : IRepository<UserBalance>
     {
+
     }
 }

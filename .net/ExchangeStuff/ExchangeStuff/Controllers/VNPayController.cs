@@ -14,11 +14,12 @@ namespace ExchangeStuff.Controllers
             _vnPayService = vnPayService;
         }
 
-        [HttpGet]
+        [HttpGet("createPaymentUrl")]
         public IActionResult CreatePayment([FromQuery] int amount)
         {
             var paymentUrl = _vnPayService.CreatePaymentUrl(amount);
-            return Redirect(paymentUrl);
+            return Ok(paymentUrl);
         }
+
     }
 }

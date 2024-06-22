@@ -72,7 +72,7 @@ namespace ExchangeStuff.Controllers
             });
         }
 
-        [HttpPost("UpdateFinancialTicket")]
+        [HttpPut("UpdateFinancialTicket")]
         public async Task<IActionResult> UpdateFinancialTicket([FromBody] UpdateFinancialTicketModel financialTicket)
         {
             var rs = await _financialTicketService.UpdateFinancialTicket(financialTicket);

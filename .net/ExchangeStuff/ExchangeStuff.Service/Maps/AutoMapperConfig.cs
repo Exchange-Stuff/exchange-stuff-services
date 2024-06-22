@@ -92,6 +92,7 @@ namespace ExchangeStuff.Service.Maps
             CreateMap<ProductBanReport, ProductBanReportViewModel>().ReverseMap();
             CreateMap<Token, TokenViewModel>().ReverseMap();
             CreateMap<Moderator, ModeratorViewModel>().ReverseMap();
+            CreateMap<ProductImageUserViewModel, Product>().ReverseMap();
         }
     }
 }
