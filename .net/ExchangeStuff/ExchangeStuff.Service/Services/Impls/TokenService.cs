@@ -35,7 +35,7 @@ namespace ExchangeStuff.Service.Services.Impls
 
         public TokenService(IUnitOfWork unitOfWork, IConfiguration configuration, IHttpContextAccessor httpContextAccessor, IDistributedCache distributed, IConnectionMultiplexer connectionMultiplexer, IIdentityUser<Guid> identityUser) : base(unitOfWork, distributed, connectionMultiplexer, configuration)
         {
-            _identityUser=identityUser;
+            _identityUser = identityUser;
             _connectionMutiple = connectionMultiplexer;
             _distributedCache = distributed;
             _configuration = configuration;
@@ -155,6 +155,10 @@ namespace ExchangeStuff.Service.Services.Impls
                     Email = email
                 };
             }
+            catch (SecurityTokenExpiredException ex)
+            {
+                throw new Exception(ex.Message);
+            }
             catch (Exception ex)
             {
                 throw new Exception(ex.Message);
@@ -235,7 +239,7 @@ namespace ExchangeStuff.Service.Services.Impls
                 var id = jwtToken.Claims.First(x => x.Type == "nameid")!.Value;
                 var email = jwtToken.Claims.First(x => x.Type == "email")!.Value;
 
-                if (Guid.TryParse(id, out Guid newId) is false 
+                if (Guid.TryParse(id, out Guid newId) is false
                     )
                 {
                     return null!;
@@ -246,6 +250,10 @@ namespace ExchangeStuff.Service.Services.Impls
                     Id = newId,
                     Email = email
                 };
+            }
+            catch (SecurityTokenExpiredException ex)
+            {
+                throw new Exception(ex.Message);
             }
             catch (Exception ex)
             {
@@ -282,7 +290,6 @@ namespace ExchangeStuff.Service.Services.Impls
             {
                 throw new UnauthorizedAccessException();
             }
-            token.RefreshToken = GenerateRefreshToken();
             token.AccessToken = await GenerateToken(account);
             _tokenRepository.Update(token);
             var rs = await _uow.SaveChangeAsync();
