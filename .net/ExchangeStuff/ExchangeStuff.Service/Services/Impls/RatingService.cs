@@ -75,7 +75,7 @@ public class RatingService : IRatingSerivce
         foreach (var product in listProduct)
         {
             var purchaseTicket = await _purchaseTicketRepo.GetOneAsync(predicate: pt => pt.ProductId == product.Id, include: "Rating");
-            if (purchaseTicket.Rating != null)
+            if (purchaseTicket != null && purchaseTicket.Rating != null)
                 listRating.Add(purchaseTicket.Rating);
         }
         var ratingCount = listRating.Count;
