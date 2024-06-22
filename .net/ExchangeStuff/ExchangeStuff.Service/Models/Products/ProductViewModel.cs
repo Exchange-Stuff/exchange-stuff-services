@@ -10,6 +10,7 @@ namespace ExchangeStuff.Service.Models.Products
         public string Thumbnail { get; set; }
         public string Description { get; set; }
         public List<ImageViewModel> Images { get; set; }
+        public Guid CreatedBy { get; set; }
         // Add on more properties
     }
 }
