@@ -14,4 +14,5 @@ public interface IRatingSerivce
     Task<List<RatingViewModel>> GetRatingByProductId(Guid productId);
     Task<bool> CreatRating(CreateRatingModel createRatingModel);
     Task<bool> UpdateRating(UpdateRatingModel updateRatingModel);
+    Task<RatingAvgViewModel> GetRatingAvg(Guid userId);
 }
