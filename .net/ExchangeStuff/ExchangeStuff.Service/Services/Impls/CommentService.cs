@@ -46,6 +46,14 @@ public class CommentService : ICommentService
         return result;
     }
 
+    public async Task<int> GetTotalCount(Guid productId)
+    {
+        var product = await _productRepository.GetOneAsync(predicate: p => p.Id == productId);
+        if (product == null) throw new Exception("Not found product!");
+        var comments = await _commentRepository.GetManyAsync(predicate: c => c.ProductId == product.Id);
+        return comments.Count();
+    }
+
     public async Task<bool> UpdateComment(UpdateCommentModel request)
     {
         var comment = await _commentRepository.GetOneAsync(predicate: c => c.Id.Equals(request.Id));

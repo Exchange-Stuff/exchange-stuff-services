@@ -152,17 +152,8 @@ namespace ExchangeStuff.Service.Services.Impls
         {
             var product = await _productRepository.GetOneAsync(predicate: p => p.Id == id, include: "Images");
             if (product == null) throw new Exception("Not found product!");
-            //var posticket = await _postTicketRepository.GetOneAsync(predicate: pt => pt.ProductId == product.Id, include: "User");
-            //if (posticket == null) throw new Exception("Not found post ticket!");
-            //var user = await _userRepository.GetOneAsync(predicate: u => u.Id == product.CreatedBy);
-            //if (user == null) throw new Exception("Not found user!");
             var result = AutoMapperConfig.Mapper.Map<ProductViewModel>(product);
-            //result.User = AutoMapperConfig.Mapper.Map<UserViewModel>(user);
             return result;
         }
-
-
-
-
     }
 }
