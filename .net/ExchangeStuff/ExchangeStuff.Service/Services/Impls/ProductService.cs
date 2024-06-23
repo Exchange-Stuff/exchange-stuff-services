@@ -11,6 +11,7 @@ using ExchangeStuff.Service.Models.Categories;
 using ExchangeStuff.Core.Enums;
 using ExchangeStuff.Service.Models.PostTicket;
 using ExchangeStuff.Repository.Repositories;
+using ExchangeStuff.Service.Models.Users;
 
 namespace ExchangeStuff.Service.Services.Impls
 {
@@ -23,7 +24,7 @@ namespace ExchangeStuff.Service.Services.Impls
         private readonly IIdentityUser<Guid> _identityUser;
         private readonly ITransactionHistoryRepository _transactionHistoryRepository;
         private readonly IUserBalanceRepository _userBalanceRepository;
-
+        private readonly IUserRepository _userRepository;
 
         public ProductService(IUnitOfWork unitOfWork, IIdentityUser<Guid> identityUser)
         {
@@ -33,6 +34,7 @@ namespace ExchangeStuff.Service.Services.Impls
             _postTicketRepository = _unitOfWork.PostTicketRepository;
             _transactionHistoryRepository = _unitOfWork.TransactionHistoryRepository;
             _userBalanceRepository = _unitOfWork.UserBalanceRepository;
+            _userRepository = _unitOfWork.UserRepository;
             _identityUser = identityUser;
         }
 
@@ -148,11 +150,10 @@ namespace ExchangeStuff.Service.Services.Impls
 
         public async Task<ProductViewModel> GetDetail(Guid id)
         {
-            return AutoMapperConfig.Mapper.Map<ProductViewModel>(await _productRepository.GetOneAsync(predicate: p => p.Id == id));
+            var product = await _productRepository.GetOneAsync(predicate: p => p.Id == id, include: "Images");
+            if (product == null) throw new Exception("Not found product!");
+            var result = AutoMapperConfig.Mapper.Map<ProductViewModel>(product);
+            return result;
         }
-
-
-
-
     }
 }

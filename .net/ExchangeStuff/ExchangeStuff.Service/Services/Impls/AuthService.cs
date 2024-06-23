@@ -1,6 +1,7 @@
 ﻿using ExchangeStuff.Core.Entities;
 using ExchangeStuff.Core.Repositories;
 using ExchangeStuff.Core.Uows;
+using ExchangeStuff.CurrentUser.Users;
 using ExchangeStuff.Service.Constants;
 using ExchangeStuff.Service.DTOs;
 using ExchangeStuff.Service.Maps;
@@ -33,9 +34,11 @@ namespace ExchangeStuff.Service.Services.Impls
         private readonly IResourceRepository _resourceRepository;
         private readonly IPermissionRepository _permissionRepository;
         private readonly IActionRepository _actionRepository;
+        private readonly IIdentityUser<Guid> _identityUser;
 
-        public AuthService(IConfiguration configuration, IUnitOfWork unitOfWork, IDistributedCache distributedCache, IConnectionMultiplexer connectionMultiplexer, IHttpContextAccessor httpContextAccessor) : base(unitOfWork, configuration, httpContextAccessor, distributedCache, connectionMultiplexer)
+        public AuthService(IConfiguration configuration, IUnitOfWork unitOfWork, IDistributedCache distributedCache, IConnectionMultiplexer connectionMultiplexer, IHttpContextAccessor httpContextAccessor, IIdentityUser<Guid> identityUser) : base(unitOfWork, configuration, httpContextAccessor, distributedCache, connectionMultiplexer, identityUser)
         {
+            _identityUser = identityUser;
             _uow = unitOfWork;
             _httpConextAccessor = httpContextAccessor;
             _distributedCache = distributedCache;
@@ -312,6 +315,7 @@ namespace ExchangeStuff.Service.Services.Impls
         }
         public async Task<ModeratorViewModel> CreateModerator(ModeratorCreateModel moderatorCreateModel)
         {
+            if (moderatorCreateModel.Username.Split(" ").Length > 0) throw new Exception("Username not allow [space]");
             var mopderatorCheck = await _moderatorRepository.GetOneAsync(x => x.Username == moderatorCreateModel.Username);
             if (mopderatorCheck != null!) throw new Exception("Moderator username already exist");
             Moderator moderator = new Moderator
@@ -350,10 +354,37 @@ namespace ExchangeStuff.Service.Services.Impls
 
         public async Task<bool> DeleteAccount(Guid id)
         {
-            var account = await _accountRepository.GetOneAsync(x => x.Id == id, forUpdate: true);
+            if (id == _identityUser.AccountId) throw new Exception("You can't delete yourself");
+            var account = await _accountRepository.GetOneAsync(x => x.Id == id, forUpdate: true, include: "PermissionGroups");
             if (account == null!) throw new Exception("Not found this account");
-            account.IsActived = false;
-            return (await _uow.SaveChangeAsync()) > 0;
+            var permissionTargets = account.PermissionGroups.Where(x => x.Name == GroupPermission.ADMIN);
+            var accCurrent = await _accountRepository.GetOneAsync(x => x.Id == _identityUser.AccountId, "PermissionGroups");
+            if (accCurrent == null!) throw new UnauthorizedAccessException("Login session expired");
+            var permissionGroupIds = accCurrent.PermissionGroups.Select(x => x.Id);
+            var permissionGroupUser = await _permissionGroupRepository.GetManyAsync(x => permissionGroupIds.Contains(x.Id));
+            if (permissionTargets.Any() is false)
+            {
+                List<PermissionGroup> permissionU = permissionGroupUser.Where(x => x.Name == GroupPermission.DEFAULT).ToList();
+                if (permissionU.Any() && permissionGroupUser.Count == 1) throw new Exception("You do not have permission");
+
+                var permissionTargetModerators = account.PermissionGroups.Where(x => x.Name == GroupPermission.MODERATOR);
+                account.IsActived = false;
+            }
+            else
+            {
+                List<PermissionGroup> permissionU = permissionGroupUser.Where(x => x.Name == GroupPermission.ADMIN).ToList();
+                if (permissionU.Any())
+                {
+                    account.IsActived = false;
+                }
+                else
+                {
+                    throw new Exception("You do not have permission");
+                }
+            }
+            await InvalidAllSession(id);
+            await _uow.SaveChangeAsync();
+            return true;
         }
     }
 

@@ -139,6 +139,7 @@ namespace ExchangeStuff.Controllers
                 Value = rs + ""
             }) : throw new UnauthorizedAccessException("Access denial");
         }
+
     }
 
     public sealed record ResourceRd(string Resource);
