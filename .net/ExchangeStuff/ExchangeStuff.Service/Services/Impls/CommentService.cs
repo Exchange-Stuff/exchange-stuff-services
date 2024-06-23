@@ -41,7 +41,7 @@ public class CommentService : ICommentService
 
     public async Task<List<CommentViewModel>> GetCommentByProductId(Guid id, int? pageSize, int? pageIndex)
     {
-        var comments = await _commentRepository.GetManyAsync(predicate: c => c.ProductId.Equals(id), pageIndex: pageIndex, pageSize: pageSize);
+        var comments = await _commentRepository.GetManyAsync(predicate: c => c.ProductId.Equals(id), pageIndex: pageIndex, pageSize: pageSize, include: "User");
         var result = AutoMapperConfig.Mapper.Map<List<CommentViewModel>>(comments);
         return result;
     }
