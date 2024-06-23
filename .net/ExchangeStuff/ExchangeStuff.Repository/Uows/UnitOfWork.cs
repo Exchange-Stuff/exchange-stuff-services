@@ -82,7 +82,6 @@ namespace ExchangeStuff.Repository.Uows
 
         public IModeratorRepository ModeratorRepository { get; private set; }
 
-
         public async Task<int> SaveChangeAsync()
         => await _context.SaveChangesAsync();
     }
