@@ -190,7 +190,7 @@ namespace ExchangeStuff.Controllers
             var param = Request.QueryString + "";
             if (string.IsNullOrEmpty(param.Trim())) throw new Exception("Not found auth code");
 
-            var tk = await _authService.GetToken(param);
+            var tk = await _authService.GetTokenAdmin(param);
 
             if (tk == null) throw new Exception("Can't get token");
             ResponseResult<TokenViewModel> responseResult = new ResponseResult<TokenViewModel>();

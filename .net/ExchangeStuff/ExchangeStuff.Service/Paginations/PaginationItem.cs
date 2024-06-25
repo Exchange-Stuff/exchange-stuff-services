@@ -29,7 +29,7 @@
             }
             var count = source.Count();
             var items = source.Skip(index * size).Take(size).ToList();
-            pageIndex = pageIndex ==null || pageIndex.HasValue&& pageIndex.Value<1 ? 1 : pageIndex;
+            pageIndex = pageIndex == null || pageIndex.HasValue && pageIndex.Value < 1 ? 1 : pageIndex;
             return new PaginationItem<T>(items, count, (int)pageIndex!, size);
         }
     }

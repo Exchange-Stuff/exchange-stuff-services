@@ -12,6 +12,7 @@ namespace ExchangeStuff.Service.Services.Interfaces
         Task<TokenViewModel> LoginUsernameAndPwd(LoginRd loginRd);
         Task<bool> DeleteAccount(Guid id);
         Task<bool> ValidScreen(string resource);
+        Task<TokenViewModel> GetTokenAdmin(string param);
 
     }
 }
