@@ -124,8 +124,6 @@ namespace ExchangeStuff.Service.Services.Impls
                     }
 
                 }
-
-                
                 
                 var result = await _unitOfWork.SaveChangeAsync();
 
@@ -154,6 +152,18 @@ namespace ExchangeStuff.Service.Services.Impls
             if (product == null) throw new Exception("Not found product!");
             var result = AutoMapperConfig.Mapper.Map<ProductViewModel>(product);
             return result;
+        }
+
+        public async Task<List<ProductUserViewModel>> GetProductUser()
+        {
+            var product = await _productRepository.GetManyAsync(predicate: p => p.CreatedBy.Equals(_identityUser.AccountId));
+
+            if (product == null) throw new Exception("Not found product!");
+
+            return AutoMapperConfig.Mapper.Map<List<ProductUserViewModel>>(product);
+
+            
+             
         }
     }
 }
