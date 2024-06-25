@@ -22,7 +22,7 @@ namespace ExchangeStuff.Repository.Repositories
             return (await _context.Accounts.FirstOrDefaultAsync(x => x.Email == email))!;
         }
 
-        public async Task<List<Account>> GetAccountsFilter(string? name = null!, string? email = null!, string? username = null!, string? includes = null!, int? pageIndex = null!, int? pageSize = null!, bool? includeBan = null!)
+        public async Task<List<Account>> GetAccountsFilter(string? name = null!, string? email = null!, string? username = null!, string? includes = null!, bool? includeBan = null!, int? pageIndex = null!, int? pageSize = null!)
         {
             IQueryable<Account> query = null!;
             if (includeBan.HasValue && includeBan.Value)

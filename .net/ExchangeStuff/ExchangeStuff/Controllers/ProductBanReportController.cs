@@ -2,6 +2,7 @@
 using ExchangeStuff.Responses;
 using ExchangeStuff.Service.Constants;
 using ExchangeStuff.Service.Models.ProductBanReports;
+using ExchangeStuff.Service.Paginations;
 using ExchangeStuff.Service.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -31,7 +32,7 @@ namespace ExchangeStuff.Controllers
         [ESAuthorize(new string[] { ActionConstant.READ })]
         [HttpGet("productBanReports/reasonIds")]
         public async Task<IActionResult> GetProductBanReportsReasonIds(List<Guid>? reasonIds = null, int? pageIndex = null, int? pageSize = null)
-            => Ok(new ResponseResult<List<ProductBanReportViewModel>>
+            => Ok(new ResponseResult<PaginationItem<ProductBanReportViewModel>>
             {
                 Error = null!,
                 IsSuccess = true,
@@ -41,7 +42,7 @@ namespace ExchangeStuff.Controllers
         [ESAuthorize(new string[] { ActionConstant.READ })]
         [HttpGet("productBanReports")]
         public async Task<IActionResult> GetProductBanReportsReasonIds(Guid? productId = null!, Guid? reasonId = null, string? reason = null, int? pageIndex = null, int? pageSize = null)
-            => Ok(new ResponseResult<List<ProductBanReportViewModel>>
+            => Ok(new ResponseResult<PaginationItem<ProductBanReportViewModel>>
             {
                 Error = null!,
                 IsSuccess = true,

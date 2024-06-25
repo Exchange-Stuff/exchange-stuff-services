@@ -58,14 +58,14 @@ namespace ExchangeStuff.Repository.Repositories.Base
             return await query.ToListAsync();
         }
 
-        public async Task<T> GetOneAsync(Expression<Func<T, bool>> predicate, string? include = null, bool? forUpdate=null!)
+        public async Task<T> GetOneAsync(Expression<Func<T, bool>> predicate, string? include = null, bool? forUpdate = null!)
         {
             IQueryable<T> query = _entities;
             if (!string.IsNullOrEmpty(include))
             {
                 foreach (var item in include.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
                 {
-                    if (forUpdate.HasValue&& forUpdate.Value)
+                    if (forUpdate.HasValue && forUpdate.Value)
                     {
                         query = query.Include(item);
                     }

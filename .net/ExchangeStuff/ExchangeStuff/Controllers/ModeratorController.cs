@@ -1,5 +1,6 @@
 ﻿using ExchangeStuff.Responses;
 using ExchangeStuff.Service.Models.Moderators;
+using ExchangeStuff.Service.Paginations;
 using ExchangeStuff.Service.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -29,7 +30,7 @@ namespace ExchangeStuff.Controllers
 
         [HttpGet]
         public async Task<IActionResult> GetModerators(string? name = null!, string? username = null!, string? email = null!, int? pageIndex = null!, int? pageSize = null!, bool? includeBan = null!)
-           => Ok(new ResponseResult<List<ModeratorViewModel>>
+           => Ok(new ResponseResult<PaginationItem<ModeratorViewModel>>
            {
                Error = null!,
                IsSuccess = true,

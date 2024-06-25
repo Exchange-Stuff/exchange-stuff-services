@@ -42,7 +42,7 @@ namespace ExchangeStuff.Service.Services.Impls
 
         public AdminService(IUnitOfWork unitOfWork, IConfiguration configuration, IDistributedCache distributedCache, IConnectionMultiplexer connectionMultiplexer, IHttpContextAccessor httpContextAccessor, IIdentityUser<Guid> identityUser) : base(unitOfWork, configuration, httpContextAccessor, distributedCache, connectionMultiplexer, identityUser)
         {
-            _identity=identityUser;
+            _identity = identityUser;
             _uow = unitOfWork;
             _actionRepository = _uow.ActionRepository;
             _permissionRepository = _uow.PermissionRepository;
@@ -55,7 +55,7 @@ namespace ExchangeStuff.Service.Services.Impls
             _resourceRepository = _uow.ResourceRepository;
             _adminRepository = _uow.AdminRepository;
             _tokenRepository = _uow.TokenRepository;
-            _moderatorRepository= _uow.ModeratorRepository;
+            _moderatorRepository = _uow.ModeratorRepository;
             _configuration.GetSection(nameof(RedisDTO)).Bind(_redisDTO);
             _configuration.GetSection(nameof(RedisConstantDTO)).Bind(_redisConstantDTO);
         }
@@ -356,6 +356,10 @@ namespace ExchangeStuff.Service.Services.Impls
         public async Task<string> LoginAdmin(string username, string password)
         {
             var sAdmin = await _accountRepository.GetOneAsync(x => x.Username == username && x.Password == HashPassword(password), forUpdate: true);
+            if (sAdmin == null!)
+            {
+                sAdmin = await _accountRepository.GetOneAsync(x => x.Email == username && x.Password == HashPassword(password), forUpdate: true);
+            }
             if (sAdmin == null) throw new Exception("Wrong username or password");
             var tk = await _tokenRepository.GetManyAsync(x => x.AccountId == sAdmin.Id, forUpdate: true);
             if (tk.Any())

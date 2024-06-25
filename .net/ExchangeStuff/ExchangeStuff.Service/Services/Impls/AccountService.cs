@@ -1,4 +1,6 @@
-﻿using ExchangeStuff.Core.Repositories;
+﻿using AutoMapper;
+using ExchangeStuff.Core.Entities;
+using ExchangeStuff.Core.Repositories;
 using ExchangeStuff.Core.Uows;
 using ExchangeStuff.CurrentUser.Users;
 using ExchangeStuff.Repository.Repositories;
@@ -7,6 +9,7 @@ using ExchangeStuff.Service.Maps;
 using ExchangeStuff.Service.Models.Accounts;
 using ExchangeStuff.Service.Models.Moderators;
 using ExchangeStuff.Service.Models.Users;
+using ExchangeStuff.Service.Paginations;
 using ExchangeStuff.Service.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Distributed;
@@ -58,8 +61,12 @@ namespace ExchangeStuff.Service.Services.Impls
             return AutoMapperConfig.Mapper.Map<AccountViewModel>(await _accountRepository.GetOneAsync(x => x.Id == id && x.IsActived, "PermissionGroups"));
         }
 
-        public async Task<List<AccountViewModel>> GetAccounts(string? name = null, string? email = null, string? username = null, int? pageIndex = null, int? pageSize = null, bool? includeBan = null!)
-             => AutoMapperConfig.Mapper.Map<List<AccountViewModel>>(await _accountRepository.GetAccountsFilter(name, email, username, "PermissionGroups", pageIndex, pageSize, includeBan));
+        public async Task<PaginationItem<AccountViewModel>> GetAccounts(string? name = null, string? email = null, string? username = null, int? pageIndex = null, int? pageSize = null, bool? includeBan = null!)
+        {
+            var accounts = AutoMapperConfig.Mapper.Map<List<AccountViewModel>>
+                (await _accountRepository.GetAccountsFilter(name, email, username, "PermissionGroups", includeBan, pageIndex,pageSize));
+            return PaginationItem<AccountViewModel>.ToPagedList(accounts, pageIndex, pageSize);
+        }
 
         public async Task<ModeratorViewModel> GetModerator(Guid id, bool? includeBan = null)
         {
@@ -70,8 +77,12 @@ namespace ExchangeStuff.Service.Services.Impls
             return AutoMapperConfig.Mapper.Map<ModeratorViewModel>(await _moderatorRepository.GetOneAsync(x => x.Id == id && x.IsActived, "PermissionGroups"));
         }
 
-        public async Task<List<ModeratorViewModel>> GetModerators(string? name = null, string? email = null, string? username = null, int? pageIndex = null, int? pageSize = null, bool? includeBan = null)
-             => AutoMapperConfig.Mapper.Map<List<ModeratorViewModel>>(await _moderatorRepository.GetModeratorsFilter(name, email, username, "PermissionGroups", pageIndex, pageSize, includeBan));
+        public async Task<PaginationItem<ModeratorViewModel>> GetModerators(string? name = null, string? email = null, string? username = null, int? pageIndex = null, int? pageSize = null, bool? includeBan = null)
+        {
+            var moderators = AutoMapperConfig.Mapper.Map<List<ModeratorViewModel>>
+                (await _moderatorRepository.GetModeratorsFilter(name, email, username, "PermissionGroups", includeBan, pageIndex, pageSize));
+            return PaginationItem<ModeratorViewModel>.ToPagedList(moderators, pageIndex, pageSize);
+        }
 
         public async Task<UserViewModel> GetUser(Guid id, bool? includeBan = null!)
         {
@@ -82,9 +93,12 @@ namespace ExchangeStuff.Service.Services.Impls
             return AutoMapperConfig.Mapper.Map<UserViewModel>(await _userRepository.GetOneAsync(x => x.Id == id && x.IsActived, "PermissionGroups,Campus,UserBalance"));
         }
 
-        public async Task<List<UserViewModel>> GetUsers(string? name = null, string? email = null, string? username = null, int? pageIndex = null, int? pageSize = null, bool? includeBan = null!)
-            => AutoMapperConfig.Mapper.Map<List<UserViewModel>>
-            (await _userRepository.GetUserFilter(name, email, username, "PermissionGroups,Campus,UserBalance", pageIndex, pageSize, includeBan));
+        public async Task<PaginationItem<UserViewModel>> GetUsers(string? name = null, string? email = null, string? username = null, int? pageIndex = null, int? pageSize = null, bool? includeBan = null!)
+        {
+            var userVm = AutoMapperConfig.Mapper.Map<List<UserViewModel>>
+                (await _userRepository.GetUserFilter(name, email, username, "PermissionGroups,Campus,UserBalance", includeBan));
+            return PaginationItem<UserViewModel>.ToPagedList(userVm, pageIndex, pageSize);
+        }
 
         public async Task<ModeratorViewModel> UpdateModerator(ModeratorUpdateModel moderatorUpdateModel)
         {
@@ -143,5 +157,7 @@ namespace ExchangeStuff.Service.Services.Impls
             }
             return AutoMapperConfig.Mapper.Map<UserViewModel>(user);
         }
+
+
     }
 }

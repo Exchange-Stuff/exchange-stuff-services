@@ -19,8 +19,8 @@ using ExchangeStuff.Service.Models.Products;
 using ExchangeStuff.Service.Models.PurchaseTicket;
 using ExchangeStuff.Service.Models.Rating;
 using ExchangeStuff.Service.Models.Resources;
-using ExchangeStuff.Service.Models.TransactionHistory;
 using ExchangeStuff.Service.Models.Tokens;
+using ExchangeStuff.Service.Models.TransactionHistory;
 using ExchangeStuff.Service.Models.UserBanReports;
 using ExchangeStuff.Service.Models.Users;
 
@@ -96,4 +96,5 @@ namespace ExchangeStuff.Service.Maps
             CreateMap<Product, ProductUserViewModel>().ReverseMap();
         }
     }
+
 }
