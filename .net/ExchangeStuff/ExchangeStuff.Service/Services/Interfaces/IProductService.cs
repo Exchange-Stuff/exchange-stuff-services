@@ -12,5 +12,6 @@ namespace ExchangeStuff.Service.Services.Interfaces
         Task<bool> CreateProductAsync(CreateProductModel model);
         Task<ProductViewModel> GetDetail(Guid id);
         Task<bool> updateStatusProduct(UpdateProductViewModel updateProductViewModel);
+        Task<List<ProductUserViewModel>> GetProductUser();
     }
 }
