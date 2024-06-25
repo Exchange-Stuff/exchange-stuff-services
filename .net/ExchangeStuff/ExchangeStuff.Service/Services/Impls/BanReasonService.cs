@@ -65,7 +65,7 @@ namespace ExchangeStuff.Service.Services.Impls
             {
                 banrs = banrs.Where(x => x.BanReasonType == banReasonType.Value).ToList();
             }
-            return AutoMapperConfig.Mapper.Map<List<BanReasonViewModel>>(banrs);
+            return (AutoMapperConfig.Mapper.Map<List<BanReasonViewModel>>(banrs));
         }
 
         public async Task<BanReasonViewModel> UpdateBanReasons(BanReasonUpdateModel banReasonUpdateModel)

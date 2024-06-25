@@ -74,6 +74,7 @@ namespace ExchangeStuff.Controllers
         /// <returns></returns>
         /// <exception cref="UnauthorizedAccessException"></exception>
         /// <exception cref="Exception"></exception>
+
         [HttpPost("renew")]
         public async Task<IActionResult> ReNewToken([FromBody] RenewRd renewRd)
         {
@@ -138,6 +139,7 @@ namespace ExchangeStuff.Controllers
                 Value = rs + ""
             }) : throw new UnauthorizedAccessException("Access denial");
         }
+
     }
 
     public sealed record ResourceRd(string Resource);

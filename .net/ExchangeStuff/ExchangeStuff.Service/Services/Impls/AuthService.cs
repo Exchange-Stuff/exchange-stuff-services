@@ -1,6 +1,8 @@
 ﻿using ExchangeStuff.Core.Entities;
 using ExchangeStuff.Core.Repositories;
 using ExchangeStuff.Core.Uows;
+using ExchangeStuff.CurrentUser.Users;
+using ExchangeStuff.Repository.Repositories;
 using ExchangeStuff.Service.Constants;
 using ExchangeStuff.Service.DTOs;
 using ExchangeStuff.Service.Maps;
@@ -13,6 +15,7 @@ using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
 using StackExchange.Redis;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 
@@ -33,9 +36,13 @@ namespace ExchangeStuff.Service.Services.Impls
         private readonly IResourceRepository _resourceRepository;
         private readonly IPermissionRepository _permissionRepository;
         private readonly IActionRepository _actionRepository;
+        private readonly IAdminRepository _adminRepository;
+        private readonly ITokenRepository _tokenRepository;
+        private readonly IIdentityUser<Guid> _identityUser;
 
-        public AuthService(IConfiguration configuration, IUnitOfWork unitOfWork, IDistributedCache distributedCache, IConnectionMultiplexer connectionMultiplexer, IHttpContextAccessor httpContextAccessor) : base(unitOfWork, configuration, httpContextAccessor, distributedCache, connectionMultiplexer)
+        public AuthService(IConfiguration configuration, IUnitOfWork unitOfWork, IDistributedCache distributedCache, IConnectionMultiplexer connectionMultiplexer, IHttpContextAccessor httpContextAccessor, IIdentityUser<Guid> identityUser) : base(unitOfWork, configuration, httpContextAccessor, distributedCache, connectionMultiplexer, identityUser)
         {
+            _identityUser = identityUser;
             _uow = unitOfWork;
             _httpConextAccessor = httpContextAccessor;
             _distributedCache = distributedCache;
@@ -49,6 +56,8 @@ namespace ExchangeStuff.Service.Services.Impls
             _resourceRepository = _uow.ResourceRepository;
             _permissionRepository = _uow.PermissionRepository;
             _actionRepository = _uow.ActionRepository;
+            _adminRepository = _uow.AdminRepository;
+            _tokenRepository = _uow.TokenRepository;
         }
 
         public async Task<bool> ValidScreen(string resource)
@@ -188,18 +197,91 @@ namespace ExchangeStuff.Service.Services.Impls
                     {
                         var userindor = GetAuth(token);
                         if (userindor == null!) throw new UnauthorizedAccessException("UserInfor invalid");
-
-
                         var acc = await UserSigninCreate(userindor);
                         if (acc == null) throw new UnauthorizedAccessException("Not found user");
                         var tokenSystem = await GenerateToken(acc);
-
                         await SavePermissionGroup(acc.Id);
                         var ntoken = await SaveAccessToken(tokenSystem, acc.Id);
                         return AutoMapperConfig.Mapper.Map<TokenViewModel>(ntoken);
                     }
                 }
                 throw new UnauthorizedAccessException("Not found auth code");
+            }
+            return null!;
+        }
+
+        public async Task<TokenViewModel> GetTokenAdmin(string param)
+        {
+            if (param != "")
+            {
+                param = param.Substring(1);
+                string[] splitParam = param.Split('&', StringSplitOptions.RemoveEmptyEntries);
+                string code = "";
+                bool isFpt = false;
+                bool finded = false;
+                foreach (var item in splitParam)
+                {
+                    if (!finded)
+                    {
+                        code = item.Split('=')[0] + "";
+                    }
+                    if (code == "code")
+                    {
+                        code = item.Split('=')[1] + "";
+                        finded = true;
+                    }
+                    if (item.Split('=')[0] + "" == "hd")
+                    {
+                        isFpt = false;
+                    }
+                }
+                if (!isFpt)
+                {
+                    throw new UnauthorizedAccessException("Not allow this email");
+                }
+                if (!string.IsNullOrEmpty(code.Trim()))
+                {
+                    var token = await GetAccessTokenAsync(code);
+                    if (!string.IsNullOrEmpty(token))
+                    {
+                        var userindor = GetAuth(token);
+                        if (userindor == null!) throw new UnauthorizedAccessException("UserInfor invalid");
+                        var acc = await AdminSignin(userindor);
+                        if (acc == null) throw new UnauthorizedAccessException("Not found user");
+                        var tk = await _tokenRepository.GetManyAsync(x => x.AccountId == acc.Id, forUpdate: true);
+                        if (tk.Any())
+                        {
+                            foreach (var item in tk)
+                            {
+                                _tokenRepository.Remove(item);
+                                await DeleteAccessToken(item.AccessToken);
+                            }
+                            await _uow.SaveChangeAsync();
+                            throw new UnauthorizedAccessException("Login session expired, another device online try again");
+                        }
+                        var tks = await GenerateToken(await _adminRepository.GetOneAsync(x => x.Id == acc.Id, forUpdate: true));
+                        await SavePermissionGroupAdmin(acc.Id);
+                        var ntoken = await SaveAccessToken(tks, acc.Id);
+                        return AutoMapperConfig.Mapper.Map<TokenViewModel>(ntoken);
+                    }
+                }
+                throw new UnauthorizedAccessException("Not found auth code");
+            }
+            return null!;
+        }
+
+        public async Task<Admin> AdminSignin(UserGGInfo userinfo)
+        {
+            if (userinfo != null!)
+            {
+                Admin admin = await _adminRepository.GetOneAsync(x => x.Email == userinfo.Email);
+                if (admin != null!)
+                {
+                    admin.Thumbnail = userinfo.Thumbnail != admin.Thumbnail ? userinfo.Thumbnail : admin.Thumbnail;
+                    admin.Name = userinfo.Name != admin.Name ? userinfo.Name : admin.Name;
+                    await _uow.SaveChangeAsync();
+                    return admin;
+                }
             }
             return null!;
         }
@@ -310,8 +392,10 @@ namespace ExchangeStuff.Service.Services.Impls
                 throw new UnauthorizedAccessException(ex.Message);
             }
         }
+
         public async Task<ModeratorViewModel> CreateModerator(ModeratorCreateModel moderatorCreateModel)
         {
+            if (moderatorCreateModel.Username.Split(" ").Length > 0) throw new Exception("Username not allow [space]");
             var mopderatorCheck = await _moderatorRepository.GetOneAsync(x => x.Username == moderatorCreateModel.Username);
             if (mopderatorCheck != null!) throw new Exception("Moderator username already exist");
             Moderator moderator = new Moderator
@@ -350,10 +434,36 @@ namespace ExchangeStuff.Service.Services.Impls
 
         public async Task<bool> DeleteAccount(Guid id)
         {
-            var account = await _accountRepository.GetOneAsync(x => x.Id == id, forUpdate: true);
+            if (id == _identityUser.AccountId) throw new Exception("You can't delete yourself");
+            var account = await _accountRepository.GetOneAsync(x => x.Id == id, forUpdate: true, include: "PermissionGroups");
             if (account == null!) throw new Exception("Not found this account");
-            account.IsActived = false;
-            return (await _uow.SaveChangeAsync()) > 0;
+            var permissionTargets = account.PermissionGroups.Where(x => x.Name == GroupPermission.ADMIN);
+            var accCurrent = await _accountRepository.GetOneAsync(x => x.Id == _identityUser.AccountId, "PermissionGroups");
+            if (accCurrent == null!) throw new UnauthorizedAccessException("Login session expired");
+            var permissionGroupIds = accCurrent.PermissionGroups.Select(x => x.Id);
+            var permissionGroupUser = await _permissionGroupRepository.GetManyAsync(x => permissionGroupIds.Contains(x.Id));
+            if (permissionTargets.Any() is false)
+            {
+                List<PermissionGroup> permissionU = permissionGroupUser.Where(x => x.Name == GroupPermission.DEFAULT).ToList();
+                if (permissionU.Any() && permissionGroupUser.Count == 1) throw new Exception("You do not have permission");
+
+                account.IsActived = false;
+            }
+            else
+            {
+                List<PermissionGroup> permissionU = permissionGroupUser.Where(x => x.Name == GroupPermission.ADMIN).ToList();
+                if (permissionU.Any())
+                {
+                    account.IsActived = false;
+                }
+                else
+                {
+                    throw new Exception("You do not have permission");
+                }
+            }
+            await InvalidAllSession(id);
+            await _uow.SaveChangeAsync();
+            return true;
         }
     }
 

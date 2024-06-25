@@ -14,7 +14,7 @@ namespace ExchangeStuff.Repository.Repositories
         {
             _context=context;
         }
-        public async Task<List<Account>> GetModeratorsFilter(string? name = null!, string? email = null!, string? username = null!, string? includes = null!, int? pageIndex = null!, int? pageSize = null!, bool? includeBan = null!)
+        public async Task<List<Account>> GetModeratorsFilter(string? name = null!, string? email = null!, string? username = null!, string? includes = null!, bool? includeBan = null!, int? pageIndex = null!, int? pageSize = null!)
         {
             IQueryable<Account> query = null!;
             if (includeBan.HasValue && includeBan.Value)

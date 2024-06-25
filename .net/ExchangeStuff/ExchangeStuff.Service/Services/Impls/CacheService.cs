@@ -6,9 +6,11 @@ using ExchangeStuff.Service.Maps;
 using ExchangeStuff.Service.Services.Interfaces;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Identity.Client;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using StackExchange.Redis;
+using System.Linq.Dynamic.Core.Tokenizer;
 using System.Security.Cryptography;
 
 namespace ExchangeStuff.Service.Services.Impls
@@ -110,10 +112,10 @@ namespace ExchangeStuff.Service.Services.Impls
             }
         }
 
-        public async Task<Token> SaveAccessToken(string token, Guid accountId)
+        public async Task<ExchangeStuff.Core.Entities.Token> SaveAccessToken(string token, Guid accountId)
         {
             await _distributedCache.SetStringAsync(token, accountId + "");
-            Token newtk = new Token
+            ExchangeStuff.Core.Entities.Token newtk = new ExchangeStuff.Core.Entities.Token
             {
                 Id = Guid.NewGuid(),
                 AccessToken = token,
@@ -153,6 +155,19 @@ namespace ExchangeStuff.Service.Services.Impls
                     NamingStrategy = new CamelCaseNamingStrategy()
                 }
             }));
+        }
+
+        public async Task InvalidAllSession(Guid accId)
+        {
+            var account = await _accountRepository.GetOneAsync(x => x.Id == accId);
+            if (account == null) throw new Exception("Not found this account");
+            var tokens = await _tokenRepository.GetManyAsync(x => x.AccountId == accId);
+            foreach (var item in tokens)
+            {
+                await _distributedCache.RemoveAsync(item.AccessToken);
+            }
+            _tokenRepository.RemoveRange(tokens);
+            await _uow.SaveChangeAsync();
         }
     }
 }

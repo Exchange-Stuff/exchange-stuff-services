@@ -30,5 +30,6 @@ namespace ExchangeStuff.Service.Models.Users
         public CampusViewModel? Campus { get; set; }
 
         public UserBalanceViewModel UserBalance { get; set; }
+   
     }
 }
