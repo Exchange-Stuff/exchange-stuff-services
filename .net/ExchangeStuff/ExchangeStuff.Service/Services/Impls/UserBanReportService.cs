@@ -4,6 +4,7 @@ using ExchangeStuff.Core.Uows;
 using ExchangeStuff.CurrentUser.Users;
 using ExchangeStuff.Service.Maps;
 using ExchangeStuff.Service.Models.UserBanReports;
+using ExchangeStuff.Service.Paginations;
 using ExchangeStuff.Service.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Distributed;
@@ -54,7 +55,7 @@ namespace ExchangeStuff.Service.Services.Impls
             if (user == null) throw new UnauthorizedAccessException("Login session expired");
             var us = await _userRepository.GetOneAsync(x => x.Id == userBanReportCreateModel.UserId);
             if (us == null!) throw new Exception("Not found this user");
-            var banrs = await _banReasonRepository.GetOneAsync(x => x.Id == userBanReportCreateModel.BanReasonId && x.BanReasonType==Core.Enums.BanReasonType.User);
+            var banrs = await _banReasonRepository.GetOneAsync(x => x.Id == userBanReportCreateModel.BanReasonId && x.BanReasonType == Core.Enums.BanReasonType.User);
             if (banrs == null) throw new Exception("Not found ban reason");
             var uBanReport = await _userBanReportRepository.GetOneAsync(x => x.UserId == userBanReportCreateModel.UserId && x.CreatedBy == _identityUser.AccountId && !x.IsApproved);
             if (uBanReport != null) throw new Exception("This report waiting approve");
@@ -73,7 +74,7 @@ namespace ExchangeStuff.Service.Services.Impls
         public async Task<UserBanReportViewModel> GetUserBanReport(Guid id)
         => AutoMapperConfig.Mapper.Map<UserBanReportViewModel>(await _userBanReportRepository.GetOneAsync(x => x.Id == id, "User,BanReason"));
 
-        public async Task<List<UserBanReportViewModel>> GetUserBanReports(Guid? userId = null!, List<Guid>? reasonIds = null, Guid? reasonId = null, string? reason = null, int? pageIndex = null, int? pageSize = null)
+        public async Task<PaginationItem<UserBanReportViewModel>> GetUserBanReports(Guid? userId = null!, List<Guid>? reasonIds = null, Guid? reasonId = null, string? reason = null, int? pageIndex = null, int? pageSize = null)
         {
             var userBans = await _userBanReportRepository.GetManyAsync(include: "BanReason,User");
             if (userId.HasValue)
@@ -102,7 +103,7 @@ namespace ExchangeStuff.Service.Services.Impls
                 int size = pageSize.Value > 0 ? pageSize.Value : 10;
                 userBans = userBans.Skip(index * size).Take(size).ToList();
             }
-            return AutoMapperConfig.Mapper.Map<List<UserBanReportViewModel>>(userBans);
+            return PaginationItem<UserBanReportViewModel>.ToPagedList(AutoMapperConfig.Mapper.Map<List<UserBanReportViewModel>>(userBans), pageIndex, pageSize);
         }
     }
 }

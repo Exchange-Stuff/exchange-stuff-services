@@ -34,6 +34,7 @@ namespace ExchangeStuff.Service.Services.Impls
         private readonly IResourceRepository _resourceRepository;
         private readonly IPermissionRepository _permissionRepository;
         private readonly IActionRepository _actionRepository;
+        private readonly IAdminRepository _adminRepository;
         private readonly IIdentityUser<Guid> _identityUser;
 
         public AuthService(IConfiguration configuration, IUnitOfWork unitOfWork, IDistributedCache distributedCache, IConnectionMultiplexer connectionMultiplexer, IHttpContextAccessor httpContextAccessor, IIdentityUser<Guid> identityUser) : base(unitOfWork, configuration, httpContextAccessor, distributedCache, connectionMultiplexer, identityUser)
@@ -52,6 +53,7 @@ namespace ExchangeStuff.Service.Services.Impls
             _resourceRepository = _uow.ResourceRepository;
             _permissionRepository = _uow.PermissionRepository;
             _actionRepository = _uow.ActionRepository;
+            _adminRepository= _uow.AdminRepository;
         }
 
         public async Task<bool> ValidScreen(string resource)
@@ -196,7 +198,6 @@ namespace ExchangeStuff.Service.Services.Impls
                         var acc = await UserSigninCreate(userindor);
                         if (acc == null) throw new UnauthorizedAccessException("Not found user");
                         var tokenSystem = await GenerateToken(acc);
-
                         await SavePermissionGroup(acc.Id);
                         var ntoken = await SaveAccessToken(tokenSystem, acc.Id);
                         return AutoMapperConfig.Mapper.Map<TokenViewModel>(ntoken);
@@ -206,7 +207,45 @@ namespace ExchangeStuff.Service.Services.Impls
             }
             return null!;
         }
-
+        public async Task<TokenViewModel> GetTokenAdmin(string param)
+        {
+            if (param != "")
+            {
+                param = param.Substring(1);
+                string[] splitParam = param.Split('&', StringSplitOptions.RemoveEmptyEntries);
+                string code = "";
+                bool finded = false;
+                foreach (var item in splitParam)
+                {
+                    if (!finded)
+                    {
+                        code = item.Split('=')[0] + "";
+                    }
+                    if (code == "code")
+                    {
+                        code = item.Split('=')[1] + "";
+                        finded = true;
+                    }
+                }
+                if (!string.IsNullOrEmpty(code.Trim()))
+                {
+                    var token = await GetAccessTokenAsync(code);
+                    if (!string.IsNullOrEmpty(token))
+                    {
+                        var userindor = GetAuth(token);
+                        if (userindor == null!) throw new UnauthorizedAccessException("UserInfor invalid");
+                        var acc = await UserSigninCreate(userindor);
+                        if (acc == null) throw new UnauthorizedAccessException("Not found user");
+                        var tokenSystem = await GenerateToken(acc);
+                        await SavePermissionGroup(acc.Id);
+                        var ntoken = await SaveAccessToken(tokenSystem, acc.Id);
+                        return AutoMapperConfig.Mapper.Map<TokenViewModel>(ntoken);
+                    }
+                }
+                throw new UnauthorizedAccessException("Not found auth code");
+            }
+            return null!;
+        }
         public async Task<Account> UserSigninCreate(UserGGInfo userinfo)
         {
             if (userinfo != null!)
@@ -313,6 +352,7 @@ namespace ExchangeStuff.Service.Services.Impls
                 throw new UnauthorizedAccessException(ex.Message);
             }
         }
+
         public async Task<ModeratorViewModel> CreateModerator(ModeratorCreateModel moderatorCreateModel)
         {
             if (moderatorCreateModel.Username.Split(" ").Length > 0) throw new Exception("Username not allow [space]");

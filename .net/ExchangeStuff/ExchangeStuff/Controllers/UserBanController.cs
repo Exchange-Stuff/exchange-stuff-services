@@ -1,5 +1,6 @@
 ﻿using ExchangeStuff.Responses;
 using ExchangeStuff.Service.Models.UserBanReports;
+using ExchangeStuff.Service.Paginations;
 using ExchangeStuff.Service.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -27,7 +28,7 @@ namespace ExchangeStuff.Controllers
 
         [HttpGet("userBanReports/reasonIds")]
         public async Task<IActionResult> GetUserBanReportsReasonIds(List<Guid>? reasonIds = null, int? pageIndex = null, int? pageSize = null)
-            => Ok(new ResponseResult<List<UserBanReportViewModel>>
+            => Ok(new ResponseResult<PaginationItem<UserBanReportViewModel>>
             {
                 Error = null!,
                 IsSuccess = true,
@@ -36,7 +37,7 @@ namespace ExchangeStuff.Controllers
 
         [HttpGet("userBanReports")]
         public async Task<IActionResult> GetUserBanReportsReasonIds(Guid? userId = null!, Guid? reasonId = null, string? reason = null, int? pageIndex = null, int? pageSize = null)
-            => Ok(new ResponseResult<List<UserBanReportViewModel>>
+            => Ok(new ResponseResult<PaginationItem<UserBanReportViewModel>>
             {
                 Error = null!,
                 IsSuccess = true,

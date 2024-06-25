@@ -1,8 +1,7 @@
-﻿using ExchangeStuff.AuthOptions.Requirements;
-using ExchangeStuff.Responses;
-using ExchangeStuff.Service.Constants;
+﻿using ExchangeStuff.Responses;
 using ExchangeStuff.Service.Models.Accounts;
 using ExchangeStuff.Service.Models.Users;
+using ExchangeStuff.Service.Paginations;
 using ExchangeStuff.Service.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,12 +20,13 @@ namespace ExchangeStuff.Controllers
 
         [HttpGet("users")]
         public async Task<IActionResult> GetUsers(string? name = null!, string? username = null!, string? email = null!, int? pageIndex = null!, int? pageSize = null!, bool? includeBan = null!)
-            => Ok(new ResponseResult<List<UserViewModel>>
+            => Ok(new ResponseResult<PaginationItem<UserViewModel>>
             {
                 Error = null!,
                 IsSuccess = true,
                 Value = await _accountService.GetUsers(name, email, username, pageIndex, pageSize, includeBan)
             });
+
         [HttpGet("user/{id}")]
         public async Task<IActionResult> GetUser([FromRoute] Guid id, bool? includeBan = null!)
             => Ok(new ResponseResult<UserViewModel>
@@ -37,7 +37,7 @@ namespace ExchangeStuff.Controllers
             });
         [HttpGet("accounts")]
         public async Task<IActionResult> GetAccounts(string? name = null!, string? username = null!, string? email = null!, int? pageIndex = null!, int? pageSize = null!, bool? includeBan = null!)
-           => Ok(new ResponseResult<List<AccountViewModel>>
+           => Ok(new ResponseResult<PaginationItem<AccountViewModel>>
            {
                Error = null!,
                IsSuccess = true,
