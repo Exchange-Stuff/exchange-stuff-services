@@ -93,7 +93,7 @@ namespace ExchangeStuff.Service.Maps
             CreateMap<Token, TokenViewModel>().ReverseMap();
             CreateMap<Moderator, ModeratorViewModel>().ReverseMap();
             CreateMap<ProductImageUserViewModel, Product>().ReverseMap();
-            //CreateMap(typeof(PaginationItem<>), typeof(PaginationItem<>)).ConvertUsing(typeof(PaginationItemConverter<,>));
+            CreateMap<Product, ProductUserViewModel>().ReverseMap();
         }
     }
 
