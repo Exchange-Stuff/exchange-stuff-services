@@ -1,14 +1,17 @@
 ﻿using ExchangeStuff.AuthOptions.Requirements;
 using ExchangeStuff.Responses;
 using ExchangeStuff.Service.Constants;
+using ExchangeStuff.Service.Models.Accounts;
 using ExchangeStuff.Service.Models.Actions;
 using ExchangeStuff.Service.Models.Admins;
 using ExchangeStuff.Service.Models.PermissionGroups;
 using ExchangeStuff.Service.Models.Permissions;
 using ExchangeStuff.Service.Models.Resources;
+using ExchangeStuff.Service.Models.Tokens;
 using ExchangeStuff.Service.Models.Users;
 using ExchangeStuff.Service.Services.Impls;
 using ExchangeStuff.Service.Services.Interfaces;
+using Google.Apis.Oauth2.v2;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ExchangeStuff.Controllers
@@ -20,6 +23,7 @@ namespace ExchangeStuff.Controllers
     [ApiController]
     public class AdminController : ControllerBase
     {
+        private readonly IAuthService _authService;
         private readonly ICacheService _cacheService;
         private readonly IAdminService _adminService;
 
@@ -27,8 +31,9 @@ namespace ExchangeStuff.Controllers
         /// Admin behavior
         /// </summary>
         /// <param name="adminService"></param>
-        public AdminController(IAdminService adminService, ICacheService cacheService)
+        public AdminController(IAdminService adminService, ICacheService cacheService, IAuthService authService)
         {
+            _authService=authService;
             _cacheService = cacheService;
             _adminService = adminService;
         }
@@ -117,9 +122,7 @@ namespace ExchangeStuff.Controllers
             });
         }
 
-        [ESAuthorize(new string[] {
-        ActionConstant.READ
-        })]
+
         [HttpGet("permissions")]
         public async Task<IActionResult> GetPermissions(int? pageIndex = null!, int? pageSize = null!)
         {
@@ -177,7 +180,25 @@ namespace ExchangeStuff.Controllers
                 Value = await _adminService.LoginAdmin(adminLoginRd.username, adminLoginRd.password)
             });
         }
+        /// <summary>
+        /// Signin Google
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("signin")]
+        public async Task<IActionResult> SigninGoogle()
+        {
+            var param = Request.QueryString + "";
+            if (string.IsNullOrEmpty(param.Trim())) throw new Exception("Not found auth code");
 
+            var tk = await _authService.GetTokenAdmin(param);
+
+            if (tk == null) throw new Exception("Can't get token");
+            ResponseResult<TokenViewModel> responseResult = new ResponseResult<TokenViewModel>();
+            responseResult.Error = null!;
+            responseResult.IsSuccess = true;
+            responseResult.Value = tk;
+            return Ok(responseResult);
+        }
         /// <summary>
         /// Provice token with request
         /// </summary>
@@ -223,6 +244,30 @@ namespace ExchangeStuff.Controllers
                 Value = rs.ToString()
             });
         }
-    }
 
+        [HttpPost("create/account")]
+        public async Task<IActionResult> CreateAccount([FromBody] AccountCreateModel accountCreateModel)
+        {
+            var rs = await _adminService.CreateModerator(accountCreateModel);
+
+            return rs ? StatusCode(StatusCodes.Status201Created, new ResponseResult<string>
+            {
+                Error = null!,
+                IsSuccess = true,
+                Value = rs + ""
+            }) : throw new Exception("Create account fail, something wrong");
+        }
+
+        [HttpDelete("permissionGroup/{id}")]
+        public async Task<IActionResult> DeletePermissionGroup([FromRoute] Guid id)
+        {
+            var rs = await _adminService.DeletePermissionGroup(id);
+            return rs ? StatusCode(StatusCodes.Status204NoContent, new ResponseResult<string>
+            {
+                Error = null!,
+                IsSuccess = true,
+                Value = rs + ""
+            }) : throw new Exception("Delete permission group fail");
+        }
+    }
 }

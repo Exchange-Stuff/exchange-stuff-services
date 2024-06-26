@@ -5,6 +5,7 @@ using ExchangeStuff.CurrentUser.Users;
 using ExchangeStuff.Service.Maps;
 using ExchangeStuff.Service.Models.ProductBanReports;
 using ExchangeStuff.Service.Models.UserBanReports;
+using ExchangeStuff.Service.Paginations;
 using ExchangeStuff.Service.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Distributed;
@@ -72,7 +73,7 @@ namespace ExchangeStuff.Service.Services.Impls
         public async Task<ProductBanReportViewModel> GetProductBanReport(Guid id)
         => AutoMapperConfig.Mapper.Map<ProductBanReportViewModel>(await _productBanReportRepository.GetOneAsync(x => x.Id == id));
 
-        public async Task<List<ProductBanReportViewModel>> GetProductBanReports(Guid? productId = null, List<Guid>? reasonIds = null, Guid? reasonId = null, string? reason = null, int? pageIndex = null, int? pageSize = null)
+        public async Task<PaginationItem<ProductBanReportViewModel>> GetProductBanReports(Guid? productId = null, List<Guid>? reasonIds = null, Guid? reasonId = null, string? reason = null, int? pageIndex = null, int? pageSize = null)
         {
             var productBans = await _productBanReportRepository.GetManyAsync(include: "BanReason,Product");
             if (productId.HasValue)
@@ -101,7 +102,7 @@ namespace ExchangeStuff.Service.Services.Impls
                 int size = pageSize.Value > 0 ? pageSize.Value : 10;
                 productBans = productBans.Skip(index * size).Take(size).ToList();
             }
-            return AutoMapperConfig.Mapper.Map<List<ProductBanReportViewModel>>(productBans);
+            return PaginationItem<ProductBanReportViewModel>.ToPagedList(AutoMapperConfig.Mapper.Map<List<ProductBanReportViewModel>>(productBans),pageIndex,pageSize);
         }
     }
 }

@@ -1,7 +1,10 @@
 ﻿using ExchangeStuff.Responses;
 using ExchangeStuff.Service.Models.Tokens;
+using ExchangeStuff.Service.Services.Impls;
 using ExchangeStuff.Service.Services.Interfaces;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 
 namespace ExchangeStuff.Controllers
 {
@@ -71,12 +74,12 @@ namespace ExchangeStuff.Controllers
         /// <returns></returns>
         /// <exception cref="UnauthorizedAccessException"></exception>
         /// <exception cref="Exception"></exception>
-        [HttpPut]
-        public async Task<IActionResult> ReNewToken()
+
+        [HttpPost("renew")]
+        public async Task<IActionResult> ReNewToken([FromBody] RenewRd renewRd)
         {
-            var rftk = (HttpContext.Request.Headers["RefreshToken"].First() + "").Split(" ").Last();
-            if (string.IsNullOrEmpty(rftk)) throw new UnauthorizedAccessException("Refresh Token required");
-            var rs = await _tokenService.RenewAccessToken(rftk);
+            if (renewRd==null!|| string.IsNullOrEmpty(renewRd.RefreshToken)) throw new UnauthorizedAccessException("Refresh Token required");
+            var rs = await _tokenService.RenewAccessToken(renewRd.RefreshToken);
             return rs != null ? Ok(new ResponseResult<TokenViewModel>
             {
                 Error = null!,
@@ -84,5 +87,61 @@ namespace ExchangeStuff.Controllers
                 Value = rs
             }) : throw new Exception("Can't renew Token");
         }
+
+
+        /// <summary>
+        /// Login with username/email and password
+        /// </summary>
+        /// <param name="loginRd"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        [HttpPost("signin")]
+        public async Task<IActionResult> Signin([FromBody] LoginRd loginRd)
+        {
+            if (string.IsNullOrEmpty(loginRd.Username) || string.IsNullOrEmpty(loginRd.Password)) throw new Exception("Username and password required");
+            return Ok(new ResponseResult<TokenViewModel>
+            {
+                Error = null!,
+                IsSuccess = true,
+                Value = await _authService.LoginUsernameAndPwd(loginRd)
+            });
+        }
+
+        /// <summary>
+        /// Delete account (ignore admin)
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteAccount([FromRoute] Guid id)
+        {
+            var rs = await _authService.DeleteAccount(id);
+            return rs ? StatusCode(StatusCodes.Status204NoContent) : throw new Exception("Can't delete account");
+        }
+
+        /// <summary>
+        /// Check screen (UserScreen, ModeratorScreen, AdminScreen) permisison, provide access token in header
+        /// </summary>
+        /// <param name="resource"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        /// <exception cref="UnauthorizedAccessException"></exception>
+        [HttpPost("screen")]
+        public async Task<IActionResult> ValidScreen([FromBody] ResourceRd resource)
+        {
+            if (resource == null! || string.IsNullOrEmpty(resource.Resource)) throw new Exception("Resource required");
+            var rs = await _authService.ValidScreen(resource.Resource);
+            return rs ? Ok(new ResponseResult<string>
+            {
+                Error = null!,
+                IsSuccess = true,
+                Value = rs + ""
+            }) : throw new UnauthorizedAccessException("Access denial");
+        }
+
     }
+
+    public sealed record ResourceRd(string Resource);
+    public sealed record RenewRd(string RefreshToken);
 }

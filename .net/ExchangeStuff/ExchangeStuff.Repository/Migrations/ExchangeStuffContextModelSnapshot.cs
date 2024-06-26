@@ -84,8 +84,8 @@ namespace ExchangeStuff.Repository.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("Password")
                         .HasColumnType("nvarchar(max)");
@@ -94,8 +94,8 @@ namespace ExchangeStuff.Repository.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Username")
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
 
@@ -277,8 +277,9 @@ namespace ExchangeStuff.Repository.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<bool>("IsCredit")
-                        .HasColumnType("bit");
+                    b.Property<string>("ImageQRCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("ModifiedBy")
                         .HasColumnType("uniqueidentifier");
@@ -978,8 +979,8 @@ namespace ExchangeStuff.Repository.Migrations
             modelBuilder.Entity("ExchangeStuff.Core.Entities.Rating", b =>
                 {
                     b.HasOne("ExchangeStuff.Core.Entities.PurchaseTicket", "PurchaseTicket")
-                        .WithMany("Ratings")
-                        .HasForeignKey("PurchaseTicketId")
+                        .WithOne("Rating")
+                        .HasForeignKey("ExchangeStuff.Core.Entities.Rating", "PurchaseTicketId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1091,7 +1092,7 @@ namespace ExchangeStuff.Repository.Migrations
 
             modelBuilder.Entity("ExchangeStuff.Core.Entities.PurchaseTicket", b =>
                 {
-                    b.Navigation("Ratings");
+                    b.Navigation("Rating");
                 });
 
             modelBuilder.Entity("ExchangeStuff.Core.Entities.Resource", b =>

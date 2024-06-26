@@ -5,10 +5,10 @@ namespace ExchangeStuff.Core.Entities
 {
     public class Account : Auditable<Guid>
     {
-        [MaxLength(30)]
+        [MaxLength(50)]
         public string? Username { get; set; }
 
-        [MaxLength(30)]
+        [MaxLength(50)]
         public string Name { get; set; }
 
         [MaxLength(50)]
