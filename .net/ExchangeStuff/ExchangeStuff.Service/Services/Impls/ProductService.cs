@@ -98,7 +98,7 @@ namespace ExchangeStuff.Service.Services.Impls
                     Image img3 = new Image
                     {
                         Id = Guid.NewGuid(),
-                        Url = model.Url1
+                        Url = model.Url2
                     };
                     await _unitOfWork.ImageRepository.AddAsync(img3);
                 }
