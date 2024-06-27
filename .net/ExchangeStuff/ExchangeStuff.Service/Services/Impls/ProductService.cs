@@ -74,34 +74,17 @@ namespace ExchangeStuff.Service.Services.Impls
                 product.Categories = categories.ToList();
                 product.ProductStatus = ProductStatus.Pending;
 
+                List<Image> images = new List<Image>();
+                foreach (var item in model.ImageUrls)
+                {
+                    images.Add(new Image
+                    {
+                        Url = item
+                    });
+                }
+                product.Images = images;
+
                 await _unitOfWork.ProductRepository.AddAsync(product);
-
-                Image img1 = new Image
-                {
-                    Id = Guid.NewGuid(),
-                    Url = model.Thumbnail
-                };
-                await _unitOfWork.ImageRepository.AddAsync(img1);
-
-                if(model.Url1 != null)
-                {
-                    Image img2 = new Image
-                    {
-                        Id = Guid.NewGuid(),
-                        Url = model.Url1
-                    };
-                    await _unitOfWork.ImageRepository.AddAsync(img2);
-                }
-
-                if (model.Url2 != null)
-                {
-                    Image img3 = new Image
-                    {
-                        Id = Guid.NewGuid(),
-                        Url = model.Url2
-                    };
-                    await _unitOfWork.ImageRepository.AddAsync(img3);
-                }
 
                 var result = await _unitOfWork.SaveChangeAsync();
 
