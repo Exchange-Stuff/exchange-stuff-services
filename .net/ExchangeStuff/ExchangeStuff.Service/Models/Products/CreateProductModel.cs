@@ -8,6 +8,8 @@ namespace ExchangeStuff.Service.Models.Products
         public string Description { get; set; }
         public double Price { get; set; }
         public string Thumbnail { get; set; }
+        public string Url1 { get; set; }
+        public string Url2 { get; set; }
         public List<Guid> CategoryId { get; set; }
 
 

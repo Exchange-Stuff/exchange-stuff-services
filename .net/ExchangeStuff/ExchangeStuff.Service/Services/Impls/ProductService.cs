@@ -76,6 +76,33 @@ namespace ExchangeStuff.Service.Services.Impls
 
                 await _unitOfWork.ProductRepository.AddAsync(product);
 
+                Image img1 = new Image
+                {
+                    Id = Guid.NewGuid(),
+                    Url = model.Thumbnail
+                };
+                await _unitOfWork.ImageRepository.AddAsync(img1);
+
+                if(model.Url1 != null)
+                {
+                    Image img2 = new Image
+                    {
+                        Id = Guid.NewGuid(),
+                        Url = model.Url1
+                    };
+                    await _unitOfWork.ImageRepository.AddAsync(img2);
+                }
+
+                if (model.Url2 != null)
+                {
+                    Image img3 = new Image
+                    {
+                        Id = Guid.NewGuid(),
+                        Url = model.Url1
+                    };
+                    await _unitOfWork.ImageRepository.AddAsync(img3);
+                }
+
                 var result = await _unitOfWork.SaveChangeAsync();
 
                 return result > 0;
@@ -162,8 +189,15 @@ namespace ExchangeStuff.Service.Services.Impls
 
             return AutoMapperConfig.Mapper.Map<List<ProductUserViewModel>>(product);
 
-            
-             
+        }
+
+        public async Task<List<ProductUserViewModel>> GetOtherUserProducts(Guid userId)
+        {
+            var product = await _productRepository.GetManyAsync(predicate: p => p.CreatedBy.Equals(userId) && p.IsActived && p.ProductStatus == ProductStatus.Approve);
+
+            if (product == null) throw new Exception("Not found product!");
+
+            return AutoMapperConfig.Mapper.Map<List<ProductUserViewModel>>(product);
         }
     }
 }

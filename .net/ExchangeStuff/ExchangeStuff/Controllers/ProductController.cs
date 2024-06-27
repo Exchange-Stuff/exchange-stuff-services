@@ -43,7 +43,7 @@ namespace ExchangeStuff.Controllers
             });
         }
 
-        [HttpGet("/getProductByCategory/{categoryId}")]
+        [HttpGet("getProductByCategory/{categoryId}")]
         public async Task<IActionResult> GetProductByCategory(Guid categoryId)
         {
             var products = await _productService.GetProductsByCategoryIdAsync(categoryId);
@@ -91,6 +91,18 @@ namespace ExchangeStuff.Controllers
                 Error = null!,
                 IsSuccess = true,
                 Value = await _productService.GetProductUser()
+            });
+        }
+
+        [HttpGet("getOtherUserProducts/{userId}")]
+        public async Task<IActionResult> GetOtherUserProducts(Guid userId)
+        {
+
+            return Ok(new ResponseResult<List<ProductUserViewModel>>
+            {
+                Error = null!,
+                IsSuccess = true,
+                Value = await _productService.GetOtherUserProducts(userId)
             });
         }
 
