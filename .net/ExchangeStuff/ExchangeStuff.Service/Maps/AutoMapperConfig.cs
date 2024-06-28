@@ -11,6 +11,7 @@ using ExchangeStuff.Service.Models.Comments;
 using ExchangeStuff.Service.Models.FinancialTickets;
 using ExchangeStuff.Service.Models.Images;
 using ExchangeStuff.Service.Models.Moderators;
+using ExchangeStuff.Service.Models.Notifications;
 using ExchangeStuff.Service.Models.PermissionGroups;
 using ExchangeStuff.Service.Models.Permissions;
 using ExchangeStuff.Service.Models.PostTicket;
@@ -19,8 +20,8 @@ using ExchangeStuff.Service.Models.Products;
 using ExchangeStuff.Service.Models.PurchaseTicket;
 using ExchangeStuff.Service.Models.Rating;
 using ExchangeStuff.Service.Models.Resources;
-using ExchangeStuff.Service.Models.TransactionHistory;
 using ExchangeStuff.Service.Models.Tokens;
+using ExchangeStuff.Service.Models.TransactionHistory;
 using ExchangeStuff.Service.Models.UserBanReports;
 using ExchangeStuff.Service.Models.Users;
 
@@ -94,6 +95,8 @@ namespace ExchangeStuff.Service.Maps
             CreateMap<Moderator, ModeratorViewModel>().ReverseMap();
             CreateMap<ProductImageUserViewModel, Product>().ReverseMap();
             CreateMap<Product, ProductUserViewModel>().ReverseMap();
+            CreateMap<Notification, NotificationViewModel>().ReverseMap();
         }
     }
+
 }

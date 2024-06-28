@@ -74,6 +74,16 @@ namespace ExchangeStuff.Service.Services.Impls
                 product.Categories = categories.ToList();
                 product.ProductStatus = ProductStatus.Pending;
 
+                List<Image> images = new List<Image>();
+                foreach (var item in model.ImageUrls)
+                {
+                    images.Add(new Image
+                    {
+                        Url = item
+                    });
+                }
+                product.Images = images;
+
                 await _unitOfWork.ProductRepository.AddAsync(product);
 
                 var result = await _unitOfWork.SaveChangeAsync();
@@ -162,8 +172,15 @@ namespace ExchangeStuff.Service.Services.Impls
 
             return AutoMapperConfig.Mapper.Map<List<ProductUserViewModel>>(product);
 
-            
-             
+        }
+
+        public async Task<List<ProductUserViewModel>> GetOtherUserProducts(Guid userId)
+        {
+            var product = await _productRepository.GetManyAsync(predicate: p => p.CreatedBy.Equals(userId) && p.IsActived && p.ProductStatus == ProductStatus.Approve);
+
+            if (product == null) throw new Exception("Not found product!");
+
+            return AutoMapperConfig.Mapper.Map<List<ProductUserViewModel>>(product);
         }
     }
 }

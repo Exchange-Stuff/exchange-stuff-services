@@ -43,6 +43,17 @@ namespace ExchangeStuff.AuthOptions.Jwts
                             x.Response!.Headers!.TryAdd("IS-EXCHANGESTUFF-TOKEN-EXPIRED", "true");
                         }
                         return Task.CompletedTask;
+                    },
+                    OnMessageReceived = context =>
+                    {
+                        var accessToken = (context.Request.Headers.Authorization.FirstOrDefault())?.Split(" ").Last()+"";
+                        var path = context.HttpContext.Request.Path;
+                        if (!string.IsNullOrEmpty(accessToken) &&
+                            (path.StartsWithSegments("/esnotification")))
+                        {
+                            context.Token = accessToken;
+                        }
+                        return Task.CompletedTask;
                     }
                 };
             });

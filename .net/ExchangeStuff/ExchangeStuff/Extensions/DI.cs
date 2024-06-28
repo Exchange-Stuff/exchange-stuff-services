@@ -10,6 +10,7 @@ namespace ExchangeStuff.Extensions
     {
         public static void InjectAPI(this IServiceCollection services, IConfiguration configuration)
         {
+            services.AddSignalR();
             services.AddSwaggerES(configuration);
             services.AddESJwt(configuration);
             services.AddTransient<IAuthorizationPolicyProvider, ESPolicy>();
