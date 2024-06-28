@@ -1,6 +1,7 @@
 ﻿using ExchangeStuff.Core.Entities;
 using ExchangeStuff.Core.Repositories;
 using ExchangeStuff.Core.Uows;
+using ExchangeStuff.CurrentUser.Users;
 using ExchangeStuff.Service.DTOs;
 using ExchangeStuff.Service.Maps;
 using ExchangeStuff.Service.Services.Interfaces;
@@ -17,6 +18,7 @@ namespace ExchangeStuff.Service.Services.Impls
 {
     public class CacheService : ICacheService
     {
+        private readonly IIdentityUser<Guid> _identityUser;
         private readonly IConfiguration _configuration;
         private readonly IUnitOfWork _uow;
         private readonly IDistributedCache _distributedCache;
@@ -31,8 +33,9 @@ namespace ExchangeStuff.Service.Services.Impls
         {
 
         }
-        public CacheService(IUnitOfWork unitOfWork, IDistributedCache distributedCache, IConnectionMultiplexer connectionMultiplexer, IConfiguration configuration)
+        public CacheService(IUnitOfWork unitOfWork, IDistributedCache distributedCache, IConnectionMultiplexer connectionMultiplexer, IConfiguration configuration, IIdentityUser<Guid> identityUser)
         {
+            _identityUser = identityUser;
             _configuration = configuration;
             _uow = unitOfWork;
             _distributedCache = distributedCache;
@@ -168,6 +171,34 @@ namespace ExchangeStuff.Service.Services.Impls
             }
             _tokenRepository.RemoveRange(tokens);
             await _uow.SaveChangeAsync();
+        }
+
+        public async Task AddConnection(string connectionId)
+        {
+            if (_identityUser.AccountId != Guid.Empty)
+            {
+                await _distributedCache.SetStringAsync(connectionId, _identityUser.AccountId + "");
+                await _distributedCache.SetStringAsync(_identityUser.AccountId + "", connectionId);
+            }
+        }
+
+        public async Task RemoveConnection(string connectionId)
+        {
+            var accountId = await _distributedCache.GetStringAsync(connectionId);
+            if (!string.IsNullOrEmpty(accountId))
+            {
+                await _distributedCache.RemoveAsync(connectionId);
+                await _distributedCache.RemoveAsync(accountId + "");
+            }
+        }
+
+        public async Task<string> GetConnectionId(string accountId)
+        {
+            if (Guid.TryParse(accountId, out  Guid newId))
+            {
+                return (await _distributedCache.GetStringAsync(accountId))!;
+            }
+            return null!;
         }
     }
 }

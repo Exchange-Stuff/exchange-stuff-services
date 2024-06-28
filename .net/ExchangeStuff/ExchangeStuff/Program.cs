@@ -7,6 +7,7 @@ using Newtonsoft.Json.Serialization;
 using Serilog;
 using ExchangeStuff.Service.Maps;
 using AutoMapper;
+using ExchangeStuff.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -62,5 +63,5 @@ app.UseException();
 app.UseCors("AllowSpecificOrigin");
 
 app.MapControllers();
-
+app.MapHub<ESNotification>("/esnotification");
 app.Run();

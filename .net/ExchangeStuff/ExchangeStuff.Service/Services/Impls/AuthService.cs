@@ -417,6 +417,7 @@ namespace ExchangeStuff.Service.Services.Impls
 
         public async Task<TokenViewModel> LoginUsernameAndPwd(LoginRd loginRd)
         {
+            var newpwd = HashPassword("string");
             if (string.IsNullOrEmpty(loginRd.Username) || string.IsNullOrEmpty(loginRd.Password)) throw new Exception("Username and password required");
             Account account = null!;
             account = await _accountRepository.GetOneAsync(x => x.Email != null && x.Email == loginRd.Username && x.Password == HashPassword(loginRd.Password) && x.IsActived);

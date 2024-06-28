@@ -33,7 +33,7 @@ namespace ExchangeStuff.Service.Services.Impls
         private JwtDTO _jwtDTO = new();
         private GoogleAuthDTO _googleAuthDTO = new();
 
-        public TokenService(IUnitOfWork unitOfWork, IConfiguration configuration, IHttpContextAccessor httpContextAccessor, IDistributedCache distributed, IConnectionMultiplexer connectionMultiplexer, IIdentityUser<Guid> identityUser) : base(unitOfWork, distributed, connectionMultiplexer, configuration)
+        public TokenService(IUnitOfWork unitOfWork, IConfiguration configuration, IHttpContextAccessor httpContextAccessor, IDistributedCache distributed, IConnectionMultiplexer connectionMultiplexer, IIdentityUser<Guid> identityUser) : base(unitOfWork, distributed, connectionMultiplexer, configuration, identityUser)
         {
             _identityUser = identityUser;
             _connectionMutiple = connectionMultiplexer;
