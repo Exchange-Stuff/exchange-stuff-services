@@ -13,5 +13,6 @@ namespace ExchangeStuff.Service.Services.Interfaces
         Task<ProductViewModel> GetDetail(Guid id);
         Task<bool> updateStatusProduct(UpdateProductViewModel updateProductViewModel);
         Task<List<ProductUserViewModel>> GetProductUser();
+        Task<List<ProductUserViewModel>> GetOtherUserProducts(Guid userId);
     }
 }
