@@ -52,6 +52,7 @@ namespace ExchangeStuff.Service.Extensions
             services.AddScoped<IProductBanReportService, ProductBanReportService>();
             services.AddScoped<IUserBanReportService, UserBanReportService>();
             services.AddScoped<IBanReasonService, BanReasonService>();
+            services.AddScoped<INotificationService, NotificationService>();
         }
     }
 }

@@ -28,6 +28,7 @@ namespace ExchangeStuff.Core.Uows
         IBanReasonRepository BanReasonRepository { get; }
         IModeratorRepository ModeratorRepository { get; }
         IUserBalanceRepository UserBalanceRepository { get; }
+        INotificationRepository NotificationRepository { get; }
         Task<int> SaveChangeAsync();
     }
 }

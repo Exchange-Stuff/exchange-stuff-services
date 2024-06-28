@@ -44,7 +44,7 @@ namespace ExchangeStuff.Controllers
         }
 
         /// <summary>
-        /// Provide access token 
+        /// (Log out)Provide access token 
         /// </summary>
         /// <returns></returns>
         /// <exception cref="UnauthorizedAccessException"></exception>
