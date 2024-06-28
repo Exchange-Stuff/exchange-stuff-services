@@ -1,6 +1,5 @@
 ﻿using ExchangeStuff.Service.Services.Interfaces;
 using Microsoft.AspNetCore.SignalR;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace ExchangeStuff.Hubs
 {
