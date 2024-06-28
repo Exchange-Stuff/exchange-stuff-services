@@ -182,5 +182,16 @@ namespace ExchangeStuff.Service.Services.Impls
 
             return AutoMapperConfig.Mapper.Map<List<ProductUserViewModel>>(product);
         }
+
+        public async Task<List<ProductViewModel>> GetListProductsForModerator()
+        {
+            return AutoMapperConfig.Mapper.Map<List<ProductViewModel>>(await _productRepository.GetManyAsync(predicate: p => p.ProductStatus.Equals(ProductStatus.Pending), orderBy: p => p.OrderBy(p => p.CreatedOn)));
+        }
+
+        public async Task<List<ProductViewModel>> GetListProductsForAdmin()
+        {
+
+            return AutoMapperConfig.Mapper.Map<List<ProductViewModel>>(await _productRepository.GetManyAsync(orderBy: p => p.OrderBy(p => p.CreatedOn)));
+        }
     }
 }
