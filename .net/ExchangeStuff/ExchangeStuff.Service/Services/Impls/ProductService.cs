@@ -124,8 +124,6 @@ namespace ExchangeStuff.Service.Services.Impls
                     }
 
                 }
-
-                
                 
                 var result = await _unitOfWork.SaveChangeAsync();
 
@@ -148,21 +146,24 @@ namespace ExchangeStuff.Service.Services.Impls
 
         }
 
-        public async Task<ProductImageUserViewModel> GetDetail(Guid id)
+        public async Task<ProductViewModel> GetDetail(Guid id)
         {
             var product = await _productRepository.GetOneAsync(predicate: p => p.Id == id, include: "Images");
             if (product == null) throw new Exception("Not found product!");
-            //var posticket = await _postTicketRepository.GetOneAsync(predicate: pt => pt.ProductId == product.Id, include: "User");
-            //if (posticket == null) throw new Exception("Not found post ticket!");
-            var user = await _userRepository.GetOneAsync(predicate: u => u.Id == product.CreatedBy);
-            if (user == null) throw new Exception("Not found user!");
-            var result = AutoMapperConfig.Mapper.Map<ProductImageUserViewModel>(product);
-            result.User = AutoMapperConfig.Mapper.Map<UserViewModel>(user);
+            var result = AutoMapperConfig.Mapper.Map<ProductViewModel>(product);
             return result;
         }
 
+        public async Task<List<ProductUserViewModel>> GetProductUser()
+        {
+            var product = await _productRepository.GetManyAsync(predicate: p => p.CreatedBy.Equals(_identityUser.AccountId));
 
+            if (product == null) throw new Exception("Not found product!");
 
+            return AutoMapperConfig.Mapper.Map<List<ProductUserViewModel>>(product);
 
+            
+             
+        }
     }
 }

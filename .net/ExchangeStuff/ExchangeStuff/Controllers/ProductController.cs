@@ -3,9 +3,11 @@ using ExchangeStuff.Core.Enums;
 using ExchangeStuff.Responses;
 using ExchangeStuff.Service.Constants;
 using ExchangeStuff.Service.Models.Products;
+using ExchangeStuff.Service.Models.PurchaseTicket;
 using ExchangeStuff.Service.Services.Impls;
 using ExchangeStuff.Service.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ExchangeStuff.Controllers
@@ -33,7 +35,7 @@ namespace ExchangeStuff.Controllers
         [HttpGet("getDetail/{id}")]
         public async Task<IActionResult> GetDetail(Guid id)
         {
-            return Ok(new ResponseResult<ProductImageUserViewModel>
+            return Ok(new ResponseResult<ProductViewModel>
             {
                 Error = null,
                 IsSuccess = true,
@@ -77,6 +79,18 @@ namespace ExchangeStuff.Controllers
                 Error = null!,
                 IsSuccess = true,
                 Value = rs.ToString()
+            });
+        }
+
+        [HttpGet("getProductByUserId")]
+        public async Task<IActionResult> GetProductUserId()
+        {
+
+            return Ok(new ResponseResult<List<ProductUserViewModel>>
+            {
+                Error = null!,
+                IsSuccess = true,
+                Value = await _productService.GetProductUser()
             });
         }
 
