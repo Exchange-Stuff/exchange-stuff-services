@@ -36,6 +36,7 @@ namespace ExchangeStuff.Repository.Uows
             BanReasonRepository = new BanReasonRepository(_context);
             ModeratorRepository = new ModeratorRepository(_context);    
             UserBalanceRepository = new UserBalanceRepository(_context);
+            NotificationRepository = new NotificationRepository(_context);
         }
 
         public IUserRepository UserRepository { get; private set; }
@@ -81,6 +82,8 @@ namespace ExchangeStuff.Repository.Uows
         public IUserBalanceRepository UserBalanceRepository { get; private set; }
 
         public IModeratorRepository ModeratorRepository { get; private set; }
+
+        public INotificationRepository NotificationRepository { get; private set; }
 
         public async Task<int> SaveChangeAsync()
         => await _context.SaveChangesAsync();
