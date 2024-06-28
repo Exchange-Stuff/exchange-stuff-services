@@ -212,7 +212,21 @@ namespace ExchangeStuff.Service.Services.Impls
             {
                 if (token == null)
                 {
-                    token = (_httpAccessor.HttpContext.Request.Headers["Authorization"].First() + "").Split(" ").Last();
+                    if (_httpAccessor.HttpContext.Request.Path == "/esnotification")
+                    {
+                        string[] paramss = _httpAccessor.HttpContext.Request.QueryString.ToString().Substring(1).Split('&');
+                        foreach (var item in paramss)
+                        {
+                            if (item.Split("=")[0] == "access_token")
+                            {
+                                token = item.Split("=")[1];
+                            }
+                        }
+                    }
+                    else
+                    {
+                        token = (_httpAccessor.HttpContext.Request.Headers["Authorization"].First() + "").Split(" ").Last();
+                    }
                 }
             }
             catch

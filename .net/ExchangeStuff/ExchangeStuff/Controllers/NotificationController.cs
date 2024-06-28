@@ -1,4 +1,5 @@
-﻿using ExchangeStuff.Responses;
+﻿using ExchangeStuff.Core.Entities;
+using ExchangeStuff.Responses;
 using ExchangeStuff.Service.Models.Notifications;
 using ExchangeStuff.Service.Paginations;
 using ExchangeStuff.Service.Services.Interfaces;
@@ -38,6 +39,17 @@ namespace ExchangeStuff.Controllers
                 Error = null!,
                 IsSuccess = true,
                 Value = await _notificationService.GetNotifications(pageIndex: pageIndex, pageSize: pageSize)
+            });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateNotification([FromBody] NotificationCreateModel notificationCreateModel)
+        {
+            return StatusCode(StatusCodes.Status201Created, new ResponseResult<PaginationItem<NotificationViewModel>>
+            {
+                Error = null!,
+                IsSuccess = true,
+                Value = await _notificationService.CreateNotification(notificationCreateModel)
             });
         }
     }

@@ -11,6 +11,7 @@ using ExchangeStuff.Service.Models.Comments;
 using ExchangeStuff.Service.Models.FinancialTickets;
 using ExchangeStuff.Service.Models.Images;
 using ExchangeStuff.Service.Models.Moderators;
+using ExchangeStuff.Service.Models.Notifications;
 using ExchangeStuff.Service.Models.PermissionGroups;
 using ExchangeStuff.Service.Models.Permissions;
 using ExchangeStuff.Service.Models.PostTicket;
@@ -94,6 +95,7 @@ namespace ExchangeStuff.Service.Maps
             CreateMap<Moderator, ModeratorViewModel>().ReverseMap();
             CreateMap<ProductImageUserViewModel, Product>().ReverseMap();
             CreateMap<Product, ProductUserViewModel>().ReverseMap();
+            CreateMap<Notification, NotificationViewModel>().ReverseMap();
         }
     }
 

@@ -15,6 +15,6 @@ namespace ExchangeStuff.Service.Services.Interfaces
         Task InvalidAllSession(Guid accId);
         Task AddConnection(string connectionId);
         Task RemoveConnection(string connectionId);
-         Task<string> GetConnectionId(string accountId);
+        Task<List<string>> GetConnectionId(string accountId);
     }
 }

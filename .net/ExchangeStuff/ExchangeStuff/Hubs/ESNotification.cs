@@ -1,5 +1,6 @@
 ﻿using ExchangeStuff.Service.Services.Interfaces;
 using Microsoft.AspNetCore.SignalR;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace ExchangeStuff.Hubs
 {
@@ -23,10 +24,13 @@ namespace ExchangeStuff.Hubs
 
         public async Task SendNotification(string accountId, string msg)
         {
-            var connectionId = await _cacheService.GetConnectionId(accountId);
-            if (!string.IsNullOrEmpty(connectionId))
+            var connectionIds = await _cacheService.GetConnectionId((accountId+"").ToLower());
+            if (connectionIds.Count>0)
             {
-                await Clients.Client(connectionId).SendAsync("ReceiveNotification", msg);
+                foreach (var item in connectionIds)
+                {
+                    await Clients.Client(item).SendAsync("ReceiveNotification", msg);
+                }
             }
         }
 
