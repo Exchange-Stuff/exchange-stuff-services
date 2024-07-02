@@ -16,5 +16,6 @@ namespace ExchangeStuff.Service.Services.Interfaces
         Task<List<ProductUserViewModel>> GetOtherUserProducts(Guid userId);
         Task<List<ProductViewModel>> GetListProductsForModerator();
         Task<List<ProductViewModel>> GetListProductsForAdmin();
+        Task<List<ProductViewModel>> GetProductByName(string name);
     }
 }

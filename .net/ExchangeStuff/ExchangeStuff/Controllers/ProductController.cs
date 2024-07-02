@@ -32,6 +32,17 @@ namespace ExchangeStuff.Controllers
             return Ok(product);
         }
 
+        [HttpGet("getProductName/{name}")]
+        public async Task<IActionResult> GetProductByName(string name)
+        {
+            return Ok(new ResponseResult<List<ProductViewModel>>
+            {
+                Error = null,
+                IsSuccess = true,
+                Value = await _productService.GetProductByName(name)
+            });
+        }
+
         [HttpGet("getForModerator")]
         public async Task<IActionResult> GetForModerator()
         {
