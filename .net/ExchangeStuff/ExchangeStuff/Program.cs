@@ -7,20 +7,28 @@ using Newtonsoft.Json.Serialization;
 using Serilog;
 using ExchangeStuff.Service.Maps;
 using AutoMapper;
+using ExchangeStuff.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowOrigin",
+//builder.Services.AddCors(options =>
+//{
+//    options.AddPolicy("AllowOrigin",
+//        builder =>
+//        {
+//            builder.WithOrigins("*")
+//                   .AllowAnyMethod()
+//                   .AllowAnyHeader();
+//        });
+//});
+builder.Services.AddCors(options => options.AddPolicy("CorsPolicy",
         builder =>
         {
-            builder.WithOrigins("*")
+            builder.AllowAnyHeader()
                    .AllowAnyMethod()
-                   .AllowAnyHeader();
-        });
-});
-
+                   .SetIsOriginAllowed((host) => true)
+                   .AllowCredentials();
+        }));
 
 builder.AddLogging();
 builder.Services.AddControllers(x =>
@@ -53,14 +61,14 @@ if (app.Environment.IsDevelopment())
 }
 app.UseSerilogRequestLogging();
 app.UseRouting();
+app.UseCors("CorsPolicy");
+
 app.UseAuthentication();
 
 app.UseMiddleware();
 app.UseAuthorization();
 app.UseException();
 
-app.UseCors("AllowSpecificOrigin");
-
 app.MapControllers();
-
+app.MapHub<ESNotification>("/esnotification");
 app.Run();

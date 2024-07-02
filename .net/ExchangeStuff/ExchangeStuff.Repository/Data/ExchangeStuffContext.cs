@@ -51,6 +51,7 @@ namespace ExchangeStuff.Repository.Data
         public DbSet<BanReason> BanReasons { get; set; }
         public DbSet<UserBanReport> UserBanReports { get; set; }
         public DbSet<ProductBanReport> ProductBanReports { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
 
         /// <summary>
         /// TPH

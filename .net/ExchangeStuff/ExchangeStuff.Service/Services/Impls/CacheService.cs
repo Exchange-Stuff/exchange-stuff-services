@@ -1,6 +1,7 @@
 ﻿using ExchangeStuff.Core.Entities;
 using ExchangeStuff.Core.Repositories;
 using ExchangeStuff.Core.Uows;
+using ExchangeStuff.CurrentUser.Users;
 using ExchangeStuff.Service.DTOs;
 using ExchangeStuff.Service.Maps;
 using ExchangeStuff.Service.Services.Interfaces;
@@ -17,6 +18,7 @@ namespace ExchangeStuff.Service.Services.Impls
 {
     public class CacheService : ICacheService
     {
+        private readonly IIdentityUser<Guid> _identityUser;
         private readonly IConfiguration _configuration;
         private readonly IUnitOfWork _uow;
         private readonly IDistributedCache _distributedCache;
@@ -31,8 +33,9 @@ namespace ExchangeStuff.Service.Services.Impls
         {
 
         }
-        public CacheService(IUnitOfWork unitOfWork, IDistributedCache distributedCache, IConnectionMultiplexer connectionMultiplexer, IConfiguration configuration)
+        public CacheService(IUnitOfWork unitOfWork, IDistributedCache distributedCache, IConnectionMultiplexer connectionMultiplexer, IConfiguration configuration, IIdentityUser<Guid> identityUser)
         {
+            _identityUser = identityUser;
             _configuration = configuration;
             _uow = unitOfWork;
             _distributedCache = distributedCache;
@@ -168,6 +171,72 @@ namespace ExchangeStuff.Service.Services.Impls
             }
             _tokenRepository.RemoveRange(tokens);
             await _uow.SaveChangeAsync();
+        }
+
+        public async Task AddConnection(string connectionId)
+        {
+            if (_identityUser.AccountId != Guid.Empty)
+            {
+                var cons = await _distributedCache.GetStringAsync((_identityUser.AccountId + ""));
+                List<string> connections = new List<string>();
+                if (!string.IsNullOrEmpty(cons))
+                {
+                    connections = JsonConvert.DeserializeObject<List<string>>(cons)!;
+                    if (connections == null)
+                    {
+                        connections = new List<string>();
+                    };
+                    if (connections.Count > 0 && connections.FirstOrDefault(x => x == connectionId)! == null!)
+                    {
+                        connections.Add(connectionId);
+                    }
+                }
+                else
+                {
+                    connections.Add(connectionId);
+                }
+                await _distributedCache.SetStringAsync(connectionId, _identityUser.AccountId + "");
+                await _distributedCache.SetStringAsync(_identityUser.AccountId + "", JsonConvert.SerializeObject(connections));
+            }
+        }
+
+        public async Task RemoveConnection(string connectionId)
+        {
+            var accountId = await _distributedCache.GetStringAsync(connectionId);
+            if (!string.IsNullOrEmpty(accountId))
+            {
+                await _distributedCache.RemoveAsync(connectionId);
+                var cons = await _distributedCache.GetStringAsync((accountId + ""));
+                List<string> connections = new List<string>();
+                if (!string.IsNullOrEmpty(cons))
+                {
+                    connections = JsonConvert.DeserializeObject<List<string>>(cons)!;
+                    if (connections != null && connections.Count > 0 && connections.FirstOrDefault(x => x == connectionId)! != null!)
+                    {
+                        connections.Remove(connectionId);
+                        await _distributedCache.SetStringAsync(accountId + "", JsonConvert.SerializeObject(connections));
+                    }
+                }
+            }
+        }
+
+        public async Task<List<string>> GetConnectionId(string accountId)
+        {
+            if (Guid.TryParse(accountId, out Guid newId))
+            {
+                List<string> connections = new List<string>();
+                var constr = await _distributedCache.GetStringAsync(accountId);
+                if (!string.IsNullOrEmpty(constr))
+                {
+                    connections = JsonConvert.DeserializeObject<List<string>>(constr)!;
+                    if (connections == null!)
+                    {
+                        connections = new List<string>();
+                    }
+                }
+                return connections;
+            }
+            return null!;
         }
     }
 }
