@@ -12,6 +12,9 @@ using ExchangeStuff.Core.Enums;
 using ExchangeStuff.Service.Models.PostTicket;
 using ExchangeStuff.Repository.Repositories;
 using ExchangeStuff.Service.Models.Users;
+using Unidecode.NET;
+using System.Globalization;
+using System.Text;
 
 namespace ExchangeStuff.Service.Services.Impls
 {
@@ -42,6 +45,47 @@ namespace ExchangeStuff.Service.Services.Impls
         {
 
             return AutoMapperConfig.Mapper.Map<List<ProductViewModel>>(await _productRepository.GetManyAsync(predicate: p => p.ProductStatus.Equals(ProductStatus.Approve), orderBy: p => p.OrderBy(p => p.CreatedOn)));
+        }
+
+        public async Task<List<ProductViewModel>> GetProductByName(string name)
+        {
+            if (string.IsNullOrEmpty(name))
+            {
+                return new List<ProductViewModel>();
+            }
+            string normalizedSearch = StringExtensions.RemoveDiacritics(name);
+
+            string[] keywords = normalizedSearch.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+            var allProducts = await _productRepository.GetManyAsync(
+                predicate: p => p.ProductStatus == ProductStatus.Approve,
+                orderBy: p => p.OrderBy(p => p.CreatedOn));
+
+            var filteredProducts = allProducts.Where(p =>
+                keywords.Any(kw => StringExtensions.RemoveDiacritics(p.Name).Contains(kw, StringComparison.OrdinalIgnoreCase)));
+
+            return AutoMapperConfig.Mapper.Map<List<ProductViewModel>>(filteredProducts);
+        }
+
+
+        public static class StringExtensions
+        {
+            public static string RemoveDiacritics(string text)
+            {
+                var normalizedString = text.Normalize(NormalizationForm.FormD);
+                var stringBuilder = new StringBuilder();
+
+                foreach (var c in normalizedString)
+                {
+                    var unicodeCategory = CharUnicodeInfo.GetUnicodeCategory(c);
+                    if (unicodeCategory != UnicodeCategory.NonSpacingMark)
+                    {
+                        stringBuilder.Append(c);
+                    }
+                }
+
+                return stringBuilder.ToString().Normalize(NormalizationForm.FormC);
+            }
         }
 
 
@@ -181,6 +225,17 @@ namespace ExchangeStuff.Service.Services.Impls
             if (product == null) throw new Exception("Not found product!");
 
             return AutoMapperConfig.Mapper.Map<List<ProductUserViewModel>>(product);
+        }
+
+        public async Task<List<ProductViewModel>> GetListProductsForModerator()
+        {
+            return AutoMapperConfig.Mapper.Map<List<ProductViewModel>>(await _productRepository.GetManyAsync(predicate: p => p.ProductStatus.Equals(ProductStatus.Pending), orderBy: p => p.OrderBy(p => p.CreatedOn)));
+        }
+
+        public async Task<List<ProductViewModel>> GetListProductsForAdmin()
+        {
+
+            return AutoMapperConfig.Mapper.Map<List<ProductViewModel>>(await _productRepository.GetManyAsync(orderBy: p => p.OrderBy(p => p.CreatedOn)));
         }
     }
 }
