@@ -68,7 +68,7 @@ namespace ExchangeStuff.Service.Services.Impls
             if (balance.Balance < 0) throw new Exception("Not enough money");
             _userBalanceRepository.Update(balance);
 
-            var product = await _productRepository.GetOneAsync(x => x.Id == request.ProductId && x.IsActived);
+            var product = await _productRepository.GetOneAsync(x => x.Id == request.ProductId && x.IsActived, forUpdate:true);
             if (product.Quantity <= 0) throw new Exception("Out of stock");
 
             product.Quantity = product.Quantity - request.Quantity;
