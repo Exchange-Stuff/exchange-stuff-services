@@ -114,8 +114,9 @@ namespace ExchangeStuff.Service.Services.Impls
 
                 var product = AutoMapperConfig.Mapper.Map<Product>(model);
                 product.Id = Guid.NewGuid();
-                product.IsActived = false;
+                product.IsActived = true;
                 product.Categories = categories.ToList();
+                product.Quantity = 1;
                 product.ProductStatus = ProductStatus.Pending;
 
                 List<Image> images = new List<Image>();

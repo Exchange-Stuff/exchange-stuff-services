@@ -14,13 +14,8 @@ namespace ExchangeStuff.Service.Services.Interfaces
         Task<bool> updateStatusProduct(UpdateProductViewModel updateProductViewModel);
         Task<List<ProductUserViewModel>> GetProductUser();
         Task<List<ProductUserViewModel>> GetOtherUserProducts(Guid userId);
-<<<<<<< HEAD
-        Task<List<ProductViewModel>> GetListProductsForAdmin();
-        Task<List<ProductViewModel>> GetListProductsForModerator();
-=======
         Task<List<ProductViewModel>> GetListProductsForModerator();
         Task<List<ProductViewModel>> GetListProductsForAdmin();
         Task<List<ProductViewModel>> GetProductByName(string name);
->>>>>>> d52b1c07313ee2ea0f6f0aeec2e61d4242bc8331
     }
 }
