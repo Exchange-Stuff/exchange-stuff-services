@@ -44,7 +44,7 @@ namespace ExchangeStuff.Service.Services.Impls
         public async Task<List<ProductViewModel>> GetAllProductsAsync()
         {
 
-            return AutoMapperConfig.Mapper.Map<List<ProductViewModel>>(await _productRepository.GetManyAsync(predicate: p => p.ProductStatus.Equals(ProductStatus.Approve), orderBy: p => p.OrderBy(p => p.CreatedOn)));
+            return AutoMapperConfig.Mapper.Map<List<ProductViewModel>>(await _productRepository.GetManyAsync(predicate: p => p.ProductStatus.Equals(ProductStatus.Approve) && p.IsActived && p.ProductStatus == ProductStatus.Approve, orderBy: p => p.OrderBy(p => p.CreatedOn)));
         }
 
         public async Task<List<ProductViewModel>> GetProductByName(string name)
@@ -237,6 +237,32 @@ namespace ExchangeStuff.Service.Services.Impls
         {
 
             return AutoMapperConfig.Mapper.Map<List<ProductViewModel>>(await _productRepository.GetManyAsync(orderBy: p => p.OrderBy(p => p.CreatedOn)));
+        }
+
+        public async Task<bool> CancelProduct(Guid productId)
+        {
+            try
+            {
+                var product = await _productRepository.GetOneAsync(predicate: p => p.Id.Equals(productId));
+
+                if (product == null)
+                {
+                    throw new Exception("Not found product");
+                }
+                product.IsActived = false;
+                product.ProductStatus = ProductStatus.Cancle;
+
+                _productRepository.Update(product);
+
+                var result = await _unitOfWork.SaveChangeAsync();
+
+                return result > 0;
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
         }
     }
 }
