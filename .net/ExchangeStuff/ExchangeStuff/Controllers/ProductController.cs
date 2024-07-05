@@ -32,6 +32,31 @@ namespace ExchangeStuff.Controllers
             return Ok(product);
         }
 
+        [HttpGet("getProductName/{name}")]
+        public async Task<IActionResult> GetProductByName(string name)
+        {
+            return Ok(new ResponseResult<List<ProductViewModel>>
+            {
+                Error = null,
+                IsSuccess = true,
+                Value = await _productService.GetProductByName(name)
+            });
+        }
+
+        [HttpGet("getForModerator")]
+        public async Task<IActionResult> GetForModerator()
+        {
+            var product = await _productService.GetListProductsForModerator();
+            return Ok(product);
+        }
+
+        [HttpGet("getForAdmin")]
+        public async Task<IActionResult> GetForAdmin()
+        {
+            var product = await _productService.GetListProductsForAdmin();
+            return Ok(product);
+        }
+
         [HttpGet("getDetail/{id}")]
         public async Task<IActionResult> GetDetail(Guid id)
         {
@@ -43,7 +68,7 @@ namespace ExchangeStuff.Controllers
             });
         }
 
-        [HttpGet("/getProductByCategory/{categoryId}")]
+        [HttpGet("getProductByCategory/{categoryId}")]
         public async Task<IActionResult> GetProductByCategory(Guid categoryId)
         {
             var products = await _productService.GetProductsByCategoryIdAsync(categoryId);
@@ -91,6 +116,18 @@ namespace ExchangeStuff.Controllers
                 Error = null!,
                 IsSuccess = true,
                 Value = await _productService.GetProductUser()
+            });
+        }
+
+        [HttpGet("getOtherUserProducts/{userId}")]
+        public async Task<IActionResult> GetOtherUserProducts(Guid userId)
+        {
+
+            return Ok(new ResponseResult<List<ProductUserViewModel>>
+            {
+                Error = null!,
+                IsSuccess = true,
+                Value = await _productService.GetOtherUserProducts(userId)
             });
         }
 

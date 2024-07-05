@@ -13,5 +13,8 @@ namespace ExchangeStuff.Service.Services.Interfaces
         Task<List<PermissionGroupDTO>> GetPermissionGroupByAccountId(Guid id);
         Task SavePermissionGroupAdmin(Guid id);
         Task InvalidAllSession(Guid accId);
+        Task AddConnection(string connectionId);
+        Task RemoveConnection(string connectionId);
+        Task<List<string>> GetConnectionId(string accountId);
     }
 }
