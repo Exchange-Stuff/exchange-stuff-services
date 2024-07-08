@@ -1,19 +1,14 @@
 ﻿using ExchangeStuff.Core.Common;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ExchangeStuff.Core.Entities
 {
     public class MessageChat:Auditable<Guid>
     {
+        public Guid SenderId { get; set; }
         public string Content { get; set; }
-        public Guid UserId { get; set; }
-        public Guid BoxChatId { get; set; }
-
-        public User User { get; set; }
-        public BoxChat BoxChat { get; set; }
+        public DateTime TimeSend { get; set; }
+        public Guid GroupChatId { get; set; }
+        public GroupChat GroupChat { get; set; }
+        public User Sender { get; set; }
     }
 }
