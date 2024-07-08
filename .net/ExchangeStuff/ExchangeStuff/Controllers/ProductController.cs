@@ -131,5 +131,20 @@ namespace ExchangeStuff.Controllers
             });
         }
 
+        [HttpPut("cancelProduct/{productId}")]
+        public async Task<IActionResult> CancelProduct(Guid productId)
+        {
+            var rs = await _productService.CancelProduct(productId);
+
+            if (!rs) throw new Exception("Can not update product");
+
+            return StatusCode(StatusCodes.Status200OK, new ResponseResult<string>
+            {
+                Error = null!,
+                IsSuccess = true,
+                Value = rs.ToString()
+            });
+        }
+
     }
 }
