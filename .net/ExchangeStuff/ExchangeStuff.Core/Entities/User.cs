@@ -26,6 +26,8 @@ namespace ExchangeStuff.Core.Entities
         public ICollection<PostTicket>? PostTickets { get; set; }
         public ICollection<PurchaseTicket>? PurchaseTickets { get; set; }
         public ICollection<Payment>? Payments { get; set; }
-
+        public ICollection<GroupChat>? GroupChatReceivers { get; set; }
+        public ICollection<GroupChat>? GroupChatSenders { get; set; }
+        public ICollection<MessageChat>? MessageChats { get; set; }
     }
 }

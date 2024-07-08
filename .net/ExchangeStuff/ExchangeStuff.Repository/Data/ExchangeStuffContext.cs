@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace ExchangeStuff.Repository.Data
 {
-    public class ExchangeStuffContext : DbContext
+    public partial class ExchangeStuffContext : DbContext
     {
         private readonly IIdentityUser<Guid> _identityUser;
 
@@ -20,11 +20,12 @@ namespace ExchangeStuff.Repository.Data
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-            => optionsBuilder.UseSqlServer("Data Source=(local);Initial Catalog=ExchangeStuff;Integrated Security=True;Encrypt=False;Trust Server Certificate=True");
+            => optionsBuilder.UseSqlServer(GetConnectionString(), x => x.MigrationsAssembly("ExchangeStuff"));
+
         private string GetConnectionString()
         {
             IConfigurationRoot configurationRoot = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("appsettings.json", true, true).Build();
-            return configurationRoot["ConnectionStrings:ExchangeStuffDb"] + "";
+            return configurationRoot.GetConnectionString("ExchangeStuffDb") + "";
         }
 
         public DbSet<Campus> Campuses { get; set; }
@@ -52,22 +53,36 @@ namespace ExchangeStuff.Repository.Data
         public DbSet<UserBanReport> UserBanReports { get; set; }
         public DbSet<ProductBanReport> ProductBanReports { get; set; }
         public DbSet<Notification> Notifications { get; set; }
+        public DbSet<GroupChat> GroupChats { get; set; }
+        public DbSet<MessageChat> MessageChats { get; set; }
 
-        /// <summary>
-        /// TPH
-        /// </summary>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
-        //protected override void OnModelCreating(ModelBuilder modelBuilder)
-        //{
-        //    base.OnModelCreating(modelBuilder);
-        //    modelBuilder.Entity<User>()
-        //        .ToTable("Users");
-        //    modelBuilder.Entity<Admin>()
-        //        .ToTable("Admins");
-        //    modelBuilder.Entity<Moderator>()
-        //      .ToTable("Moderators");
-        //}
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<GroupChat>(entity =>
+            {
+                entity.ToTable("GroupChat");
+
+                entity.HasOne(d => d.Receiver)
+                .WithMany(p => p.GroupChatReceivers)
+                .OnDelete(DeleteBehavior.NoAction)
+                .HasForeignKey(d => d.ReceiverId);
+
+                entity.HasOne(d => d.Sender)
+                .WithMany(p => p.GroupChatSenders)
+                .OnDelete(DeleteBehavior.NoAction)
+                .HasForeignKey(d => d.SenderId);
+            });
+
+            modelBuilder.Entity<MessageChat>(x =>
+            {
+                x.ToTable("MessageChat");
+                x.HasOne(x => x.Sender).WithMany(x => x.MessageChats).HasForeignKey(x => x.SenderId);
+            });
+            OnModelCreatingPartial(modelBuilder);
+        }
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
@@ -89,5 +104,7 @@ namespace ExchangeStuff.Repository.Data
             }
             return base.SaveChangesAsync(cancellationToken);
         }
+
+        partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
     }
 }
