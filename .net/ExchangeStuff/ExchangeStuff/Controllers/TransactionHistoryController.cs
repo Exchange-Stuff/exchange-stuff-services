@@ -17,7 +17,7 @@ namespace ExchangeStuff.Controllers
             _transactionHistoryService = transactionHistoryService;
         }
 
-        [HttpGet("/getAllTransactionHistory/{pageSize}/{pageIndex}/{status}")]
+        [HttpGet("getAllTransactionHistory/{pageSize}/{pageIndex}/{status}")]
         public async Task<IActionResult> GetAllTransactionHistory(int pageSize, int pageIndex, TransactionType status)
         {
             return Ok(new ResponseResult<List<TransactionHistoryViewModel>>
@@ -28,7 +28,7 @@ namespace ExchangeStuff.Controllers
             });
         }
 
-        [HttpGet("/getListTransactionHistoryByUserId/{pageSize}/{pageIndex}/{status}")]
+        [HttpGet("getListTransactionHistoryByUserId/{pageSize}/{pageIndex}/{status}")]
         public async Task<IActionResult> GetListTransactionHistoryByUserId(int pageSize, int pageIndex, TransactionType status)
         {
             return Ok(new ResponseResult<List<TransactionHistoryViewModel>>
@@ -39,7 +39,7 @@ namespace ExchangeStuff.Controllers
             });
         }
 
-        [HttpGet("/getTransactionHistoryDetail/{transactionHistoryId}")]
+        [HttpGet("getTransactionHistoryDetail/{transactionHistoryId}")]
         public async Task<IActionResult> GetTransactionHistoryDetail(Guid transactionHistoryId)
         {
             return Ok(new ResponseResult<TransactionHistoryViewModel>

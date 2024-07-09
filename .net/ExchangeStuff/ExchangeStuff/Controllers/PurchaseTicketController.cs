@@ -9,8 +9,8 @@ using System.Net.NetworkInformation;
 
 namespace ExchangeStuff.Controllers
 {
-    [ApiController]
     [Route("api/[controller]")]
+    [ApiController]
     public class PurchaseTicketController : ControllerBase
     {
         private readonly IPurchaseTicketService _purchaseTicketService;
@@ -20,7 +20,7 @@ namespace ExchangeStuff.Controllers
             _purchaseTicketService = purchaseTicketService;
         }
 
-        [HttpGet("/getAllPurchaseTicket/{pageSize}/{pageIndex}/{status}")]
+        [HttpGet("getAllPurchaseTicket/{pageSize}/{pageIndex}/{status}")]
         public async Task<IActionResult> GetAllPurchaseTicket(int pageSize, int pageIndex, PurchaseTicketStatus status)
         {
             return Ok(new ResponseResult<List<PurchaseTicketViewModel>>
@@ -32,7 +32,7 @@ namespace ExchangeStuff.Controllers
            
         }
 
-        [HttpGet("/getListPurchaseTicketByUserId/{pageSize}/{pageIndex}/{status}")]
+        [HttpGet("getListPurchaseTicketByUserId/{pageSize}/{pageIndex}/{status}")]
         public async Task<IActionResult> GetListPurchaseTicketByUserId(int pageSize, int pageIndex, PurchaseTicketStatus status)
         {
             return Ok(new ResponseResult<List<PurchaseTicketViewModel>>
@@ -43,7 +43,7 @@ namespace ExchangeStuff.Controllers
             });
         }
 
-        [HttpGet("/getPurchaseTicketDetail/{purchaseTicketId}")]
+        [HttpGet("getPurchaseTicketDetail/{purchaseTicketId}")]
         public async Task<IActionResult> GetPurchaseTicketDetail(Guid purchaseTicketId)
         {
             return Ok(new ResponseResult<PurchaseTicketViewModel>

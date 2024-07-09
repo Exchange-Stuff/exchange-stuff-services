@@ -15,7 +15,7 @@ namespace ExchangeStuff.Core.Entities
         public Guid UserId { get; set; }
         public int Quantity { get; set; }
         [MaxLength(30)]
-        public string CampusName { get; set; }
+        public string CampusName { get; set; } = "HCM Campus";
         public PurchaseTicketStatus Status { get; set; }
         public User User { get; set; }
         public Product Product { get; set; }

@@ -20,6 +20,7 @@ namespace ExchangeStuff.Service.Services.Impls
         private readonly ITransactionHistoryRepository _transactionHistoryRepository;
         private readonly IUserBalanceRepository _userBalanceRepository;
         private readonly IPostTicketRepository _postTicketRepository;
+        private readonly IProductRepository _productRepository;
 
         public PurchaseTicketService(IIdentityUser<Guid> identityUser, IUnitOfWork unitOfWork)
         {
@@ -31,60 +32,63 @@ namespace ExchangeStuff.Service.Services.Impls
             _transactionHistoryRepository = _unitOfWork.TransactionHistoryRepository;
             _userBalanceRepository = _unitOfWork.UserBalanceRepository;
             _postTicketRepository = _unitOfWork.PostTicketRepository;
+            _productRepository = _unitOfWork.ProductRepository;
         }
 
         public async Task<bool> CreatePurchaseTicket(CreatePurchaseTicketModel request)
         {
-            try
+            User user = await _userRepository.GetOneAsync(predicate: u => u.Id.Equals(_identityUser.AccountId));
+            if (user == null!) throw new UnauthorizedAccessException("Not found user");
+            PurchaseTicket purchaseTicket = new PurchaseTicket
             {
-                Account acc = await _accountRepository.GetOneAsync(predicate: a => a.Id.Equals(_identityUser.AccountId));
-                User user = await _userRepository.GetOneAsync(predicate: u => u.Id.Equals(_identityUser.AccountId));
-                PurchaseTicket purchaseTicket = new PurchaseTicket
-                {
-                    Id = Guid.NewGuid(),
-                    Amount = request.Amount,
-                    ProductId = request.ProductId,
-                    StudentId = user.StudentId,
-                    Email = acc.Email,
-                    UserId = _identityUser.AccountId,
-                    Quantity = request.Quantity,
-                    Status = PurchaseTicketStatus.Processing
-                };
-                await _purchaseTicketRepository.AddAsync(purchaseTicket);
+                Amount = request.Amount,
+                ProductId = request.ProductId,
+                StudentId = user.StudentId + "",
+                Email = user.Email + "",
+                UserId = _identityUser.AccountId,
+                Quantity = request.Quantity,
+                Status = PurchaseTicketStatus.Processing
+            };
+            await _purchaseTicketRepository.AddAsync(purchaseTicket);
 
-                TransactionHistory transactionHistory = new TransactionHistory
-                {
-                    Id = Guid.NewGuid(),
-                    UserId = _identityUser.AccountId,
-                    Amount = request.Amount,
-                    IsCredit = false,
-                    TransactionType = TransactionType.Purchase
-                };
-                await _transactionHistoryRepository.AddAsync(transactionHistory);
-
-                UserBalance balance = await _userBalanceRepository.GetOneAsync(predicate: b => b.UserId.Equals(_identityUser.AccountId));
-                balance.Balance = balance.Balance - request.Amount;
-                _userBalanceRepository.Update(balance);
-
-                var result = await _unitOfWork.SaveChangeAsync();
-                return result > 0;
-            }
-            catch (Exception ex)
+            TransactionHistory transactionHistory = new TransactionHistory
             {
-                throw new Exception(ex.Message);
-            }
+                UserId = _identityUser.AccountId,
+                Amount = request.Amount,
+                IsCredit = false,
+                TransactionType = TransactionType.Purchase
+            };
+            await _transactionHistoryRepository.AddAsync(transactionHistory);
 
+            UserBalance balance = await _userBalanceRepository.GetOneAsync(predicate: b => b.UserId.Equals(_identityUser.AccountId), forUpdate: true);
+
+            if (balance.Balance <= 0) throw new Exception("Not enough money");
+            balance.Balance = balance.Balance - request.Amount;
+
+            if (balance.Balance < 0) throw new Exception("Not enough money");
+            _userBalanceRepository.Update(balance);
+
+            var product = await _productRepository.GetOneAsync(x => x.Id == request.ProductId && x.IsActived, forUpdate:true);
+            if (product.Quantity <= 0) throw new Exception("Out of stock");
+
+            product.Quantity = product.Quantity - request.Quantity;
+            if (product.Quantity < 0) throw new Exception("Out of stock");
+            if (request.Quantity * product.Price != request.Amount) throw new Exception("Check sum invalid");
+            _productRepository.Update(product);
+
+            var result = await _unitOfWork.SaveChangeAsync();
+            return result > 0;
         }
 
         public async Task<List<PurchaseTicketViewModel>> GetAllPurchaseTicket(int pageSize, int pageIndex, PurchaseTicketStatus? status = null!)
         {
             try
             {
-                 List<PurchaseTicket> listTicket = new List<PurchaseTicket>();
-                 if (status.HasValue)
+                List<PurchaseTicket> listTicket = new List<PurchaseTicket>();
+                if (status.HasValue)
                 {
                     listTicket = await _purchaseTicketRepository.GetManyAsync(
-                        pageSize : pageSize, pageIndex: pageIndex, predicate: p => p.Status.Equals(status), orderBy: p => p.OrderBy(p => p.CreatedOn));
+                        pageSize: pageSize, pageIndex: pageIndex, predicate: p => p.Status.Equals(status), orderBy: p => p.OrderBy(p => p.CreatedOn));
                 }
                 else
                 {
@@ -152,7 +156,7 @@ namespace ExchangeStuff.Service.Services.Impls
                 ticket.Status = request.Status;
                 _purchaseTicketRepository.Update(ticket);
 
-                if(request.Status.Equals(PurchaseTicketStatus.Cancelled))
+                if (request.Status.Equals(PurchaseTicketStatus.Cancelled))
                 {
                     TransactionHistory transactionHistory = new TransactionHistory
                     {

@@ -4,6 +4,7 @@ using ExchangeStuff.Repository.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ExchangeStuff.Repository.Migrations
 {
     [DbContext(typeof(ExchangeStuffContext))]
-    partial class ExchangeStuffContextModelSnapshot : ModelSnapshot
+    [Migration("20240705134834_chat")]
+    partial class chat
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -158,6 +161,33 @@ namespace ExchangeStuff.Repository.Migrations
                     b.ToTable("BanReasons");
                 });
 
+            modelBuilder.Entity("ExchangeStuff.Core.Entities.BoxChat", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("ModifiedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("ModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("BoxChats");
+                });
+
             modelBuilder.Entity("ExchangeStuff.Core.Entities.Campus", b =>
                 {
                     b.Property<Guid>("Id")
@@ -300,39 +330,6 @@ namespace ExchangeStuff.Repository.Migrations
                     b.ToTable("FinancialTickets");
                 });
 
-            modelBuilder.Entity("ExchangeStuff.Core.Entities.GroupChat", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("CreatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("ModifiedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("ModifiedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("ReceiverId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("SenderId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ReceiverId");
-
-                    b.HasIndex("SenderId");
-
-                    b.ToTable("GroupChat", (string)null);
-                });
-
             modelBuilder.Entity("ExchangeStuff.Core.Entities.Image", b =>
                 {
                     b.Property<Guid>("Id")
@@ -366,6 +363,9 @@ namespace ExchangeStuff.Repository.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid>("BoxChatId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Content")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -376,28 +376,22 @@ namespace ExchangeStuff.Repository.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("GroupChatId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid>("ModifiedBy")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("ModifiedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("SenderId")
+                    b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("TimeSend")
-                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("GroupChatId");
+                    b.HasIndex("BoxChatId");
 
-                    b.HasIndex("SenderId");
+                    b.HasIndex("UserId");
 
-                    b.ToTable("MessageChat", (string)null);
+                    b.ToTable("MessageChats");
                 });
 
             modelBuilder.Entity("ExchangeStuff.Core.Entities.Notification", b =>
@@ -433,6 +427,39 @@ namespace ExchangeStuff.Repository.Migrations
                     b.HasIndex("AccountId");
 
                     b.ToTable("Notifications");
+                });
+
+            modelBuilder.Entity("ExchangeStuff.Core.Entities.ParticipantChat", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("BoxChatId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("ModifiedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("ModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BoxChatId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ParticipantChats");
                 });
 
             modelBuilder.Entity("ExchangeStuff.Core.Entities.Payment", b =>
@@ -918,6 +945,9 @@ namespace ExchangeStuff.Repository.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<Guid?>("BoxChatId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid?>("CampusId")
                         .HasColumnType("uniqueidentifier");
 
@@ -931,6 +961,8 @@ namespace ExchangeStuff.Repository.Migrations
                     b.Property<string>("StudentId")
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)");
+
+                    b.HasIndex("BoxChatId");
 
                     b.HasIndex("CampusId");
 
@@ -997,42 +1029,23 @@ namespace ExchangeStuff.Repository.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("ExchangeStuff.Core.Entities.GroupChat", b =>
-                {
-                    b.HasOne("ExchangeStuff.Core.Entities.User", "Receiver")
-                        .WithMany("GroupChatReceivers")
-                        .HasForeignKey("ReceiverId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("ExchangeStuff.Core.Entities.User", "Sender")
-                        .WithMany("GroupChatSenders")
-                        .HasForeignKey("SenderId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Receiver");
-
-                    b.Navigation("Sender");
-                });
-
             modelBuilder.Entity("ExchangeStuff.Core.Entities.MessageChat", b =>
                 {
-                    b.HasOne("ExchangeStuff.Core.Entities.GroupChat", "GroupChat")
+                    b.HasOne("ExchangeStuff.Core.Entities.BoxChat", "BoxChat")
+                        .WithMany("MesageChats")
+                        .HasForeignKey("BoxChatId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ExchangeStuff.Core.Entities.User", "User")
                         .WithMany()
-                        .HasForeignKey("GroupChatId")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ExchangeStuff.Core.Entities.User", "Sender")
-                        .WithMany("MessageChats")
-                        .HasForeignKey("SenderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("BoxChat");
 
-                    b.Navigation("GroupChat");
-
-                    b.Navigation("Sender");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("ExchangeStuff.Core.Entities.Notification", b =>
@@ -1044,6 +1057,25 @@ namespace ExchangeStuff.Repository.Migrations
                         .IsRequired();
 
                     b.Navigation("Account");
+                });
+
+            modelBuilder.Entity("ExchangeStuff.Core.Entities.ParticipantChat", b =>
+                {
+                    b.HasOne("ExchangeStuff.Core.Entities.BoxChat", "BoxChat")
+                        .WithMany()
+                        .HasForeignKey("BoxChatId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ExchangeStuff.Core.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("BoxChat");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("ExchangeStuff.Core.Entities.Payment", b =>
@@ -1213,6 +1245,10 @@ namespace ExchangeStuff.Repository.Migrations
 
             modelBuilder.Entity("ExchangeStuff.Core.Entities.User", b =>
                 {
+                    b.HasOne("ExchangeStuff.Core.Entities.BoxChat", null)
+                        .WithMany("Users")
+                        .HasForeignKey("BoxChatId");
+
                     b.HasOne("ExchangeStuff.Core.Entities.Campus", "Campus")
                         .WithMany("Users")
                         .HasForeignKey("CampusId");
@@ -1232,6 +1268,13 @@ namespace ExchangeStuff.Repository.Migrations
                     b.Navigation("ProductBanReports");
 
                     b.Navigation("UserBanReports");
+                });
+
+            modelBuilder.Entity("ExchangeStuff.Core.Entities.BoxChat", b =>
+                {
+                    b.Navigation("MesageChats");
+
+                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("ExchangeStuff.Core.Entities.Campus", b =>
@@ -1262,12 +1305,6 @@ namespace ExchangeStuff.Repository.Migrations
             modelBuilder.Entity("ExchangeStuff.Core.Entities.User", b =>
                 {
                     b.Navigation("FinancialTickets");
-
-                    b.Navigation("GroupChatReceivers");
-
-                    b.Navigation("GroupChatSenders");
-
-                    b.Navigation("MessageChats");
 
                     b.Navigation("Payments");
 
