@@ -20,7 +20,12 @@ namespace ExchangeStuff.Repository.Data
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-            => optionsBuilder.UseSqlServer(GetConnectionString(), x => x.MigrationsAssembly("ExchangeStuff"));
+        {
+            if (!optionsBuilder.IsConfigured)
+            {
+                optionsBuilder.UseSqlServer(GetConnectionString(), x => x.MigrationsAssembly("ExchangeStuff"));
+            }
+        }
 
         private string GetConnectionString()
         {
