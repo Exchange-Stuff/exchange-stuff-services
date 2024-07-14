@@ -15,6 +15,7 @@ using ExchangeStuff.Service.Models.Users;
 using Unidecode.NET;
 using System.Globalization;
 using System.Text;
+using Azure.Core;
 
 namespace ExchangeStuff.Service.Services.Impls
 {
@@ -131,6 +132,36 @@ namespace ExchangeStuff.Service.Services.Impls
 
                 await _unitOfWork.ProductRepository.AddAsync(product);
 
+                PostTicketViewModel postTicketViewModel = new PostTicketViewModel();
+                postTicketViewModel.productId = product.Id;
+                postTicketViewModel.Amount = 10;
+                postTicketViewModel.UserId = _identityUser.AccountId;
+                await createPostTicket(postTicketViewModel);
+
+                var userBl = await _userBalanceRepository.GetOneAsync(predicate: p => p.UserId.Equals(product.CreatedBy));
+
+                if (userBl != null)
+                {
+                    if (userBl.Balance < 10)
+                    {
+                        throw new Exception("Not enough money");
+                    }
+                    else
+                    {
+                        userBl.Balance = userBl.Balance - 10;
+                        _userBalanceRepository.Update(userBl);
+                    }
+                }
+
+                TransactionHistory transactionHistory = new TransactionHistory
+                {
+                    UserId = _identityUser.AccountId,
+                    Amount = 10,
+                    IsCredit = false,
+                    TransactionType = TransactionType.Post
+                };
+                await _transactionHistoryRepository.AddAsync(transactionHistory);
+
                 var result = await _unitOfWork.SaveChangeAsync();
 
                 return result > 0;
@@ -156,27 +187,21 @@ namespace ExchangeStuff.Service.Services.Impls
 
                 _productRepository.Update(product);
 
-                if (product.ProductStatus.Equals(ProductStatus.Approve)) 
+                if (product.ProductStatus.Equals(ProductStatus.Cancle)) 
                 {
-                    PostTicketViewModel postTicketViewModel = new PostTicketViewModel();
-                    postTicketViewModel.productId = product.Id;
-                    postTicketViewModel.Amount = 10;
-                    postTicketViewModel.UserId = product.CreatedBy;
-                    await createPostTicket(postTicketViewModel);
-
                     var userBl = await _userBalanceRepository.GetOneAsync(predicate: p => p.UserId.Equals(product.CreatedBy));
 
-                    if (userBl != null) 
+                    userBl.Balance = userBl.Balance + 10;
+                    _userBalanceRepository.Update(userBl);
+
+                    TransactionHistory transactionHistory = new TransactionHistory
                     {
-                        if (userBl.Balance < 0)
-                        {
-                            throw new Exception("Not enough money");
-                        }
-                        else 
-                        {
-                            userBl.Balance = userBl.Balance - 10;
-                        }
-                    }
+                        UserId = _identityUser.AccountId,
+                        Amount = 10,
+                        IsCredit = true,
+                        TransactionType = TransactionType.Post
+                    };
+                    await _transactionHistoryRepository.AddAsync(transactionHistory);
 
                 }
                 
