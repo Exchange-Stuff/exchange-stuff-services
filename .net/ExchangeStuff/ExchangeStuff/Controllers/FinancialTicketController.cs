@@ -22,7 +22,7 @@ namespace ExchangeStuff.Controllers
         }
 
 
-        [HttpGet("/getAllFinancialTicket")]
+        [HttpGet("getAllFinancialTicket")]
         public async Task<IActionResult> GetFinancialTicket([FromQuery] int pageSize, [FromQuery] int pageIndex, [FromQuery] FinancialTicketStatus status )
         {
             return Ok(new ResponseResult<List<FinancialTicketViewModel>>
@@ -35,7 +35,7 @@ namespace ExchangeStuff.Controllers
         }
        
 
-        [HttpGet("/getListFinancialTicketByUserId")]
+        [HttpGet("getListFinancialTicketByUserId")]
         public async Task<IActionResult> GetListFinancialTicketByUserId([FromQuery] int pageSize, [FromQuery] int pageIndex, [FromQuery] FinancialTicketStatus status)
         {
             return Ok(new ResponseResult<List<FinancialTicketViewModel>>
@@ -47,7 +47,7 @@ namespace ExchangeStuff.Controllers
             });
 
         }
-        [HttpGet("/getFinancialTicketDetail/{id}")]
+        [HttpGet("getFinancialTicketDetail/{id}")]
         public async Task<IActionResult> GetFinancialTicketDetail(Guid id)
         {
             return Ok(new ResponseResult<FinancialTicketViewModel>

@@ -40,6 +40,17 @@ namespace ExchangeStuff.Controllers
                 Value = result.ToString()
             });
         }
+        [HttpGet("get-total-count/{id}")]
+        public async Task<IActionResult> GetTotalCount(Guid id)
+        {
+            var result = await _commentService.GetTotalCount(id);
+            return Ok(new ResponseResult<string>
+            {
+                Error = null!,
+                IsSuccess = true,
+                Value = result.ToString(),
+            });
+        }
         [HttpPut("update")]
         public async Task<IActionResult> UpdateComment(UpdateCommentModel updateModel)
         {

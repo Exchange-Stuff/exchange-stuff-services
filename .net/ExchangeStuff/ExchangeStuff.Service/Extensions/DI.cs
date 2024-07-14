@@ -18,7 +18,6 @@ namespace ExchangeStuff.Service.Extensions
     {
         public static void Inject(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddDbContext<ExchangeStuffContext>(x => x.UseSqlServer("TODO"));
             services.AddTransient<IUnitOfWork, UnitOfWork>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IRatingSerivce, RatingService>();
@@ -52,6 +51,7 @@ namespace ExchangeStuff.Service.Extensions
             services.AddScoped<IProductBanReportService, ProductBanReportService>();
             services.AddScoped<IUserBanReportService, UserBanReportService>();
             services.AddScoped<IBanReasonService, BanReasonService>();
+            services.AddScoped<INotificationService, NotificationService>();
         }
     }
 }

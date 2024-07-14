@@ -1,9 +1,13 @@
-﻿using ExchangeStuff.Core.Enums;
+﻿using ExchangeStuff.AuthOptions.Requirements;
+using ExchangeStuff.Core.Enums;
 using ExchangeStuff.Responses;
+using ExchangeStuff.Service.Constants;
 using ExchangeStuff.Service.Models.Products;
+using ExchangeStuff.Service.Models.PurchaseTicket;
 using ExchangeStuff.Service.Services.Impls;
 using ExchangeStuff.Service.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ExchangeStuff.Controllers
@@ -28,6 +32,31 @@ namespace ExchangeStuff.Controllers
             return Ok(product);
         }
 
+        [HttpGet("getProductName/{name}")]
+        public async Task<IActionResult> GetProductByName(string name)
+        {
+            return Ok(new ResponseResult<List<ProductViewModel>>
+            {
+                Error = null,
+                IsSuccess = true,
+                Value = await _productService.GetProductByName(name)
+            });
+        }
+
+        [HttpGet("getForModerator")]
+        public async Task<IActionResult> GetForModerator()
+        {
+            var product = await _productService.GetListProductsForModerator();
+            return Ok(product);
+        }
+
+        [HttpGet("getForAdmin")]
+        public async Task<IActionResult> GetForAdmin()
+        {
+            var product = await _productService.GetListProductsForAdmin();
+            return Ok(product);
+        }
+
         [HttpGet("getDetail/{id}")]
         public async Task<IActionResult> GetDetail(Guid id)
         {
@@ -39,7 +68,7 @@ namespace ExchangeStuff.Controllers
             });
         }
 
-        [HttpGet("/getProductByCategory/{categoryId}")]
+        [HttpGet("getProductByCategory/{categoryId}")]
         public async Task<IActionResult> GetProductByCategory(Guid categoryId)
         {
             var products = await _productService.GetProductsByCategoryIdAsync(categoryId);
@@ -67,6 +96,45 @@ namespace ExchangeStuff.Controllers
         public async Task<IActionResult> UpdateProduct(UpdateProductViewModel updateProductViewModel)
         {
             var rs = await _productService.updateStatusProduct(updateProductViewModel);
+
+            if (!rs) throw new Exception("Can not update product");
+
+            return StatusCode(StatusCodes.Status200OK, new ResponseResult<string>
+            {
+                Error = null!,
+                IsSuccess = true,
+                Value = rs.ToString()
+            });
+        }
+
+        [HttpGet("getProductByUserId")]
+        public async Task<IActionResult> GetProductUserId()
+        {
+
+            return Ok(new ResponseResult<List<ProductUserViewModel>>
+            {
+                Error = null!,
+                IsSuccess = true,
+                Value = await _productService.GetProductUser()
+            });
+        }
+
+        [HttpGet("getOtherUserProducts/{userId}")]
+        public async Task<IActionResult> GetOtherUserProducts(Guid userId)
+        {
+
+            return Ok(new ResponseResult<List<ProductUserViewModel>>
+            {
+                Error = null!,
+                IsSuccess = true,
+                Value = await _productService.GetOtherUserProducts(userId)
+            });
+        }
+
+        [HttpPut("cancelProduct/{productId}")]
+        public async Task<IActionResult> CancelProduct(Guid productId)
+        {
+            var rs = await _productService.CancelProduct(productId);
 
             if (!rs) throw new Exception("Can not update product");
 

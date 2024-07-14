@@ -1,20 +1,24 @@
 ﻿using ExchangeStuff.Core.Entities;
 using ExchangeStuff.Core.Repositories;
 using ExchangeStuff.Core.Uows;
+using ExchangeStuff.CurrentUser.Users;
 using ExchangeStuff.Service.DTOs;
 using ExchangeStuff.Service.Maps;
 using ExchangeStuff.Service.Services.Interfaces;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Identity.Client;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using StackExchange.Redis;
+using System.Linq.Dynamic.Core.Tokenizer;
 using System.Security.Cryptography;
 
 namespace ExchangeStuff.Service.Services.Impls
 {
     public class CacheService : ICacheService
     {
+        private readonly IIdentityUser<Guid> _identityUser;
         private readonly IConfiguration _configuration;
         private readonly IUnitOfWork _uow;
         private readonly IDistributedCache _distributedCache;
@@ -29,8 +33,9 @@ namespace ExchangeStuff.Service.Services.Impls
         {
 
         }
-        public CacheService(IUnitOfWork unitOfWork, IDistributedCache distributedCache, IConnectionMultiplexer connectionMultiplexer, IConfiguration configuration)
+        public CacheService(IUnitOfWork unitOfWork, IDistributedCache distributedCache, IConnectionMultiplexer connectionMultiplexer, IConfiguration configuration, IIdentityUser<Guid> identityUser)
         {
+            _identityUser = identityUser;
             _configuration = configuration;
             _uow = unitOfWork;
             _distributedCache = distributedCache;
@@ -110,10 +115,10 @@ namespace ExchangeStuff.Service.Services.Impls
             }
         }
 
-        public async Task<Token> SaveAccessToken(string token, Guid accountId)
+        public async Task<ExchangeStuff.Core.Entities.Token> SaveAccessToken(string token, Guid accountId)
         {
             await _distributedCache.SetStringAsync(token, accountId + "");
-            Token newtk = new Token
+            ExchangeStuff.Core.Entities.Token newtk = new ExchangeStuff.Core.Entities.Token
             {
                 Id = Guid.NewGuid(),
                 AccessToken = token,
@@ -153,6 +158,85 @@ namespace ExchangeStuff.Service.Services.Impls
                     NamingStrategy = new CamelCaseNamingStrategy()
                 }
             }));
+        }
+
+        public async Task InvalidAllSession(Guid accId)
+        {
+            var account = await _accountRepository.GetOneAsync(x => x.Id == accId);
+            if (account == null) throw new Exception("Not found this account");
+            var tokens = await _tokenRepository.GetManyAsync(x => x.AccountId == accId);
+            foreach (var item in tokens)
+            {
+                await _distributedCache.RemoveAsync(item.AccessToken);
+            }
+            _tokenRepository.RemoveRange(tokens);
+            await _uow.SaveChangeAsync();
+        }
+
+        public async Task AddConnection(string connectionId)
+        {
+            if (_identityUser.AccountId != Guid.Empty)
+            {
+                var cons = await _distributedCache.GetStringAsync((_identityUser.AccountId + ""));
+                List<string> connections = new List<string>();
+                if (!string.IsNullOrEmpty(cons))
+                {
+                    connections = JsonConvert.DeserializeObject<List<string>>(cons)!;
+                    if (connections == null)
+                    {
+                        connections = new List<string>();
+                    };
+                    if (connections.Count > 0 && connections.FirstOrDefault(x => x == connectionId)! == null!)
+                    {
+                        connections.Add(connectionId);
+                    }
+                }
+                else
+                {
+                    connections.Add(connectionId);
+                }
+                await _distributedCache.SetStringAsync(connectionId, _identityUser.AccountId + "");
+                await _distributedCache.SetStringAsync(_identityUser.AccountId + "", JsonConvert.SerializeObject(connections));
+            }
+        }
+
+        public async Task RemoveConnection(string connectionId)
+        {
+            var accountId = await _distributedCache.GetStringAsync(connectionId);
+            if (!string.IsNullOrEmpty(accountId))
+            {
+                await _distributedCache.RemoveAsync(connectionId);
+                var cons = await _distributedCache.GetStringAsync((accountId + ""));
+                List<string> connections = new List<string>();
+                if (!string.IsNullOrEmpty(cons))
+                {
+                    connections = JsonConvert.DeserializeObject<List<string>>(cons)!;
+                    if (connections != null && connections.Count > 0 && connections.FirstOrDefault(x => x == connectionId)! != null!)
+                    {
+                        connections.Remove(connectionId);
+                        await _distributedCache.SetStringAsync(accountId + "", JsonConvert.SerializeObject(connections));
+                    }
+                }
+            }
+        }
+
+        public async Task<List<string>> GetConnectionId(string accountId)
+        {
+            if (Guid.TryParse(accountId, out Guid newId))
+            {
+                List<string> connections = new List<string>();
+                var constr = await _distributedCache.GetStringAsync(accountId);
+                if (!string.IsNullOrEmpty(constr))
+                {
+                    connections = JsonConvert.DeserializeObject<List<string>>(constr)!;
+                    if (connections == null!)
+                    {
+                        connections = new List<string>();
+                    }
+                }
+                return connections;
+            }
+            return null!;
         }
     }
 }

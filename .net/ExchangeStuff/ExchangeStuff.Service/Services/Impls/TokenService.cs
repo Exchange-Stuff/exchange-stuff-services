@@ -1,6 +1,7 @@
 ﻿using ExchangeStuff.Core.Entities;
 using ExchangeStuff.Core.Repositories;
 using ExchangeStuff.Core.Uows;
+using ExchangeStuff.CurrentUser.Users;
 using ExchangeStuff.Service.DTOs;
 using ExchangeStuff.Service.Maps;
 using ExchangeStuff.Service.Models.Tokens;
@@ -24,6 +25,7 @@ namespace ExchangeStuff.Service.Services.Impls
         private readonly IUnitOfWork _uow;
         private readonly ITokenRepository _tokenRepository;
         private readonly IDistributedCache _distributedCache;
+        private readonly IIdentityUser<Guid> _identityUser;
         private readonly IConnectionMultiplexer _connectionMutiple;
         private readonly IAccountRepository _accountRepository;
         private readonly IUserRepository _userRepository;
@@ -31,8 +33,9 @@ namespace ExchangeStuff.Service.Services.Impls
         private JwtDTO _jwtDTO = new();
         private GoogleAuthDTO _googleAuthDTO = new();
 
-        public TokenService(IUnitOfWork unitOfWork, IConfiguration configuration, IHttpContextAccessor httpContextAccessor, IDistributedCache distributed, IConnectionMultiplexer connectionMultiplexer) : base(unitOfWork, distributed, connectionMultiplexer, configuration)
+        public TokenService(IUnitOfWork unitOfWork, IConfiguration configuration, IHttpContextAccessor httpContextAccessor, IDistributedCache distributed, IConnectionMultiplexer connectionMultiplexer, IIdentityUser<Guid> identityUser) : base(unitOfWork, distributed, connectionMultiplexer, configuration, identityUser)
         {
+            _identityUser = identityUser;
             _connectionMutiple = connectionMultiplexer;
             _distributedCache = distributed;
             _configuration = configuration;
@@ -152,6 +155,10 @@ namespace ExchangeStuff.Service.Services.Impls
                     Email = email
                 };
             }
+            catch (SecurityTokenExpiredException ex)
+            {
+                throw new Exception(ex.Message);
+            }
             catch (Exception ex)
             {
                 throw new Exception(ex.Message);
@@ -205,7 +212,21 @@ namespace ExchangeStuff.Service.Services.Impls
             {
                 if (token == null)
                 {
-                    token = (_httpAccessor.HttpContext.Request.Headers["Authorization"].First() + "").Split(" ").Last();
+                    if (_httpAccessor.HttpContext.Request.Path == "/esnotification")
+                    {
+                        string[] paramss = _httpAccessor.HttpContext.Request.QueryString.ToString().Substring(1).Split('&');
+                        foreach (var item in paramss)
+                        {
+                            if (item.Split("=")[0] == "access_token")
+                            {
+                                token = item.Split("=")[1];
+                            }
+                        }
+                    }
+                    else
+                    {
+                        token = (_httpAccessor.HttpContext.Request.Headers["Authorization"].First() + "").Split(" ").Last();
+                    }
                 }
             }
             catch
@@ -232,8 +253,7 @@ namespace ExchangeStuff.Service.Services.Impls
                 var id = jwtToken.Claims.First(x => x.Type == "nameid")!.Value;
                 var email = jwtToken.Claims.First(x => x.Type == "email")!.Value;
 
-                if (Guid.TryParse(id, out Guid newId) is false ||
-                    string.IsNullOrEmpty(email)
+                if (Guid.TryParse(id, out Guid newId) is false
                     )
                 {
                     return null!;
@@ -244,6 +264,10 @@ namespace ExchangeStuff.Service.Services.Impls
                     Id = newId,
                     Email = email
                 };
+            }
+            catch (SecurityTokenExpiredException ex)
+            {
+                throw new Exception(ex.Message);
             }
             catch (Exception ex)
             {
@@ -280,7 +304,6 @@ namespace ExchangeStuff.Service.Services.Impls
             {
                 throw new UnauthorizedAccessException();
             }
-            token.RefreshToken = GenerateRefreshToken();
             token.AccessToken = await GenerateToken(account);
             _tokenRepository.Update(token);
             var rs = await _uow.SaveChangeAsync();
