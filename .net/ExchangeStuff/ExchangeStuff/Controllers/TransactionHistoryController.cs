@@ -28,14 +28,14 @@ namespace ExchangeStuff.Controllers
             });
         }
 
-        [HttpGet("getListTransactionHistoryByUserId/{pageSize}/{pageIndex}/{status}")]
-        public async Task<IActionResult> GetListTransactionHistoryByUserId(int pageSize, int pageIndex, TransactionType status)
+        [HttpGet("getListTransactionHistoryByUserId/{pageSize}/{pageIndex}")]
+        public async Task<IActionResult> GetListTransactionHistoryByUserId(int pageSize, int pageIndex)
         {
             return Ok(new ResponseResult<List<TransactionHistoryViewModel>>
             {
                 Error = null!,
                 IsSuccess = true,
-                Value = await _transactionHistoryService.GetListTransactionHistoryByUserId(pageSize, pageIndex, status)
+                Value = await _transactionHistoryService.GetListTransactionHistoryByUserId(pageSize, pageIndex)
             });
         }
 
