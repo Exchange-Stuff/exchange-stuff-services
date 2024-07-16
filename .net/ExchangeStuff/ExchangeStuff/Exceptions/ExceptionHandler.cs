@@ -50,7 +50,7 @@ namespace ExchangeStuff.Exceptions
             }
             if (context.Exception is SecurityTokenExpiredException || context.Exception.GetType() == typeof(SecurityTokenExpiredException))
             {
-                context.HttpContext.Response!.Headers!.TryAdd("IS-LOOKEACH-TOKEN-EXPIRED", "true");
+                context.HttpContext.Response!.Headers!.TryAdd("IS-EXCHANGESTUFF-TOKEN-EXPIRED", "true");
                 responseView.Error.Message = "The token provided has expired.";
                 responseView.Error.Code = 401;
             }
