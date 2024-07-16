@@ -1,5 +1,7 @@
-﻿using ExchangeStuff.Core.Enums;
+﻿using ExchangeStuff.AuthOptions.Requirements;
+using ExchangeStuff.Core.Enums;
 using ExchangeStuff.Responses;
+using ExchangeStuff.Service.Constants;
 using ExchangeStuff.Service.Models.TransactionHistory;
 using ExchangeStuff.Service.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -16,7 +18,7 @@ namespace ExchangeStuff.Controllers
         {
             _transactionHistoryService = transactionHistoryService;
         }
-
+        [ESAuthorize(new string[] { ActionConstant.READ })]
         [HttpGet("getAllTransactionHistory/{pageSize}/{pageIndex}/{status}")]
         public async Task<IActionResult> GetAllTransactionHistory(int pageSize, int pageIndex, TransactionType status)
         {
@@ -27,7 +29,7 @@ namespace ExchangeStuff.Controllers
                 Value = await _transactionHistoryService.GetAllTransactionHistory(pageSize, pageIndex, status)
             });
         }
-
+        [ESAuthorize(new string[] { ActionConstant.READ })]
         [HttpGet("getListTransactionHistoryByUserId/{pageSize}/{pageIndex}/{status}")]
         public async Task<IActionResult> GetListTransactionHistoryByUserId(int pageSize, int pageIndex, TransactionType status)
         {
@@ -38,7 +40,7 @@ namespace ExchangeStuff.Controllers
                 Value = await _transactionHistoryService.GetListTransactionHistoryByUserId(pageSize, pageIndex, status)
             });
         }
-
+        [ESAuthorize(new string[] { ActionConstant.READ })]
         [HttpGet("getTransactionHistoryDetail/{transactionHistoryId}")]
         public async Task<IActionResult> GetTransactionHistoryDetail(Guid transactionHistoryId)
         {
@@ -49,7 +51,7 @@ namespace ExchangeStuff.Controllers
                 Value = await _transactionHistoryService.GetTransactionHistoryDetail(transactionHistoryId)
             });
         }
-
+        [ESAuthorize(new string[] { ActionConstant.WRITE })]
         [HttpPost("createTransactionHistory")]
         public async Task<IActionResult> CreateTransactionHistory([FromBody] CreateTransactionHistoryModel transactionHistory)
         {

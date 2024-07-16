@@ -1,4 +1,6 @@
-﻿using ExchangeStuff.Responses;
+﻿using ExchangeStuff.AuthOptions.Requirements;
+using ExchangeStuff.Responses;
+using ExchangeStuff.Service.Constants;
 using ExchangeStuff.Service.Models.GroupChat;
 using ExchangeStuff.Service.Models.MessageChat;
 using ExchangeStuff.Service.Services.Interfaces;
@@ -16,6 +18,7 @@ namespace ExchangeStuff.Controllers
         {
             _chatService = chatService;
         }
+        [ESAuthorize(new string[] { ActionConstant.READ })]
         [HttpGet("get-list-joined/{id}")]
         public async Task<IActionResult> GetListJoined([FromRoute] Guid id)
         {
@@ -26,6 +29,7 @@ namespace ExchangeStuff.Controllers
                 Value = await _chatService.GetGroupsJoined(id)
             });
         }
+        [ESAuthorize(new string[] { ActionConstant.READ })]
         [HttpGet("get-list-messages/{id}")]
         public async Task<IActionResult> ListMessages([FromRoute] Guid id)
         {
@@ -36,6 +40,7 @@ namespace ExchangeStuff.Controllers
                 Value = await _chatService.GetListMessage(id)
             });
         }
+        [ESAuthorize(new string[] { ActionConstant.READ })]
         [HttpGet("check-group")]
         public async Task<IActionResult> CheckGroupExisting(Guid senderId, Guid receiverId)
         {
