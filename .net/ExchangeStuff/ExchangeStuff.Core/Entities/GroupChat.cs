@@ -9,5 +9,7 @@ namespace ExchangeStuff.Core.Entities
 
         public User Receiver { get; set; }
         public User Sender { get; set; }
+
+        public ICollection<MessageChat>? MessageChats { get; set; }
     }
 }

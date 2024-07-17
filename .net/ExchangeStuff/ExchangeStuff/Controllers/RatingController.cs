@@ -1,4 +1,6 @@
-﻿using ExchangeStuff.Responses;
+﻿using ExchangeStuff.AuthOptions.Requirements;
+using ExchangeStuff.Responses;
+using ExchangeStuff.Service.Constants;
 using ExchangeStuff.Service.Models.Rating;
 using ExchangeStuff.Service.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
@@ -16,6 +18,7 @@ namespace ExchangeStuff.Controllers
         {
             _ratingSerivce = ratingSerivce;
         }
+        [ESAuthorize(new string[] { ActionConstant.READ })]
         [HttpGet("product/{productId}")]
         public async Task<IActionResult> GetRatingByProductId([FromRoute] Guid productId)
         {
@@ -26,6 +29,7 @@ namespace ExchangeStuff.Controllers
                 Value = await _ratingSerivce.GetRatingByProductId(productId)
             });
         }
+        [ESAuthorize(new string[] { ActionConstant.READ })]
         [HttpGet("user/{userId}")]
         public async Task<IActionResult> GetRatingByUserId([FromRoute] Guid userId)
         {
@@ -36,6 +40,7 @@ namespace ExchangeStuff.Controllers
                 Value = await _ratingSerivce.GetRatingByUserId(userId)
             });
         }
+        [ESAuthorize(new string[] { ActionConstant.READ })]
         [HttpGet("rating-avg-user/{id}")]
         public async Task<IActionResult> GetRatingAvg([FromRoute] Guid id)
         {
@@ -46,7 +51,8 @@ namespace ExchangeStuff.Controllers
                 Value = await _ratingSerivce.GetRatingAvg(id)
             });
         }
-        [HttpPost]
+        [ESAuthorize(new string[] { ActionConstant.WRITE })]
+        [HttpPost("create-rating")]
         public async Task<IActionResult> CreateRating(CreateRatingModel createModel)
         {
             var result = await _ratingSerivce.CreateRating(createModel);
@@ -57,7 +63,8 @@ namespace ExchangeStuff.Controllers
                 Value = result.ToString()
             });
         }
-        [HttpPut]
+        [ESAuthorize(new string[] { ActionConstant.OVERWRITE })]
+        [HttpPut("update-rating")]
         public async Task<IActionResult> UpdateRating(UpdateRatingModel updateModel)
         {
             var result = await _ratingSerivce.UpdateRating(updateModel);
