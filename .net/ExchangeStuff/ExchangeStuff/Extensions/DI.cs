@@ -2,6 +2,7 @@
 using ExchangeStuff.AuthOptions.Jwts;
 using ExchangeStuff.AuthOptions.Requirements;
 using ExchangeStuff.AuthOptions.SwaggerOptions;
+using ExchangeStuff.Repository;
 using ExchangeStuff.Repository.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
@@ -19,6 +20,8 @@ namespace ExchangeStuff.Extensions
             services.AddTransient<IAuthorizationHandler, ActionRequirementHandler>();
             services.AddDbContext<ExchangeStuffContext>(x => x.UseSqlServer(GetConnectionString()));
             services.AddScoped<Func<ExchangeStuffContext>>(x => () => x.GetService<ExchangeStuffContext>()!);
+            services.AddScoped<DbFactory>();
+
         }
         private static string GetConnectionString()
         {
