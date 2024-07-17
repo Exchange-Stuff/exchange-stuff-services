@@ -71,4 +71,5 @@ app.UseException();
 
 app.MapControllers();
 app.MapHub<ESNotification>("/esnotification");
+app.MapHub<ChatHub>("/chat");
 app.Run();

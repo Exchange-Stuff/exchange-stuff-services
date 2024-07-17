@@ -1,5 +1,7 @@
-﻿using ExchangeStuff.Core.Enums;
+﻿using ExchangeStuff.AuthOptions.Requirements;
+using ExchangeStuff.Core.Enums;
 using ExchangeStuff.Responses;
+using ExchangeStuff.Service.Constants;
 using ExchangeStuff.Service.Models.Comments;
 using ExchangeStuff.Service.Models.FinancialTickets;
 using ExchangeStuff.Service.Models.PurchaseTicket;
@@ -20,7 +22,7 @@ namespace ExchangeStuff.Controllers
         {
             _financialTicketService = financialTicketService;
         }
-
+        [ESAuthorize(new string[] { ActionConstant.READ })]
 
         [HttpGet("getAllFinancialTicket")]
         public async Task<IActionResult> GetFinancialTicket([FromQuery] int pageSize, [FromQuery] int pageIndex, [FromQuery] FinancialTicketStatus status )
@@ -33,8 +35,8 @@ namespace ExchangeStuff.Controllers
 
             });
         }
-       
 
+        [ESAuthorize(new string[] { ActionConstant.READ })]
         [HttpGet("getListFinancialTicketByUserId")]
         public async Task<IActionResult> GetListFinancialTicketByUserId([FromQuery] int pageSize, [FromQuery] int pageIndex, [FromQuery] FinancialTicketStatus status)
         {
@@ -47,6 +49,7 @@ namespace ExchangeStuff.Controllers
             });
 
         }
+        [ESAuthorize(new string[] { ActionConstant.READ })]
         [HttpGet("getFinancialTicketDetail/{id}")]
         public async Task<IActionResult> GetFinancialTicketDetail(Guid id)
         {
@@ -57,6 +60,7 @@ namespace ExchangeStuff.Controllers
                 Value = await _financialTicketService.GetFinancialTicketDetail(id),
             });
         }
+        [ESAuthorize(new string[] { ActionConstant.WRITE })]
         [HttpPost("createFinancialTicket")]
         public async Task<IActionResult> CreateFinancialTicket([FromBody] CreateFinancialTicketModel financialTicket)
         {
@@ -71,7 +75,7 @@ namespace ExchangeStuff.Controllers
                 Value = rs.ToString()
             });
         }
-
+        [ESAuthorize(new string[] { ActionConstant.OVERWRITE })]
         [HttpPut("UpdateFinancialTicket")]
         public async Task<IActionResult> UpdateFinancialTicket([FromBody] UpdateFinancialTicketModel financialTicket)
         {
@@ -86,6 +90,7 @@ namespace ExchangeStuff.Controllers
                 Value = rs.ToString()
             });
         }
+        [ESAuthorize(new string[] { ActionConstant.READ })]
         [HttpGet("get-all-filter")]
         public async Task<IActionResult> GetAllFilter([FromQuery] int pageSize, [FromQuery] int pageIndex, [FromQuery] DateTime? from, [FromQuery] DateTime? to, [FromQuery] FinancialTicketStatus? status, [FromQuery] int? sort)
         {

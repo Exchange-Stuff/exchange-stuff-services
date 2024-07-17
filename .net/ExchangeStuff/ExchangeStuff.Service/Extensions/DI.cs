@@ -29,6 +29,7 @@ namespace ExchangeStuff.Service.Extensions
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IPermissionService, PermissionService>();
             services.AddScoped<IActionService, ActionService>();
+            services.AddScoped<IChatService, ChatService>();
             services.AddScoped<IAdminService, AdminService>();
             services.AddScoped<ITransactionHistoryService, TransactionHistoryService>();
             try

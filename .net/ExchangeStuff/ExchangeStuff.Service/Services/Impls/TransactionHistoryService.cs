@@ -70,21 +70,13 @@ namespace ExchangeStuff.Service.Services.Impls
             }
         }
 
-        public async Task<List<TransactionHistoryViewModel>> GetListTransactionHistoryByUserId(int pageSize, int pageIndex, TransactionType? type = null)
+        public async Task<List<TransactionHistoryViewModel>> GetListTransactionHistoryByUserId(int pageSize, int pageIndex)
         {
             try
             {
                 List<TransactionHistory> listTransactionHistory = new List<TransactionHistory>();
-                if (type.HasValue)
-                {
-                    listTransactionHistory = await _transactionHistoryRepository.GetManyAsync(
-                        pageSize: pageSize, pageIndex: pageIndex, predicate: t => t.TransactionType.Equals(type) && t.UserId.Equals(_identityUser.AccountId), orderBy: t => t.OrderBy(t => t.CreatedOn));
-                }
-                else
-                {
-                    listTransactionHistory = await _transactionHistoryRepository.GetManyAsync(
-                        pageSize: pageSize, pageIndex: pageIndex, predicate: t => t.UserId.Equals(_identityUser.AccountId), orderBy: t => t.OrderBy(t => t.CreatedOn));
-                }
+                listTransactionHistory = await _transactionHistoryRepository.GetManyAsync(
+                    pageSize: pageSize, pageIndex: pageIndex, predicate: t =>  t.UserId.Equals(_identityUser.AccountId), orderBy: t => t.OrderBy(t => t.CreatedOn));
 
                 var result = AutoMapperConfig.Mapper.Map<List<TransactionHistoryViewModel>>(listTransactionHistory);
                 return result;
