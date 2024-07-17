@@ -29,6 +29,8 @@ namespace ExchangeStuff.Core.Uows
         IModeratorRepository ModeratorRepository { get; }
         IUserBalanceRepository UserBalanceRepository { get; }
         INotificationRepository NotificationRepository { get; }
+        IMessageChatRepository MessageChatRepository { get; }
+        IGroupChatRepository GroupChatRepository { get; }
         Task<int> SaveChangeAsync();
     }
 }

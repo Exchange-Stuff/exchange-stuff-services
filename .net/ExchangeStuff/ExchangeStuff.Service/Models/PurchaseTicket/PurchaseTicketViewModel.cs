@@ -13,5 +13,7 @@ namespace ExchangeStuff.Service.Models.PurchaseTicket
         public Guid UserId { get; set; }
         public int Quantity { get; set; }
         public PurchaseTicketStatus Status { get; set; }
+        public DateTime CreatedOn { get; set; }
+        public DateTime ModifiedOn { get; set; }
     }
 }

@@ -233,24 +233,6 @@ namespace ExchangeStuff.Service.Services.Impls
                         };
                         await _transactionHistoryRepository.AddAsync(transactionHistory);
                     }
-                    UserBalance userBalance = await _userBalanceRepository.GetOneAsync(predicate: b => b.UserId.Equals(ticket.UserId), forUpdate: true);
-                    if (userBalance == null)
-                    {
-                        throw new Exception("User balance not found");
-                    }
-                    else
-                    {
-                        if (ticket.Amount <= userBalance.Balance)
-                        {
-                            userBalance.Balance -= ticket.Amount;
-                            _userBalanceRepository.Update(userBalance);
-                        }
-                        else
-                        {
-                            throw new Exception("Not enough blance!");
-                        }
-                    }
-                    // Update the user's balance
                     var result = await _unitOfWork.SaveChangeAsync();
                     return result > 0;
                 }

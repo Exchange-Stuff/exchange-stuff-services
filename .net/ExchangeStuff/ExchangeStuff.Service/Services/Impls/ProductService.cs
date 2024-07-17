@@ -16,6 +16,7 @@ using Unidecode.NET;
 using System.Globalization;
 using System.Text;
 using Azure.Core;
+using System;
 
 namespace ExchangeStuff.Service.Services.Impls
 {
@@ -45,21 +46,21 @@ namespace ExchangeStuff.Service.Services.Impls
         public async Task<List<ProductViewModel>> GetAllProductsAsync()
         {
 
-            return AutoMapperConfig.Mapper.Map<List<ProductViewModel>>(await _productRepository.GetManyAsync(predicate: p => p.ProductStatus.Equals(ProductStatus.Approve) && p.IsActived && p.ProductStatus == ProductStatus.Approve, orderBy: p => p.OrderBy(p => p.CreatedOn)));
+            return AutoMapperConfig.Mapper.Map<List<ProductViewModel>>(await _productRepository.GetManyAsync(predicate: p => p.ProductStatus.Equals(ProductStatus.Approve) && p.IsActived && p.Quantity > 0, orderBy: p => p.OrderBy(p => p.CreatedOn)));
         }
 
         public async Task<List<ProductViewModel>> GetProductByName(string name)
         {
-            if (string.IsNullOrEmpty(name))
+            if (string.IsNullOrEmpty(name.Trim()))
             {
-                return new List<ProductViewModel>();
+                return AutoMapperConfig.Mapper.Map<List<ProductViewModel>>(await _productRepository.GetManyAsync(predicate: p => p.ProductStatus.Equals(ProductStatus.Approve) && p.IsActived && p.Quantity > 0, orderBy: p => p.OrderBy(p => p.CreatedOn)));
             }
             string normalizedSearch = StringExtensions.RemoveDiacritics(name);
 
             string[] keywords = normalizedSearch.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
             var allProducts = await _productRepository.GetManyAsync(
-                predicate: p => p.ProductStatus == ProductStatus.Approve,
+                predicate: p => p.ProductStatus.Equals(ProductStatus.Approve) && p.IsActived && p.Quantity > 0,
                 orderBy: p => p.OrderBy(p => p.CreatedOn));
 
             var filteredProducts = allProducts.Where(p =>
@@ -97,7 +98,17 @@ namespace ExchangeStuff.Service.Services.Impls
                 include: "Products"
             );
 
-            return AutoMapperConfig.Mapper.Map<List<ProductViewModel>>(category.Products);
+            if (category == null)
+            {
+                return new List<ProductViewModel>();
+            }
+
+            var approvedProducts = category.Products
+                .Where(p => p.ProductStatus == ProductStatus.Approve && p.IsActived && p.Quantity > 0)
+                .OrderBy(p => p.CreatedOn)
+                .ToList();
+
+            return AutoMapperConfig.Mapper.Map<List<ProductViewModel>>(approvedProducts);
 
         }
 

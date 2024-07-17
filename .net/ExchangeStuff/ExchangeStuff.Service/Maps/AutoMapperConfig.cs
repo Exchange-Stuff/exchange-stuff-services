@@ -9,7 +9,9 @@ using ExchangeStuff.Service.Models.Campuses;
 using ExchangeStuff.Service.Models.Categories;
 using ExchangeStuff.Service.Models.Comments;
 using ExchangeStuff.Service.Models.FinancialTickets;
+using ExchangeStuff.Service.Models.GroupChat;
 using ExchangeStuff.Service.Models.Images;
+using ExchangeStuff.Service.Models.MessageChat;
 using ExchangeStuff.Service.Models.Moderators;
 using ExchangeStuff.Service.Models.Notifications;
 using ExchangeStuff.Service.Models.PermissionGroups;
@@ -96,6 +98,8 @@ namespace ExchangeStuff.Service.Maps
             CreateMap<ProductImageUserViewModel, Product>().ReverseMap();
             CreateMap<Product, ProductUserViewModel>().ReverseMap();
             CreateMap<Notification, NotificationViewModel>().ReverseMap();
+            CreateMap<GroupChat, GroupChatViewModel>().ReverseMap();
+            CreateMap<MessageChat, MessageChatViewModel>().ReverseMap();
         }
     }
 

@@ -1,4 +1,6 @@
-﻿using ExchangeStuff.Responses;
+﻿using ExchangeStuff.AuthOptions.Requirements;
+using ExchangeStuff.Responses;
+using ExchangeStuff.Service.Constants;
 using ExchangeStuff.Service.Models.Tokens;
 using ExchangeStuff.Service.Services.Impls;
 using ExchangeStuff.Service.Services.Interfaces;
@@ -113,6 +115,7 @@ namespace ExchangeStuff.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
+        [ESAuthorize(new string[] { ActionConstant.DELETE })]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAccount([FromRoute] Guid id)
         {
