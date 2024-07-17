@@ -27,6 +27,7 @@ namespace ExchangeStuff.Repository.Data
             }
         }
 
+
         private string GetConnectionString()
         {
             IConfigurationRoot configurationRoot = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("appsettings.json", true, true).Build();

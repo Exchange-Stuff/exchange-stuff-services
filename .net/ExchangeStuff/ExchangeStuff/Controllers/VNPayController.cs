@@ -1,4 +1,6 @@
-﻿using ExchangeStuff.Service.Services.Interfaces;
+﻿using ExchangeStuff.AuthOptions.Requirements;
+using ExchangeStuff.Service.Constants;
+using ExchangeStuff.Service.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ExchangeStuff.Controllers
@@ -13,7 +15,7 @@ namespace ExchangeStuff.Controllers
         {
             _vnPayService = vnPayService;
         }
-
+        [ESAuthorize(new string[] { ActionConstant.READ })]
         [HttpGet("createPaymentUrl")]
         public IActionResult CreatePayment([FromQuery] int amount)
         {

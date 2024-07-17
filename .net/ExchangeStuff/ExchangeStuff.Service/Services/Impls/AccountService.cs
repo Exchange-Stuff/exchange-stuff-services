@@ -127,7 +127,7 @@ namespace ExchangeStuff.Service.Services.Impls
 
         public async Task<UserViewModel> UpdateUser(UserUpdateModel userUpdateModel)
         {
-            if (userUpdateModel.Id != _identityUser.AccountId) throw new Exception("You do not have permission");
+           if (userUpdateModel.Id != _identityUser.AccountId) throw new Exception("You do not have permission");
             var user = await _userRepository.GetOneAsync(x => x.Id == userUpdateModel.Id && x.IsActived, forUpdate: true);
             if (user == null!) throw new Exception("Not found this user");
 
