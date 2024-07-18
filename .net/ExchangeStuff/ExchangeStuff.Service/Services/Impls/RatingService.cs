@@ -97,7 +97,7 @@ public class RatingService : IRatingSerivce
         var ratingCount = listRating.Count;
         var totalRating = listRating.Sum(p => (int)p.EvaluateType);
 
-        var avgRating = (decimal)totalRating / ratingCount;
+        var avgRating = totalRating == 0 ? 0 : ((decimal)totalRating / ratingCount);
         return new RatingAvgViewModel { RatingAvg = Math.Round(avgRating, 2), RatingCount = ratingCount };
     }
 }
