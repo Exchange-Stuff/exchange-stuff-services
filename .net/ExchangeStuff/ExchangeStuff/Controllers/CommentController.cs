@@ -23,13 +23,13 @@ namespace ExchangeStuff.Controllers
         }
         [ESAuthorize(new string[] { ActionConstant.READ })]
         [HttpGet("product/{id}")]
-        public async Task<IActionResult> GetCommentByProductId([FromRoute] Guid id)
+        public async Task<IActionResult> GetCommentByProductId([FromRoute] Guid id, [FromQuery] int pageIndex, [FromQuery] int pageSize)
         {
             return Ok(new ResponseResult<List<CommentViewModel>>
             {
                 Error = null!,
                 IsSuccess = true,
-                Value = await _commentService.GetCommentByProductId(id)
+                Value = await _commentService.GetCommentByProductId(id, pageSize, pageIndex)
             });
         }
         [ESAuthorize(new string[] { ActionConstant.WRITE })]

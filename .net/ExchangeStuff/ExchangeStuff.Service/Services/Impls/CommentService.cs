@@ -39,9 +39,11 @@ public class CommentService : ICommentService
         return result > 0;
     }
 
-    public async Task<List<CommentViewModel>> GetCommentByProductId(Guid id)
+    public async Task<List<CommentViewModel>> GetCommentByProductId(Guid id, int pageIndex, int pageSize)
     {
         var comments = await _commentRepository.GetManyAsync(
+            pageIndex: pageIndex,
+            pageSize: pageSize,
             predicate: c => c.ProductId.Equals(id),
             orderBy: c => c.OrderByDescending(c => c.CreatedOn),
             include: "User"
