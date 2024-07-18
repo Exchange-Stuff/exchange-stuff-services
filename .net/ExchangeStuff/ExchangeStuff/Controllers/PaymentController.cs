@@ -1,4 +1,6 @@
-﻿using ExchangeStuff.Responses;
+﻿using ExchangeStuff.AuthOptions.Requirements;
+using ExchangeStuff.Responses;
+using ExchangeStuff.Service.Constants;
 using ExchangeStuff.Service.Models.Products;
 using ExchangeStuff.Service.Services.Impls;
 using ExchangeStuff.Service.Services.Interfaces;
@@ -18,6 +20,7 @@ namespace ExchangeStuff.Controllers
             _paymentService = paymentService;
         }
 
+        [ESAuthorize(new string[] { ActionConstant.READ })]
 
         [HttpGet("createPayment")]
         public async Task<IActionResult> createPayment([FromQuery] Guid userId, [FromQuery] int amount)

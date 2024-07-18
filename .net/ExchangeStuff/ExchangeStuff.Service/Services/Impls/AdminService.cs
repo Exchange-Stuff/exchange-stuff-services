@@ -14,7 +14,6 @@ using ExchangeStuff.Service.Models.Resources;
 using ExchangeStuff.Service.Models.Users;
 using ExchangeStuff.Service.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
@@ -444,5 +443,6 @@ namespace ExchangeStuff.Service.Services.Impls
             var rs = await _uow.SaveChangeAsync();
             return rs > 0;
         }
+
     }
 }

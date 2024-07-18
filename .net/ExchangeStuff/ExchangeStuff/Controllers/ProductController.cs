@@ -24,6 +24,7 @@ namespace ExchangeStuff.Controllers
         {
             _productService = productService;
         }
+        [ESAuthorize(new string[] { ActionConstant.READ })]
 
         [HttpGet]
         public async Task<IActionResult> Get()
@@ -31,6 +32,7 @@ namespace ExchangeStuff.Controllers
             var product = await _productService.GetAllProductsAsync();
             return Ok(product);
         }
+        [ESAuthorize(new string[] { ActionConstant.READ })]
 
         [HttpGet("getProductName/{name}")]
         public async Task<IActionResult> GetProductByName(string name)
@@ -42,6 +44,7 @@ namespace ExchangeStuff.Controllers
                 Value = await _productService.GetProductByName(name)
             });
         }
+        [ESAuthorize(new string[] { ActionConstant.READ })]
 
         [HttpGet("getForModerator")]
         public async Task<IActionResult> GetForModerator()
@@ -49,6 +52,7 @@ namespace ExchangeStuff.Controllers
             var product = await _productService.GetListProductsForModerator();
             return Ok(product);
         }
+        [ESAuthorize(new string[] { ActionConstant.READ })]
 
         [HttpGet("getForAdmin")]
         public async Task<IActionResult> GetForAdmin()
@@ -56,6 +60,7 @@ namespace ExchangeStuff.Controllers
             var product = await _productService.GetListProductsForAdmin();
             return Ok(product);
         }
+        [ESAuthorize(new string[] { ActionConstant.READ })]
 
         [HttpGet("getDetail/{id}")]
         public async Task<IActionResult> GetDetail(Guid id)
@@ -67,6 +72,7 @@ namespace ExchangeStuff.Controllers
                 Value = await _productService.GetDetail(id)
             });
         }
+        [ESAuthorize(new string[] { ActionConstant.READ })]
 
         [HttpGet("getProductByCategory/{categoryId}")]
         public async Task<IActionResult> GetProductByCategory(Guid categoryId)
@@ -75,6 +81,7 @@ namespace ExchangeStuff.Controllers
             return Ok(products);
         }
 
+        [ESAuthorize(new string[] { ActionConstant.WRITE })]
         [HttpPost("createProduct")]
         public async Task<IActionResult> CreateProduct(CreateProductModel model)
         {
@@ -92,11 +99,11 @@ namespace ExchangeStuff.Controllers
             return StatusCode(500, "A problem happened while handling your request.");
         }
 
+        [ESAuthorize(new string[] { ActionConstant.OVERWRITE })]
         [HttpPut("updateStatusProduct")]
         public async Task<IActionResult> UpdateProduct(UpdateProductViewModel updateProductViewModel)
         {
             var rs = await _productService.updateStatusProduct(updateProductViewModel);
-
             if (!rs) throw new Exception("Can not update product");
 
             return StatusCode(StatusCodes.Status200OK, new ResponseResult<string>
@@ -107,6 +114,7 @@ namespace ExchangeStuff.Controllers
             });
         }
 
+        [ESAuthorize(new string[] { ActionConstant.READ })]
         [HttpGet("getProductByUserId")]
         public async Task<IActionResult> GetProductUserId()
         {
@@ -119,6 +127,7 @@ namespace ExchangeStuff.Controllers
             });
         }
 
+        [ESAuthorize(new string[] { ActionConstant.READ })]
         [HttpGet("getOtherUserProducts/{userId}")]
         public async Task<IActionResult> GetOtherUserProducts(Guid userId)
         {

@@ -1,5 +1,7 @@
-﻿using ExchangeStuff.Core.Enums;
+﻿using ExchangeStuff.AuthOptions.Requirements;
+using ExchangeStuff.Core.Enums;
 using ExchangeStuff.Responses;
+using ExchangeStuff.Service.Constants;
 using ExchangeStuff.Service.Models.Permissions;
 using ExchangeStuff.Service.Models.PurchaseTicket;
 using ExchangeStuff.Service.Services.Impls;
@@ -20,6 +22,9 @@ namespace ExchangeStuff.Controllers
             _purchaseTicketService = purchaseTicketService;
         }
 
+
+        [ESAuthorize(new string[] { ActionConstant.READ })]
+
         [HttpGet("getAllPurchaseTicket/{pageSize}/{pageIndex}/{status}")]
         public async Task<IActionResult> GetAllPurchaseTicket(int pageSize, int pageIndex, PurchaseTicketStatus status)
         {
@@ -31,6 +36,7 @@ namespace ExchangeStuff.Controllers
             });
            
         }
+        [ESAuthorize(new string[] { ActionConstant.READ })]
 
         [HttpGet("getListPurchaseTicketByUserId/{pageSize}/{pageIndex}/{status}")]
         public async Task<IActionResult> GetListPurchaseTicketByUserId(int pageSize, int pageIndex, PurchaseTicketStatus status)
@@ -42,6 +48,7 @@ namespace ExchangeStuff.Controllers
                 Value = await _purchaseTicketService.GetListPurchaseTicketByUserId(pageSize, pageIndex, status)
             });
         }
+        [ESAuthorize(new string[] { ActionConstant.READ })]
 
         [HttpGet("getPurchaseTicketDetail/{purchaseTicketId}")]
         public async Task<IActionResult> GetPurchaseTicketDetail(Guid purchaseTicketId)
@@ -53,6 +60,7 @@ namespace ExchangeStuff.Controllers
                 Value = await _purchaseTicketService.GetPurchaseTicketDetail(purchaseTicketId)
             });
         }
+        [ESAuthorize(new string[] { ActionConstant.WRITE })]
 
         [HttpPost("createPurchaseTicket")]
         public async Task<IActionResult> CreatePurchaseTicket([FromBody] CreatePurchaseTicketModel purchaseTicket)
@@ -68,6 +76,7 @@ namespace ExchangeStuff.Controllers
                 Value = rs.ToString()
             });
         }
+        [ESAuthorize(new string[] { ActionConstant.OVERWRITE })]
 
         [HttpPut("UpdatePurchaseTicket")]
         public async Task<IActionResult> UpdatePurchaseTicket([FromBody] UpdatePurchaseTicketModel purchaseTicket)
