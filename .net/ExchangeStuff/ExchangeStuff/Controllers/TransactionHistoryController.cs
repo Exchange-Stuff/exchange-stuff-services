@@ -3,6 +3,7 @@ using ExchangeStuff.Core.Enums;
 using ExchangeStuff.Responses;
 using ExchangeStuff.Service.Constants;
 using ExchangeStuff.Service.Models.TransactionHistory;
+using ExchangeStuff.Service.Paginations;
 using ExchangeStuff.Service.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -22,7 +23,7 @@ namespace ExchangeStuff.Controllers
         [HttpGet("getAllTransactionHistory/{pageSize}/{pageIndex}/{status}")]
         public async Task<IActionResult> GetAllTransactionHistory(int pageSize, int pageIndex, TransactionType status)
         {
-            return Ok(new ResponseResult<List<TransactionHistoryViewModel>>
+            return Ok(new ResponseResult<PaginationItem<TransactionHistoryViewModel>>
             {
                 Error = null!,
                 IsSuccess = true,
@@ -33,7 +34,7 @@ namespace ExchangeStuff.Controllers
         [HttpGet("getListTransactionHistoryByUserId/{pageSize}/{pageIndex}")]
         public async Task<IActionResult> GetListTransactionHistoryByUserId(int pageSize, int pageIndex)
         {
-            return Ok(new ResponseResult<List<TransactionHistoryViewModel>>
+            return Ok(new ResponseResult<PaginationItem<TransactionHistoryViewModel>>
             {
                 Error = null!,
                 IsSuccess = true,
