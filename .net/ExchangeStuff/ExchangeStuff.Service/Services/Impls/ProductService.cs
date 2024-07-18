@@ -15,6 +15,8 @@ using ExchangeStuff.Service.Models.Users;
 using Unidecode.NET;
 using System.Globalization;
 using System.Text;
+using Azure.Core;
+using System;
 
 namespace ExchangeStuff.Service.Services.Impls
 {
@@ -44,21 +46,21 @@ namespace ExchangeStuff.Service.Services.Impls
         public async Task<List<ProductViewModel>> GetAllProductsAsync()
         {
 
-            return AutoMapperConfig.Mapper.Map<List<ProductViewModel>>(await _productRepository.GetManyAsync(predicate: p => p.ProductStatus.Equals(ProductStatus.Approve), orderBy: p => p.OrderBy(p => p.CreatedOn)));
+            return AutoMapperConfig.Mapper.Map<List<ProductViewModel>>(await _productRepository.GetManyAsync(predicate: p => p.ProductStatus.Equals(ProductStatus.Approve) && p.IsActived && p.Quantity > 0, orderBy: p => p.OrderBy(p => p.CreatedOn)));
         }
 
         public async Task<List<ProductViewModel>> GetProductByName(string name)
         {
-            if (string.IsNullOrEmpty(name))
+            if (string.IsNullOrEmpty(name.Trim()))
             {
-                return new List<ProductViewModel>();
+                return AutoMapperConfig.Mapper.Map<List<ProductViewModel>>(await _productRepository.GetManyAsync(predicate: p => p.ProductStatus.Equals(ProductStatus.Approve) && p.IsActived && p.Quantity > 0, orderBy: p => p.OrderBy(p => p.CreatedOn)));
             }
             string normalizedSearch = StringExtensions.RemoveDiacritics(name);
 
             string[] keywords = normalizedSearch.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
             var allProducts = await _productRepository.GetManyAsync(
-                predicate: p => p.ProductStatus == ProductStatus.Approve,
+                predicate: p => p.ProductStatus.Equals(ProductStatus.Approve) && p.IsActived && p.Quantity > 0,
                 orderBy: p => p.OrderBy(p => p.CreatedOn));
 
             var filteredProducts = allProducts.Where(p =>
@@ -96,7 +98,17 @@ namespace ExchangeStuff.Service.Services.Impls
                 include: "Products"
             );
 
-            return AutoMapperConfig.Mapper.Map<List<ProductViewModel>>(category.Products);
+            if (category == null)
+            {
+                return new List<ProductViewModel>();
+            }
+
+            var approvedProducts = category.Products
+                .Where(p => p.ProductStatus == ProductStatus.Approve && p.IsActived && p.Quantity > 0)
+                .OrderBy(p => p.CreatedOn)
+                .ToList();
+
+            return AutoMapperConfig.Mapper.Map<List<ProductViewModel>>(approvedProducts);
 
         }
 
@@ -114,8 +126,9 @@ namespace ExchangeStuff.Service.Services.Impls
 
                 var product = AutoMapperConfig.Mapper.Map<Product>(model);
                 product.Id = Guid.NewGuid();
-                product.IsActived = false;
+                product.IsActived = true;
                 product.Categories = categories.ToList();
+                product.Quantity = 1;
                 product.ProductStatus = ProductStatus.Pending;
 
                 List<Image> images = new List<Image>();
@@ -129,6 +142,36 @@ namespace ExchangeStuff.Service.Services.Impls
                 product.Images = images;
 
                 await _unitOfWork.ProductRepository.AddAsync(product);
+
+                PostTicketViewModel postTicketViewModel = new PostTicketViewModel();
+                postTicketViewModel.productId = product.Id;
+                postTicketViewModel.Amount = 10;
+                postTicketViewModel.UserId = _identityUser.AccountId;
+                await createPostTicket(postTicketViewModel);
+
+                var userBl = await _userBalanceRepository.GetOneAsync(predicate: p => p.UserId.Equals(product.CreatedBy));
+
+                if (userBl != null)
+                {
+                    if (userBl.Balance < 10)
+                    {
+                        throw new Exception("Not enough money");
+                    }
+                    else
+                    {
+                        userBl.Balance = userBl.Balance - 10;
+                        _userBalanceRepository.Update(userBl);
+                    }
+                }
+
+                TransactionHistory transactionHistory = new TransactionHistory
+                {
+                    UserId = _identityUser.AccountId,
+                    Amount = 10,
+                    IsCredit = false,
+                    TransactionType = TransactionType.Post
+                };
+                await _transactionHistoryRepository.AddAsync(transactionHistory);
 
                 var result = await _unitOfWork.SaveChangeAsync();
 
@@ -155,27 +198,21 @@ namespace ExchangeStuff.Service.Services.Impls
 
                 _productRepository.Update(product);
 
-                if (product.ProductStatus.Equals(ProductStatus.Approve)) 
+                if (product.ProductStatus.Equals(ProductStatus.Cancle)) 
                 {
-                    PostTicketViewModel postTicketViewModel = new PostTicketViewModel();
-                    postTicketViewModel.productId = product.Id;
-                    postTicketViewModel.Amount = 10;
-                    postTicketViewModel.UserId = product.CreatedBy;
-                    await createPostTicket(postTicketViewModel);
-
                     var userBl = await _userBalanceRepository.GetOneAsync(predicate: p => p.UserId.Equals(product.CreatedBy));
 
-                    if (userBl != null) 
+                    userBl.Balance = userBl.Balance + 10;
+                    _userBalanceRepository.Update(userBl);
+
+                    TransactionHistory transactionHistory = new TransactionHistory
                     {
-                        if (userBl.Balance < 0)
-                        {
-                            throw new Exception("Not enough money");
-                        }
-                        else 
-                        {
-                            userBl.Balance = userBl.Balance - 10;
-                        }
-                    }
+                        UserId = _identityUser.AccountId,
+                        Amount = 10,
+                        IsCredit = true,
+                        TransactionType = TransactionType.Post
+                    };
+                    await _transactionHistoryRepository.AddAsync(transactionHistory);
 
                 }
                 
@@ -236,6 +273,32 @@ namespace ExchangeStuff.Service.Services.Impls
         {
 
             return AutoMapperConfig.Mapper.Map<List<ProductViewModel>>(await _productRepository.GetManyAsync(orderBy: p => p.OrderBy(p => p.CreatedOn)));
+        }
+
+        public async Task<bool> CancelProduct(Guid productId)
+        {
+            try
+            {
+                var product = await _productRepository.GetOneAsync(predicate: p => p.Id.Equals(productId));
+
+                if (product == null)
+                {
+                    throw new Exception("Not found product");
+                }
+                product.IsActived = false;
+                product.ProductStatus = ProductStatus.Cancle;
+
+                _productRepository.Update(product);
+
+                var result = await _unitOfWork.SaveChangeAsync();
+
+                return result > 0;
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
         }
     }
 }

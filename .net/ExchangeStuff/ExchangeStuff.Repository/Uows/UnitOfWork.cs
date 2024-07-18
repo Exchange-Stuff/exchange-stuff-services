@@ -37,6 +37,8 @@ namespace ExchangeStuff.Repository.Uows
             ModeratorRepository = new ModeratorRepository(_context);    
             UserBalanceRepository = new UserBalanceRepository(_context);
             NotificationRepository = new NotificationRepository(_context);
+            GroupChatRepository = new GroupChatRepository(_context);
+            MessageChatRepository = new MessageChatRepository(_context);
         }
 
         public IUserRepository UserRepository { get; private set; }
@@ -84,6 +86,10 @@ namespace ExchangeStuff.Repository.Uows
         public IModeratorRepository ModeratorRepository { get; private set; }
 
         public INotificationRepository NotificationRepository { get; private set; }
+
+        public IMessageChatRepository MessageChatRepository { get; private set; }
+
+        public IGroupChatRepository GroupChatRepository { get; private set; }
 
         public async Task<int> SaveChangeAsync()
         => await _context.SaveChangesAsync();

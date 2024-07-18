@@ -19,7 +19,6 @@ namespace ExchangeStuff.Controllers
             _ratingSerivce = ratingSerivce;
         }
         [ESAuthorize(new string[] { ActionConstant.READ })]
-
         [HttpGet("product/{productId}")]
         public async Task<IActionResult> GetRatingByProductId([FromRoute] Guid productId)
         {
@@ -31,7 +30,6 @@ namespace ExchangeStuff.Controllers
             });
         }
         [ESAuthorize(new string[] { ActionConstant.READ })]
-
         [HttpGet("user/{userId}")]
         public async Task<IActionResult> GetRatingByUserId([FromRoute] Guid userId)
         {
@@ -42,9 +40,7 @@ namespace ExchangeStuff.Controllers
                 Value = await _ratingSerivce.GetRatingByUserId(userId)
             });
         }
-
         [ESAuthorize(new string[] { ActionConstant.READ })]
-
         [HttpGet("rating-avg-user/{id}")]
         public async Task<IActionResult> GetRatingAvg([FromRoute] Guid id)
         {
@@ -55,10 +51,8 @@ namespace ExchangeStuff.Controllers
                 Value = await _ratingSerivce.GetRatingAvg(id)
             });
         }
-
         [ESAuthorize(new string[] { ActionConstant.WRITE })]
-
-        [HttpPost]
+        [HttpPost("create-rating")]
         public async Task<IActionResult> CreateRating(CreateRatingModel createModel)
         {
             var result = await _ratingSerivce.CreateRating(createModel);
@@ -69,10 +63,8 @@ namespace ExchangeStuff.Controllers
                 Value = result.ToString()
             });
         }
-
         [ESAuthorize(new string[] { ActionConstant.OVERWRITE })]
-
-        [HttpPut]
+        [HttpPut("update-rating")]
         public async Task<IActionResult> UpdateRating(UpdateRatingModel updateModel)
         {
             var result = await _ratingSerivce.UpdateRating(updateModel);

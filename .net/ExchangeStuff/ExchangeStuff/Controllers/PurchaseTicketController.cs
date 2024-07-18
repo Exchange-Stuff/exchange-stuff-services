@@ -21,10 +21,7 @@ namespace ExchangeStuff.Controllers
         {
             _purchaseTicketService = purchaseTicketService;
         }
-
-
         [ESAuthorize(new string[] { ActionConstant.READ })]
-
         [HttpGet("getAllPurchaseTicket/{pageSize}/{pageIndex}/{status}")]
         public async Task<IActionResult> GetAllPurchaseTicket(int pageSize, int pageIndex, PurchaseTicketStatus status)
         {
@@ -37,7 +34,6 @@ namespace ExchangeStuff.Controllers
            
         }
         [ESAuthorize(new string[] { ActionConstant.READ })]
-
         [HttpGet("getListPurchaseTicketByUserId/{pageSize}/{pageIndex}/{status}")]
         public async Task<IActionResult> GetListPurchaseTicketByUserId(int pageSize, int pageIndex, PurchaseTicketStatus status)
         {
@@ -49,7 +45,6 @@ namespace ExchangeStuff.Controllers
             });
         }
         [ESAuthorize(new string[] { ActionConstant.READ })]
-
         [HttpGet("getPurchaseTicketDetail/{purchaseTicketId}")]
         public async Task<IActionResult> GetPurchaseTicketDetail(Guid purchaseTicketId)
         {
@@ -61,7 +56,6 @@ namespace ExchangeStuff.Controllers
             });
         }
         [ESAuthorize(new string[] { ActionConstant.WRITE })]
-
         [HttpPost("createPurchaseTicket")]
         public async Task<IActionResult> CreatePurchaseTicket([FromBody] CreatePurchaseTicketModel purchaseTicket)
         {
@@ -77,7 +71,6 @@ namespace ExchangeStuff.Controllers
             });
         }
         [ESAuthorize(new string[] { ActionConstant.OVERWRITE })]
-
         [HttpPut("UpdatePurchaseTicket")]
         public async Task<IActionResult> UpdatePurchaseTicket([FromBody] UpdatePurchaseTicketModel purchaseTicket)
         {

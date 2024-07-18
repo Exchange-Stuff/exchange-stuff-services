@@ -19,7 +19,6 @@ namespace ExchangeStuff.Controllers
             _transactionHistoryService = transactionHistoryService;
         }
         [ESAuthorize(new string[] { ActionConstant.READ })]
-
         [HttpGet("getAllTransactionHistory/{pageSize}/{pageIndex}/{status}")]
         public async Task<IActionResult> GetAllTransactionHistory(int pageSize, int pageIndex, TransactionType status)
         {
@@ -31,19 +30,17 @@ namespace ExchangeStuff.Controllers
             });
         }
         [ESAuthorize(new string[] { ActionConstant.READ })]
-
-        [HttpGet("getListTransactionHistoryByUserId/{pageSize}/{pageIndex}/{status}")]
-        public async Task<IActionResult> GetListTransactionHistoryByUserId(int pageSize, int pageIndex, TransactionType status)
+        [HttpGet("getListTransactionHistoryByUserId/{pageSize}/{pageIndex}")]
+        public async Task<IActionResult> GetListTransactionHistoryByUserId(int pageSize, int pageIndex)
         {
             return Ok(new ResponseResult<List<TransactionHistoryViewModel>>
             {
                 Error = null!,
                 IsSuccess = true,
-                Value = await _transactionHistoryService.GetListTransactionHistoryByUserId(pageSize, pageIndex, status)
+                Value = await _transactionHistoryService.GetListTransactionHistoryByUserId(pageSize, pageIndex)
             });
         }
         [ESAuthorize(new string[] { ActionConstant.READ })]
-
         [HttpGet("getTransactionHistoryDetail/{transactionHistoryId}")]
         public async Task<IActionResult> GetTransactionHistoryDetail(Guid transactionHistoryId)
         {
@@ -55,7 +52,6 @@ namespace ExchangeStuff.Controllers
             });
         }
         [ESAuthorize(new string[] { ActionConstant.WRITE })]
-
         [HttpPost("createTransactionHistory")]
         public async Task<IActionResult> CreateTransactionHistory([FromBody] CreateTransactionHistoryModel transactionHistory)
         {

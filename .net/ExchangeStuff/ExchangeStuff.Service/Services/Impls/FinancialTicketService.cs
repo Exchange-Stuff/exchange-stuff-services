@@ -41,13 +41,40 @@ namespace ExchangeStuff.Service.Services.Impls
 
             if (user.UserBalance.Balance < request.Amount) throw new Exception("Not enough blance!");
 
-            FinancialTicket financialTicket = new FinancialTicket();
-            financialTicket.UserId = request.UserId;
-            financialTicket.Amount = request.Amount;
-            financialTicket.ImageQRCode = request.ImageQRCode;
-            financialTicket.Status = FinancialTicketStatus.Pending;
+            FinancialTicket financialTicket = new FinancialTicket
+            {
+                UserId = request.UserId,
+                Amount = request.Amount,
+                ImageQRCode = request.ImageQRCode,
+                Status = FinancialTicketStatus.Pending,
+            };
 
             await _financialTicketsRepository.AddAsync(financialTicket);
+            var userBl = await _userBalanceRepository.GetOneAsync(predicate: p => p.UserId.Equals(request.UserId));
+
+            if (userBl != null)
+            {
+                userBl.Balance = userBl.Balance - request.Amount;
+            }
+            else
+            {
+                throw new Exception();
+            }
+
+            _userBalanceRepository.Update(userBl);
+
+
+            TransactionHistory transactionHistory = new TransactionHistory
+            {
+                UserId = request.UserId,
+                Amount = request.Amount,
+                IsCredit = false,
+                TransactionType = TransactionType.Financial
+            };
+
+            await _transactionHistoryRepository.AddAsync(transactionHistory);
+
+
             var result = await _unitOfWork.SaveChangeAsync();
             return result > 0;
         }
@@ -206,24 +233,6 @@ namespace ExchangeStuff.Service.Services.Impls
                         };
                         await _transactionHistoryRepository.AddAsync(transactionHistory);
                     }
-                    UserBalance userBalance = await _userBalanceRepository.GetOneAsync(predicate: b => b.UserId.Equals(ticket.UserId), forUpdate: true);
-                    if (userBalance == null)
-                    {
-                        throw new Exception("User balance not found");
-                    }
-                    else
-                    {
-                        if (ticket.Amount <= userBalance.Balance)
-                        {
-                            userBalance.Balance -= ticket.Amount;
-                            _userBalanceRepository.Update(userBalance);
-                        }
-                        else
-                        {
-                            throw new Exception("Not enough blance!");
-                        }
-                    }
-                    // Update the user's balance
                     var result = await _unitOfWork.SaveChangeAsync();
                     return result > 0;
                 }

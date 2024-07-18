@@ -22,10 +22,9 @@ namespace ExchangeStuff.Controllers
         {
             _financialTicketService = financialTicketService;
         }
-
         [ESAuthorize(new string[] { ActionConstant.READ })]
 
-        [HttpGet("/getAllFinancialTicket")]
+        [HttpGet("getAllFinancialTicket")]
         public async Task<IActionResult> GetFinancialTicket([FromQuery] int pageSize, [FromQuery] int pageIndex, [FromQuery] FinancialTicketStatus status )
         {
             return Ok(new ResponseResult<List<FinancialTicketViewModel>>
@@ -38,8 +37,7 @@ namespace ExchangeStuff.Controllers
         }
 
         [ESAuthorize(new string[] { ActionConstant.READ })]
-
-        [HttpGet("/getListFinancialTicketByUserId")]
+        [HttpGet("getListFinancialTicketByUserId")]
         public async Task<IActionResult> GetListFinancialTicketByUserId([FromQuery] int pageSize, [FromQuery] int pageIndex, [FromQuery] FinancialTicketStatus status)
         {
             return Ok(new ResponseResult<List<FinancialTicketViewModel>>
@@ -51,10 +49,8 @@ namespace ExchangeStuff.Controllers
             });
 
         }
-
         [ESAuthorize(new string[] { ActionConstant.READ })]
-
-        [HttpGet("/getFinancialTicketDetail/{id}")]
+        [HttpGet("getFinancialTicketDetail/{id}")]
         public async Task<IActionResult> GetFinancialTicketDetail(Guid id)
         {
             return Ok(new ResponseResult<FinancialTicketViewModel>
@@ -65,7 +61,6 @@ namespace ExchangeStuff.Controllers
             });
         }
         [ESAuthorize(new string[] { ActionConstant.WRITE })]
-
         [HttpPost("createFinancialTicket")]
         public async Task<IActionResult> CreateFinancialTicket([FromBody] CreateFinancialTicketModel financialTicket)
         {
@@ -81,7 +76,6 @@ namespace ExchangeStuff.Controllers
             });
         }
         [ESAuthorize(new string[] { ActionConstant.OVERWRITE })]
-
         [HttpPut("UpdateFinancialTicket")]
         public async Task<IActionResult> UpdateFinancialTicket([FromBody] UpdateFinancialTicketModel financialTicket)
         {
@@ -97,7 +91,6 @@ namespace ExchangeStuff.Controllers
             });
         }
         [ESAuthorize(new string[] { ActionConstant.READ })]
-
         [HttpGet("get-all-filter")]
         public async Task<IActionResult> GetAllFilter([FromQuery] int pageSize, [FromQuery] int pageIndex, [FromQuery] DateTime? from, [FromQuery] DateTime? to, [FromQuery] FinancialTicketStatus? status, [FromQuery] int? sort)
         {

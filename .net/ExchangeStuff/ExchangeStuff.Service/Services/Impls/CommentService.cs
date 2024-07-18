@@ -39,9 +39,13 @@ public class CommentService : ICommentService
         return result > 0;
     }
 
-    public async Task<List<CommentViewModel>> GetCommentByProductId(Guid id, int? pageSize, int? pageIndex)
+    public async Task<List<CommentViewModel>> GetCommentByProductId(Guid id)
     {
-        var comments = await _commentRepository.GetManyAsync(predicate: c => c.ProductId.Equals(id), pageIndex: pageIndex, pageSize: pageSize, include: "User");
+        var comments = await _commentRepository.GetManyAsync(
+            predicate: c => c.ProductId.Equals(id),
+            orderBy: c => c.OrderByDescending(c => c.CreatedOn),
+            include: "User"
+        );
         var result = AutoMapperConfig.Mapper.Map<List<CommentViewModel>>(comments);
         return result;
     }
