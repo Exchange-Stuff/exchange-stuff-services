@@ -63,7 +63,7 @@ namespace ExchangeStuff.Controllers
                 Value = await _accountService.GetAccount(id, includeBan)
             });
 
-        [ESAuthorize(new string[] { ActionConstant.OVERRIDE })]
+        [ESAuthorize(new string[] { ActionConstant.OVERWRITE })]
         [HttpPatch("update/user")]
         public async Task<IActionResult> UpdateUser([FromBody] UserUpdateModel userUpdateModel)
         {
