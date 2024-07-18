@@ -113,12 +113,19 @@ namespace ExchangeStuff.Service.Services.Impls
                 if (status.HasValue)
                 {
                     listTicket = await _purchaseTicketRepository.GetManyAsync(
-                        pageSize: pageSize, pageIndex: pageIndex, predicate: p => p.Status.Equals(status) && p.UserId.Equals(_identityUser.AccountId), orderBy: p => p.OrderBy(p => p.CreatedOn));
+                        pageSize: pageSize,
+                        pageIndex: pageIndex,
+                        predicate: p => p.Status.Equals(status) && p.UserId.Equals(_identityUser.AccountId),
+                        orderBy: p => p.OrderBy(p => p.CreatedOn),
+                        include: "Product");
                 }
                 else
                 {
                     listTicket = await _purchaseTicketRepository.GetManyAsync(
-                        pageSize: pageSize, pageIndex: pageIndex, predicate: p => p.UserId.Equals(_identityUser.AccountId), orderBy: p => p.OrderBy(p => p.CreatedOn));
+                        pageSize: pageSize, pageIndex: pageIndex, 
+                        predicate: p => p.UserId.Equals(_identityUser.AccountId),
+                        orderBy: p => p.OrderBy(p => p.CreatedOn),
+                        include: "Product");
                 }
 
                 var result = AutoMapperConfig.Mapper.Map<List<PurchaseTicketViewModel>>(listTicket);
