@@ -96,7 +96,6 @@ namespace ExchangeStuff.Controllers
         public async Task<IActionResult> UpdateProduct(UpdateProductViewModel updateProductViewModel)
         {
             var rs = await _productService.updateStatusProduct(updateProductViewModel);
-
             if (!rs) throw new Exception("Can not update product");
 
             return StatusCode(StatusCodes.Status200OK, new ResponseResult<string>

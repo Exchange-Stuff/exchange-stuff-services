@@ -3,6 +3,7 @@ using ExchangeStuff.Responses;
 using ExchangeStuff.Service.Constants;
 using ExchangeStuff.Service.Models.Comments;
 using ExchangeStuff.Service.Models.Users;
+using ExchangeStuff.Service.Paginations;
 using ExchangeStuff.Service.Services.Impls;
 using ExchangeStuff.Service.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
@@ -21,18 +22,21 @@ namespace ExchangeStuff.Controllers
         {
             _commentService = commentService;
         }
+
         [ESAuthorize(new string[] { ActionConstant.READ })]
+
         [HttpGet("product/{id}")]
-        public async Task<IActionResult> GetCommentByProductId([FromRoute] Guid id)
+        public async Task<IActionResult> GetCommentByProductId([FromRoute] Guid id, [FromQuery] int pageIndex, [FromQuery] int pageSize)
         {
-            return Ok(new ResponseResult<List<CommentViewModel>>
+            return Ok(new ResponseResult<PaginationItem<CommentViewModel>>
             {
                 Error = null!,
                 IsSuccess = true,
-                Value = await _commentService.GetCommentByProductId(id)
+                Value = await _commentService.GetCommentByProductId(id, pageSize, pageIndex)
             });
         }
         [ESAuthorize(new string[] { ActionConstant.WRITE })]
+
         [HttpPost("create")]
         public async Task<IActionResult> CreateComment(CreateCommentModel createModel)
         {
@@ -45,6 +49,7 @@ namespace ExchangeStuff.Controllers
             });
         }
         [ESAuthorize(new string[] { ActionConstant.READ })]
+
         [HttpGet("get-total-count/{id}")]
         public async Task<IActionResult> GetTotalCount(Guid id)
         {
@@ -56,7 +61,9 @@ namespace ExchangeStuff.Controllers
                 Value = result.ToString(),
             });
         }
+
         [ESAuthorize(new string[] { ActionConstant.OVERWRITE })]
+
         [HttpPut("update")]
         public async Task<IActionResult> UpdateComment(UpdateCommentModel updateModel)
         {

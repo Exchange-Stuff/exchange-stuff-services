@@ -4,6 +4,8 @@ using ExchangeStuff.Core.Repositories;
 using ExchangeStuff.Core.Uows;
 using ExchangeStuff.Service.Maps;
 using ExchangeStuff.Service.Models.Rating;
+using ExchangeStuff.Service.Models.Users;
+using ExchangeStuff.Service.Paginations;
 using ExchangeStuff.Service.Services.Interfaces;
 using System.Net;
 
@@ -25,13 +27,16 @@ public class RatingService : IRatingSerivce
         _productRepo = _unitOfWork.ProductRepository;
     }
 
-    public async Task<List<RatingViewModel>> GetRatingByUserId(Guid userId)
+    public async Task<PaginationItem<RatingViewModel>> GetRatingByUserId(Guid userId, int pageSize, int pageIndex)
     {
         //var user = await _userRepo.GetOneAsync(u => u.Id.Equals(userId));
         //if (user == null) throw new Exception("Not found user!");
-        var listPurchaseTicket = await _purchaseTicketRepo.GetManyAsync(include: "Rating", predicate: p => p.User.Equals(userId));
+        var listPurchaseTicket = await _purchaseTicketRepo.GetManyAsync(
+            include: "Rating",
+            predicate: p => p.User.Equals(userId)
+        );
         var result = AutoMapperConfig.Mapper.Map<List<RatingViewModel>>(listPurchaseTicket.Select(p => p.Rating));
-        return result;
+        return PaginationItem<RatingViewModel>.ToPagedList(result, pageIndex, pageSize);
     }
 
     public async Task<bool> CreateRating(CreateRatingModel createRatingModel)
@@ -42,19 +47,26 @@ public class RatingService : IRatingSerivce
         return result > 0;
     }
 
-    public async Task<List<RatingViewModel>> GetRatingByProductId(Guid productId)
+    public async Task<PaginationItem<RatingViewModel>> GetRatingByProductId(Guid productId, int pageSize, int pageIndex)
     {
-        //var product = await _productRepo.GetOneAsync(predicate: p => p.Id.Equals(productId));
-        //if (product == null) throw new Exception("Not found product!");
 
-        //var listPurchaseTicket = await _purchaseTicketRepo.GetManyAsync(predicate: p => p.ProductId.Equals(productId));
-        //var result = AutoMapperConfig.Mapper.Map<List<RatingViewModel>>(listPurchaseTicket.SelectMany(p => p.Ratings));
-        //return result;
-        throw new NotImplementedException();
+        var product = await _productRepo.GetOneAsync(predicate: p => p.Id.Equals(productId));
+        if (product == null) throw new Exception("Not found product!");
 
-        var listPurchaseTicket = await _purchaseTicketRepo.GetManyAsync(predicate: p => p.ProductId.Equals(productId));
-        var result = AutoMapperConfig.Mapper.Map<List<RatingViewModel>>(listPurchaseTicket.Select(p => p.Rating));
-        return result;
+        var lisPurchase = await _purchaseTicketRepo.GetManyAsync(
+            predicate: pu => pu.ProductId == product.Id,
+            include: "Rating"
+            );
+        List<Rating> listRating = new List<Rating>();
+        foreach (var purchase in lisPurchase)
+        {
+            if (purchase.Rating != null) 
+            {
+                listRating.Add(purchase.Rating);
+            };
+        }
+        var result = AutoMapperConfig.Mapper.Map<List<RatingViewModel>>(listRating);
+        return PaginationItem<RatingViewModel>.ToPagedList(result, pageIndex, pageSize);
     }
 
     public async Task<bool> UpdateRating(UpdateRatingModel updateRatingModel)
@@ -85,7 +97,7 @@ public class RatingService : IRatingSerivce
         var ratingCount = listRating.Count;
         var totalRating = listRating.Sum(p => (int)p.EvaluateType);
 
-        var avgRating = (decimal)totalRating / ratingCount;
+        var avgRating = totalRating == 0 ? 0 : ((decimal)totalRating / ratingCount);
         return new RatingAvgViewModel { RatingAvg = Math.Round(avgRating, 2), RatingCount = ratingCount };
     }
 }

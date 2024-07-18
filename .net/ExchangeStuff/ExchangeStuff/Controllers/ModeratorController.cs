@@ -1,4 +1,6 @@
-﻿using ExchangeStuff.Responses;
+﻿using ExchangeStuff.AuthOptions.Requirements;
+using ExchangeStuff.Responses;
+using ExchangeStuff.Service.Constants;
 using ExchangeStuff.Service.Models.Moderators;
 using ExchangeStuff.Service.Paginations;
 using ExchangeStuff.Service.Services.Interfaces;
@@ -18,6 +20,7 @@ namespace ExchangeStuff.Controllers
             _accountService = accountService;
             _authService = authService;
         }
+        [ESAuthorize(new string[] { ActionConstant.READ })]
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetModerator([FromRoute] Guid id, bool? includeBan)
@@ -27,6 +30,7 @@ namespace ExchangeStuff.Controllers
             IsSuccess = true,
             Value = await _accountService.GetModerator(id, includeBan)
         });
+        [ESAuthorize(new string[] { ActionConstant.READ })]
 
         [HttpGet]
         public async Task<IActionResult> GetModerators(string? name = null!, string? username = null!, string? email = null!, int? pageIndex = null!, int? pageSize = null!, bool? includeBan = null!)
@@ -36,6 +40,7 @@ namespace ExchangeStuff.Controllers
                IsSuccess = true,
                Value = await _accountService.GetModerators(name, email, username, pageIndex, pageSize, includeBan)
            });
+        [ESAuthorize(new string[] { ActionConstant.READ })]
 
         [HttpPost("moderator")]
         public async Task<IActionResult> CreateModerator(ModeratorCreateModel moderatorCreateModel)
@@ -55,6 +60,8 @@ namespace ExchangeStuff.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
+        [ESAuthorize(new string[] { ActionConstant.DELETE })]
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser([FromRoute] Guid id)
         {
@@ -63,6 +70,7 @@ namespace ExchangeStuff.Controllers
             var rs = await _authService.DeleteAccount(id);
             return rs ? StatusCode(StatusCodes.Status204NoContent) : throw new Exception("Can't delete account");
         }
+        [ESAuthorize(new string[] { ActionConstant.WRITE })]
 
         [HttpPatch("update/moderator")]
         public async Task<IActionResult> UpdateModerator([FromBody] ModeratorUpdateModel moderatorUpdateModel)

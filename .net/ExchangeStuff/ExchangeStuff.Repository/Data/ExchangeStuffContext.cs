@@ -62,7 +62,6 @@ namespace ExchangeStuff.Repository.Data
         public DbSet<GroupChat> GroupChats { get; set; }
         public DbSet<MessageChat> MessageChats { get; set; }
 
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
