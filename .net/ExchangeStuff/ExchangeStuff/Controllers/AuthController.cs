@@ -130,6 +130,8 @@ namespace ExchangeStuff.Controllers
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
         /// <exception cref="UnauthorizedAccessException"></exception>
+       
+        [ESAuthorize(new string[] { ActionConstant.ACCESS })]
         [HttpPost("screen")]
         public async Task<IActionResult> ValidScreen([FromBody] ResourceRd resource)
         {
