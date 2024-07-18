@@ -5,6 +5,8 @@ using ExchangeStuff.Core.Uows;
 using ExchangeStuff.CurrentUser.Users;
 using ExchangeStuff.Service.Maps;
 using ExchangeStuff.Service.Models.TransactionHistory;
+using ExchangeStuff.Service.Models.Users;
+using ExchangeStuff.Service.Paginations;
 using ExchangeStuff.Service.Services.Interfaces;
 
 namespace ExchangeStuff.Service.Services.Impls
@@ -45,7 +47,7 @@ namespace ExchangeStuff.Service.Services.Impls
             }
         }
 
-        public async Task<List<TransactionHistoryViewModel>> GetAllTransactionHistory(int pageSize, int pageIndex, TransactionType? type = null)
+        public async Task<PaginationItem<TransactionHistoryViewModel>> GetAllTransactionHistory(int pageSize, int pageIndex, TransactionType? type = null)
         {
             try
             {
@@ -53,16 +55,17 @@ namespace ExchangeStuff.Service.Services.Impls
                 if (type.HasValue)
                 {
                     listTransactionHistory = await _transactionHistoryRepository.GetManyAsync(
-                        pageSize: pageSize, pageIndex: pageIndex, predicate: t => t.TransactionType.Equals(type), orderBy: t => t.OrderBy(t => t.CreatedOn));
+                         predicate: t => t.TransactionType.Equals(type),
+                         orderBy: t => t.OrderBy(t => t.CreatedOn));
                 }
                 else
                 {
                     listTransactionHistory = await _transactionHistoryRepository.GetManyAsync(
-                        pageSize: pageSize, pageIndex: pageIndex, orderBy: t => t.OrderBy(t => t.CreatedOn));
+                        orderBy: t => t.OrderBy(t => t.CreatedOn));
                 }
 
                 var result = AutoMapperConfig.Mapper.Map<List<TransactionHistoryViewModel>>(listTransactionHistory);
-                return result;
+                return PaginationItem<TransactionHistoryViewModel>.ToPagedList(result, pageIndex, pageSize);
             }
             catch (Exception ex)
             {
@@ -70,16 +73,17 @@ namespace ExchangeStuff.Service.Services.Impls
             }
         }
 
-        public async Task<List<TransactionHistoryViewModel>> GetListTransactionHistoryByUserId(int pageSize, int pageIndex)
+        public async Task<PaginationItem<TransactionHistoryViewModel>> GetListTransactionHistoryByUserId(int pageSize, int pageIndex)
         {
             try
             {
                 List<TransactionHistory> listTransactionHistory = new List<TransactionHistory>();
                 listTransactionHistory = await _transactionHistoryRepository.GetManyAsync(
-                    pageSize: pageSize, pageIndex: pageIndex, predicate: t =>  t.UserId.Equals(_identityUser.AccountId), orderBy: t => t.OrderBy(t => t.CreatedOn));
+                    predicate: t =>  t.UserId.Equals(_identityUser.AccountId),
+                    orderBy: t => t.OrderBy(t => t.CreatedOn));
 
                 var result = AutoMapperConfig.Mapper.Map<List<TransactionHistoryViewModel>>(listTransactionHistory);
-                return result;
+                return PaginationItem<TransactionHistoryViewModel>.ToPagedList(result, pageIndex, pageSize);
             }
             catch (Exception ex)
             {
