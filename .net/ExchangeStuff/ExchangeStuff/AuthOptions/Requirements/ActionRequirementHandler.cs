@@ -119,7 +119,6 @@ namespace ExchangeStuff.AuthOptions.Requirements
 
             actionDTOs = actionDTOs.OrderBy(x => x.Index).ToList();
 
-            // expected Permission 
             char[] authorizeString = ReverseString(DecimalToBinary(roleValue)).ToArray();
 
             Dictionary<string, bool> actionKey = new Dictionary<string, bool>();

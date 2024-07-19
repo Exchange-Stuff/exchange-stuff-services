@@ -29,5 +29,8 @@ namespace ExchangeStuff.Core.Entities
         public ICollection<GroupChat>? GroupChatReceivers { get; set; }
         public ICollection<GroupChat>? GroupChatSenders { get; set; }
         public ICollection<MessageChat>? MessageChats { get; set; }
+        public ICollection<ProductBanReport>? ProductBanReports { get; set; }
+        public ICollection<UserBanReport>? UserBanReports { get; set; }
+        public ICollection<UserBanReport>? UserCreateBanReports { get; set; }
     }
 }

@@ -24,7 +24,7 @@ namespace ExchangeStuff.Repository.Data
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer(GetConnectionString(), x => x.MigrationsAssembly("ExchangeStuff"));
+                optionsBuilder.UseSqlServer(GetConnectionString(), x => x.MigrationsAssembly("ExchangeStuff.Repository"));
             }
         }
 
@@ -93,6 +93,13 @@ namespace ExchangeStuff.Repository.Data
             {
                 x.ToTable(nameof(Token));
                 x.HasOne(x => x.Account).WithMany(x => x.Tokens).OnDelete(DeleteBehavior.NoAction).HasForeignKey(x => x.AccountId);
+            });
+
+            modelBuilder.Entity<UserBanReport>(x =>
+            {
+                x.ToTable($"{nameof(UserBanReport)}");
+                x.HasOne(x => x.User).WithMany(x => x.UserBanReports).OnDelete(DeleteBehavior.NoAction).HasForeignKey(x => x.UserId);
+                x.HasOne(x => x.UserCreate).WithMany(x => x.UserCreateBanReports).OnDelete(DeleteBehavior.NoAction).HasForeignKey(x => x.UserCreateId);
             });
         }
 

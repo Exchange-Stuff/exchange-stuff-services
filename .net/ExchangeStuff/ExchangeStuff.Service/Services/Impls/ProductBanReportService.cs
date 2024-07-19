@@ -63,7 +63,8 @@ namespace ExchangeStuff.Service.Services.Impls
             {
                 BanReasonId = productBanReportCreateModel.BanReasonId,
                 IsApproved = false,
-                ProductId = productBanReportCreateModel.ProductId
+                ProductId = productBanReportCreateModel.ProductId,
+                UserId = _identityUser.AccountId,
             };
             await _productBanReportRepository.AddAsync(productBanReport);
             await _uow.SaveChangeAsync();
