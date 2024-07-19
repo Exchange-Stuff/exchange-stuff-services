@@ -157,7 +157,7 @@ namespace ExchangeStuff.Service.Services.Impls
             }
             catch (SecurityTokenExpiredException ex)
             {
-                throw new Exception(ex.Message);
+                throw new SecurityTokenExpiredException(ex.Message);
             }
             catch (Exception ex)
             {
@@ -200,6 +200,10 @@ namespace ExchangeStuff.Service.Services.Impls
                     };
                 }
                 throw new UnauthorizedAccessException("Token invalid");
+            }
+            catch (SecurityTokenExpiredException ex)
+            {
+                throw new SecurityTokenExpiredException(ex.Message);
             }
             catch (Exception ex)
             {
@@ -267,7 +271,7 @@ namespace ExchangeStuff.Service.Services.Impls
             }
             catch (SecurityTokenExpiredException ex)
             {
-                throw new Exception(ex.Message);
+                throw new SecurityTokenExpiredException(ex.Message);
             }
             catch (Exception ex)
             {
