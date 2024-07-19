@@ -67,18 +67,21 @@ namespace ExchangeStuff.AuthOptions.Requirements
                         await ToErrorResult("Unauthorize", 401);
                         return;
                     }
-                    var permissonActual = permissions.Where(x => x.Resource.Name.ToLower() == resource.ToLower()).FirstOrDefault();
+                    var permissonActuals = permissions.Where(x => x.Resource.Name.ToLower() == resource.ToLower());
 
-                    if (permissonActual == null!)
+                    if (permissonActuals == null! || permissonActuals.Any() is false)
                     {
                         context.Fail();
                         await ToErrorResult("Unauthorize", 401);
                         return;
                     }
-                    if (await ValidActionResource(_adminService, requirement.Actions, permissonActual.PermissionValue))
+                    foreach (var item in permissonActuals)
                     {
-                        context.Succeed(requirement);
-                        isPassed = true;
+                        if (await ValidActionResource(_adminService, requirement.Actions, item.PermissionValue))
+                        {
+                            context.Succeed(requirement);
+                            isPassed = true;
+                        }
                     }
                 }
             }

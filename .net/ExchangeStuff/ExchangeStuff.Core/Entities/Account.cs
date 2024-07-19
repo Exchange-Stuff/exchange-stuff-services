@@ -20,6 +20,7 @@ namespace ExchangeStuff.Core.Entities
         public ICollection<PermissionGroup> PermissionGroups { get; set; }
         public ICollection<Comment>? Comments { get; set; }
         public ICollection<Notification>? Notifications { get; set; }
+        public ICollection<Token>? Tokens { get; set; }
         public bool IsActived { get; set; }
     }
 }
