@@ -1,4 +1,6 @@
-﻿using ExchangeStuff.Responses;
+﻿using ExchangeStuff.AuthOptions.Requirements;
+using ExchangeStuff.Responses;
+using ExchangeStuff.Service.Constants;
 using ExchangeStuff.Service.Models.Accounts;
 using ExchangeStuff.Service.Models.Users;
 using ExchangeStuff.Service.Paginations;
@@ -18,6 +20,8 @@ namespace ExchangeStuff.Controllers
             _accountService = accountService;
         }
 
+
+        [ESAuthorize(new string[] { ActionConstant.READ })]
         [HttpGet("users")]
         public async Task<IActionResult> GetUsers(string? name = null!, string? username = null!, string? email = null!, int? pageIndex = null!, int? pageSize = null!, bool? includeBan = null!)
             => Ok(new ResponseResult<PaginationItem<UserViewModel>>
@@ -27,6 +31,8 @@ namespace ExchangeStuff.Controllers
                 Value = await _accountService.GetUsers(name, email, username, pageIndex, pageSize, includeBan)
             });
 
+        [ESAuthorize(new string[] { ActionConstant.READ })]
+
         [HttpGet("user/{id}")]
         public async Task<IActionResult> GetUser([FromRoute] Guid id, bool? includeBan = null!)
             => Ok(new ResponseResult<UserViewModel>
@@ -35,6 +41,9 @@ namespace ExchangeStuff.Controllers
                 IsSuccess = true,
                 Value = await _accountService.GetUser(id, includeBan)
             });
+
+        [ESAuthorize(new string[] { ActionConstant.READ })]
+
         [HttpGet("accounts")]
         public async Task<IActionResult> GetAccounts(string? name = null!, string? username = null!, string? email = null!, int? pageIndex = null!, int? pageSize = null!, bool? includeBan = null!)
            => Ok(new ResponseResult<PaginationItem<AccountViewModel>>
@@ -43,6 +52,8 @@ namespace ExchangeStuff.Controllers
                IsSuccess = true,
                Value = await _accountService.GetAccounts(name, email, username, pageIndex, pageSize, includeBan)
            });
+
+        [ESAuthorize(new string[] { ActionConstant.READ })]
         [HttpGet("account/{id}")]
         public async Task<IActionResult> GetAccount([FromRoute] Guid id, bool? includeBan = null!)
             => Ok(new ResponseResult<AccountViewModel>
@@ -52,6 +63,7 @@ namespace ExchangeStuff.Controllers
                 Value = await _accountService.GetAccount(id, includeBan)
             });
 
+        [ESAuthorize(new string[] { ActionConstant.OVERWRITE })]
         [HttpPatch("update/user")]
         public async Task<IActionResult> UpdateUser([FromBody] UserUpdateModel userUpdateModel)
         {

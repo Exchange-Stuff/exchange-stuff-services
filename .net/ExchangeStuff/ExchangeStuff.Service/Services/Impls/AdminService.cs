@@ -14,7 +14,6 @@ using ExchangeStuff.Service.Models.Resources;
 using ExchangeStuff.Service.Models.Users;
 using ExchangeStuff.Service.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
@@ -399,9 +398,8 @@ namespace ExchangeStuff.Service.Services.Impls
         }
 
         public async Task<bool> CreateModerator(AccountCreateModel accountCreateModel)
-
         {
-            if (accountCreateModel.Username.Split(" ").Length > 0) throw new Exception("Username not allow [space]");
+            if (accountCreateModel.Username.Split(" ").Length > 1) throw new Exception("Username not allow [space]");
             var account = await _accountRepository.GetOneAsync(x => x.Username == accountCreateModel.Username);
             if (account != null) throw new Exception("Username already exist");
             Moderator moderator = new Moderator
@@ -445,5 +443,6 @@ namespace ExchangeStuff.Service.Services.Impls
             var rs = await _uow.SaveChangeAsync();
             return rs > 0;
         }
+
     }
 }

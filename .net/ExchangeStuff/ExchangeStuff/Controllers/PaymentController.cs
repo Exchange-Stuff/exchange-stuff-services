@@ -22,14 +22,28 @@ namespace ExchangeStuff.Controllers
 
         [ESAuthorize(new string[] { ActionConstant.READ })]
         [HttpGet("createPayment")]
-        public async Task<IActionResult> createPayment([FromQuery] Guid userId, [FromQuery] int amount)
+        public async Task<IActionResult> CreatePayment([FromQuery] Guid userId, [FromQuery] int amount, [FromQuery] int vnp_ResponseCode)
         {
-            var rs = await _paymentService.createPaymentAsync(userId, amount);
+            if (vnp_ResponseCode == 24)
+            {
+                var redirectUrl = $"http://localhost:3000/payment?status=fail";
+                return Redirect(redirectUrl);
+            }
+            else if (vnp_ResponseCode == 00)
+            {
+                var rs = await _paymentService.createPaymentAsync(userId, amount);
 
-            if (!rs) throw new Exception("Can not create payment");
+                if (!rs) throw new Exception("Can not create payment");
 
-            var redirectUrl = $"http://localhost:3000/payment?status=success";
-            return Redirect(redirectUrl);
+                var redirectUrl = $"http://localhost:3000/payment?status=success";
+                return Redirect(redirectUrl);
+            }
+            else
+            {
+                var redirectUrl = $"http://localhost:3000/payment?status=unknown";
+                return Redirect(redirectUrl);
+            }
         }
+
     }
 }

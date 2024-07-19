@@ -1,5 +1,7 @@
-﻿using ExchangeStuff.Core.Entities;
+﻿using ExchangeStuff.AuthOptions.Requirements;
+using ExchangeStuff.Core.Entities;
 using ExchangeStuff.Responses;
+using ExchangeStuff.Service.Constants;
 using ExchangeStuff.Service.Models.Notifications;
 using ExchangeStuff.Service.Paginations;
 using ExchangeStuff.Service.Services.Interfaces;
@@ -19,7 +21,7 @@ namespace ExchangeStuff.Controllers
             _notificationService = notificationService;
         }
 
-
+        [ESAuthorize(new string[] { ActionConstant.READ })]
         [HttpPut("readAll")]
         public async Task<IActionResult> ReadAllNotification([FromBody] int sizeRecent)
         {
@@ -31,6 +33,7 @@ namespace ExchangeStuff.Controllers
             });
         }
 
+        [ESAuthorize(new string[] { ActionConstant.READ })]
         [HttpGet]
         public async Task<IActionResult> GetNotifications(int? pageIndex = null!, int? pageSize = null!)
         {
@@ -41,6 +44,9 @@ namespace ExchangeStuff.Controllers
                 Value = await _notificationService.GetNotifications(pageIndex: pageIndex, pageSize: pageSize)
             });
         }
+
+
+        [ESAuthorize(new string[] { ActionConstant.WRITE })]
 
         [HttpPost]
         public async Task<IActionResult> CreateNotification([FromBody] NotificationCreateModel notificationCreateModel)

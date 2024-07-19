@@ -100,7 +100,7 @@ namespace ExchangeStuff.Service.Services.Impls
 
             if (category == null)
             {
-                return new List<ProductViewModel>(); // or handle null case as appropriate
+                return new List<ProductViewModel>();
             }
 
             var approvedProducts = category.Products

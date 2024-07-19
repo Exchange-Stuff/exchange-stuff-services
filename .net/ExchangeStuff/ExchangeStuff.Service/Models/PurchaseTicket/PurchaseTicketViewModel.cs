@@ -1,6 +1,7 @@
 ﻿using ExchangeStuff.Core.Common;
 using ExchangeStuff.Core.Entities;
 using ExchangeStuff.Core.Enums;
+using ExchangeStuff.Service.Models.Products;
 using System;
 using System.ComponentModel.DataAnnotations;
 
@@ -13,5 +14,8 @@ namespace ExchangeStuff.Service.Models.PurchaseTicket
         public Guid UserId { get; set; }
         public int Quantity { get; set; }
         public PurchaseTicketStatus Status { get; set; }
+        public DateTime CreatedOn { get; set; }
+        public DateTime ModifiedOn { get; set; }
+        public ProductViewModel Product { get; set; }
     }
 }

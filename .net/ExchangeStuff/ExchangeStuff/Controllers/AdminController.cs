@@ -37,6 +37,7 @@ namespace ExchangeStuff.Controllers
             _cacheService = cacheService;
             _adminService = adminService;
         }
+        [ESAuthorize(new string[] { ActionConstant.WRITE })]
 
         [HttpPost("permissionGroups")]
         public async Task<IActionResult> CreatePermisisonGroup([FromBody] PermissionGroupCreateModel permissionGroupCreateModel)
@@ -52,6 +53,7 @@ namespace ExchangeStuff.Controllers
                 Value = rs.ToString()
             });
         }
+        [ESAuthorize(new string[] { ActionConstant.WRITE })]
 
         [HttpPost("permissionGroup/value")]
         public async Task<IActionResult> CreatePermissionGroupValue([FromBody] PermissionGroupCreateValueModel permissionGroupCreateValueModel)
@@ -66,6 +68,7 @@ namespace ExchangeStuff.Controllers
                 Value = rs.ToString()
             });
         }
+        [ESAuthorize(new string[] { ActionConstant.WRITE })]
 
         [HttpPost("action")]
         public async Task<IActionResult> CreateAction([FromBody] string name)
@@ -80,6 +83,8 @@ namespace ExchangeStuff.Controllers
                 Value = rs.ToString()
             });
         }
+        [ESAuthorize(new string[] { ActionConstant.WRITE })]
+
         [HttpPost("resource")]
         public async Task<IActionResult> CreateResource([FromBody] string name)
         {
@@ -93,6 +98,7 @@ namespace ExchangeStuff.Controllers
                 Value = rs.ToString()
             });
         }
+        [ESAuthorize(new string[] { ActionConstant.OVERWRITE })]
 
         [HttpPut("permissionAction/value")]
         public async Task<IActionResult> UpdatePermissionActionValue([FromBody] UpdatePermissionActionValueModel updatePermissionActionValueModel)
@@ -107,6 +113,7 @@ namespace ExchangeStuff.Controllers
                 Value = rs.ToString()
             });
         }
+        [ESAuthorize(new string[] { ActionConstant.OVERWRITE })]
 
         [HttpPut("accounts/permissionGroup")]
         public async Task<IActionResult> UpdatePermissionGroupOfAccount([FromBody] UpdateUserPermisisonGroupModel updateUserPermisisonGroupModel)
@@ -122,6 +129,7 @@ namespace ExchangeStuff.Controllers
             });
         }
 
+        [ESAuthorize(new string[] { ActionConstant.READ })]
 
         [HttpGet("permissions")]
         public async Task<IActionResult> GetPermissions(int? pageIndex = null!, int? pageSize = null!)
@@ -133,6 +141,7 @@ namespace ExchangeStuff.Controllers
                 Value = await _adminService.GetPermissions(pageIndex, pageSize)
             });
         }
+        [ESAuthorize(new string[] { ActionConstant.READ })]
 
         [HttpGet("permissionGroups")]
         public async Task<IActionResult> GetPermissionGroups(string? name = null!, int? pageIndex = null!, int? pageSize = null!)
@@ -144,6 +153,8 @@ namespace ExchangeStuff.Controllers
                 Value = await _adminService.GetPermisisonGroups(name, pageIndex, pageSize)
             });
         }
+        [ESAuthorize(new string[] { ActionConstant.READ })]
+
         [HttpGet("actions")]
         public async Task<IActionResult> GetActions(string? name = null!, int? pageIndex = null!, int? pageSize = null!)
         {
@@ -154,6 +165,8 @@ namespace ExchangeStuff.Controllers
                 Value = await _adminService.GetActions(name, pageIndex, pageSize)
             });
         }
+        [ESAuthorize(new string[] { ActionConstant.READ })]
+
         [HttpGet("resources")]
         public async Task<IActionResult> GetResources(string? name = null!, int? pageIndex = null!, int? pageSize = null!)
         {
@@ -218,6 +231,7 @@ namespace ExchangeStuff.Controllers
         }
 
         public sealed record AdminLoginRd(string username, string password);
+        [ESAuthorize(new string[] { ActionConstant.WRITE })]
 
         [HttpPost("admin")]
         public async Task<IActionResult> CreateAdmin(AdminCreateModel adminCreateModel)
@@ -229,6 +243,7 @@ namespace ExchangeStuff.Controllers
                 Value = await _adminService.CreateAdmin(adminCreateModel.Username, adminCreateModel.Password, adminCreateModel.Name)
             });
         }
+        [ESAuthorize(new string[] { ActionConstant.OVERWRITE })]
 
         [HttpPut("permissionGroup/permissions")]
 
@@ -244,6 +259,7 @@ namespace ExchangeStuff.Controllers
                 Value = rs.ToString()
             });
         }
+        [ESAuthorize(new string[] { ActionConstant.WRITE })]
 
         [HttpPost("create/account")]
         public async Task<IActionResult> CreateAccount([FromBody] AccountCreateModel accountCreateModel)
@@ -257,6 +273,7 @@ namespace ExchangeStuff.Controllers
                 Value = rs + ""
             }) : throw new Exception("Create account fail, something wrong");
         }
+        [ESAuthorize(new string[] { ActionConstant.DELETE })]
 
         [HttpDelete("permissionGroup/{id}")]
         public async Task<IActionResult> DeletePermissionGroup([FromRoute] Guid id)
