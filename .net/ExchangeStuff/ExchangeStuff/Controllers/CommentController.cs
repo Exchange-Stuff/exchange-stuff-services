@@ -3,6 +3,7 @@ using ExchangeStuff.Responses;
 using ExchangeStuff.Service.Constants;
 using ExchangeStuff.Service.Models.Comments;
 using ExchangeStuff.Service.Models.Users;
+using ExchangeStuff.Service.Paginations;
 using ExchangeStuff.Service.Services.Impls;
 using ExchangeStuff.Service.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
@@ -27,7 +28,7 @@ namespace ExchangeStuff.Controllers
         [HttpGet("product/{id}")]
         public async Task<IActionResult> GetCommentByProductId([FromRoute] Guid id, [FromQuery] int pageIndex, [FromQuery] int pageSize)
         {
-            return Ok(new ResponseResult<List<CommentViewModel>>
+            return Ok(new ResponseResult<PaginationItem<CommentViewModel>>
             {
                 Error = null!,
                 IsSuccess = true,

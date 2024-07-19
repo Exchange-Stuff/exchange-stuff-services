@@ -4,6 +4,8 @@ using ExchangeStuff.Core.Repositories;
 using ExchangeStuff.Core.Uows;
 using ExchangeStuff.Service.Maps;
 using ExchangeStuff.Service.Models.Rating;
+using ExchangeStuff.Service.Models.Users;
+using ExchangeStuff.Service.Paginations;
 using ExchangeStuff.Service.Services.Interfaces;
 using System.Net;
 
@@ -25,18 +27,16 @@ public class RatingService : IRatingSerivce
         _productRepo = _unitOfWork.ProductRepository;
     }
 
-    public async Task<List<RatingViewModel>> GetRatingByUserId(Guid userId, int pageSize, int pageIndex)
+    public async Task<PaginationItem<RatingViewModel>> GetRatingByUserId(Guid userId, int pageSize, int pageIndex)
     {
         //var user = await _userRepo.GetOneAsync(u => u.Id.Equals(userId));
         //if (user == null) throw new Exception("Not found user!");
         var listPurchaseTicket = await _purchaseTicketRepo.GetManyAsync(
-            pageSize: pageSize,
-            pageIndex: pageIndex,
             include: "Rating",
             predicate: p => p.User.Equals(userId)
         );
         var result = AutoMapperConfig.Mapper.Map<List<RatingViewModel>>(listPurchaseTicket.Select(p => p.Rating));
-        return result;
+        return PaginationItem<RatingViewModel>.ToPagedList(result, pageIndex, pageSize);
     }
 
     public async Task<bool> CreateRating(CreateRatingModel createRatingModel)
@@ -47,7 +47,7 @@ public class RatingService : IRatingSerivce
         return result > 0;
     }
 
-    public async Task<List<RatingViewModel>> GetRatingByProductId(Guid productId, int pageSize, int pageIndex)
+    public async Task<PaginationItem<RatingViewModel>> GetRatingByProductId(Guid productId, int pageSize, int pageIndex)
     {
 
         var product = await _productRepo.GetOneAsync(predicate: p => p.Id.Equals(productId));
@@ -65,8 +65,8 @@ public class RatingService : IRatingSerivce
                 listRating.Add(purchase.Rating);
             };
         }
-        var result = listRating.Take(pageSize).Skip((pageIndex - 1)* pageSize).ToList();
-        return AutoMapperConfig.Mapper.Map<List<RatingViewModel>>(result);
+        var result = AutoMapperConfig.Mapper.Map<List<RatingViewModel>>(listRating);
+        return PaginationItem<RatingViewModel>.ToPagedList(result, pageIndex, pageSize);
     }
 
     public async Task<bool> UpdateRating(UpdateRatingModel updateRatingModel)

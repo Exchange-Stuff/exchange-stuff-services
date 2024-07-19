@@ -7,6 +7,8 @@ using ExchangeStuff.Service.Constants;
 using ExchangeStuff.Service.Maps;
 using ExchangeStuff.Service.Models.FinancialTickets;
 using ExchangeStuff.Service.Models.TransactionHistory;
+using ExchangeStuff.Service.Models.Users;
+using ExchangeStuff.Service.Paginations;
 using ExchangeStuff.Service.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using StackExchange.Redis;
@@ -79,7 +81,7 @@ namespace ExchangeStuff.Service.Services.Impls
             return result > 0;
         }
 
-        public async Task<List<FinancialTicketViewModel>> GetAllFilter(int pageSize, int pageIndex, DateTime? from, DateTime? to, FinancialTicketStatus? status, int? sort)
+        public async Task<PaginationItem<FinancialTicketViewModel>> GetAllFilter(int pageSize, int pageIndex, DateTime? from, DateTime? to, FinancialTicketStatus? status, int? sort)
         {
             try
             {
@@ -90,47 +92,48 @@ namespace ExchangeStuff.Service.Services.Impls
 
                 if (from == null && to == null && status == null && sort == null)
                 {
-                    listTicket = await _financialTicketsRepository.GetManyAsync(pageSize: pageSize, pageIndex: pageIndex, include: "User");
+                    listTicket = await _financialTicketsRepository.GetManyAsync(include: "User");
                 }
                 else if (from != null && to != null && status != null && sort != null)
                 {
                     Expression<Func<FinancialTicket, bool>> time = query => query.CreatedOn >= from && query.CreatedOn <= to && query.Status == status;
                     Func<IQueryable<FinancialTicket>, IOrderedQueryable<FinancialTicket>> order = query => query.OrderBy(SortOption.SortFinancialTicket[(int)sort]);
-                    listTicket = await _financialTicketsRepository.GetManyAsync(predicate: time, pageSize: pageSize, pageIndex: pageIndex, orderBy: order, include: "User");
+                    listTicket = await _financialTicketsRepository.GetManyAsync(predicate: time, orderBy: order, include: "User");
                 }
                 else if (status != null && sort == null && from == null && to == null)
                 {
                     Expression<Func<FinancialTicket, bool>> time = query => query.Status == status;
-                    listTicket = await _financialTicketsRepository.GetManyAsync(predicate: time, pageSize: pageSize, pageIndex: pageIndex, include: "User");
+                    listTicket = await _financialTicketsRepository.GetManyAsync(predicate: time, include: "User");
                 }
                 else if (status != null && sort != null)
                 {
                     Expression<Func<FinancialTicket, bool>> time = query => query.Status == status;
                     Func<IQueryable<FinancialTicket>, IOrderedQueryable<FinancialTicket>> order = query => query.OrderBy(SortOption.SortFinancialTicket[(int)sort]);
-                    listTicket = await _financialTicketsRepository.GetManyAsync(predicate: time, pageSize: pageSize, pageIndex: pageIndex, orderBy: order, include: "User");
+                    listTicket = await _financialTicketsRepository.GetManyAsync(predicate: time, orderBy: order, include: "User");
                 }
                 else if (status != null && from != null && to != null)
                 {
                     Expression<Func<FinancialTicket, bool>> time = query => query.CreatedOn >= from && query.CreatedOn <= to && query.Status == status;
-                    listTicket = await _financialTicketsRepository.GetManyAsync(predicate: time, pageSize: pageSize, pageIndex: pageIndex, include: "User");
+                    listTicket = await _financialTicketsRepository.GetManyAsync(predicate: time, include: "User");
                 }
                 else if (sort != null && from == null && to == null && status == null)
                 {
                     Func<IQueryable<FinancialTicket>, IOrderedQueryable<FinancialTicket>> order = query => query.OrderBy(SortOption.SortFinancialTicket[(int)sort]);
-                    listTicket = await _financialTicketsRepository.GetManyAsync(pageSize: pageSize, pageIndex: pageIndex, orderBy: order, include: "User");
+                    listTicket = await _financialTicketsRepository.GetManyAsync(orderBy: order, include: "User");
                 }
                 else if (sort != null && from != null && to != null)
                 {
                     Expression<Func<FinancialTicket, bool>> time = query => query.CreatedOn >= from && query.CreatedOn <= to;
                     Func<IQueryable<FinancialTicket>, IOrderedQueryable<FinancialTicket>> order = query => query.OrderBy(SortOption.SortFinancialTicket[(int)sort]);
-                    listTicket = await _financialTicketsRepository.GetManyAsync(predicate: time, pageSize: pageSize, pageIndex: pageIndex, orderBy: order, include: "User");
+                    listTicket = await _financialTicketsRepository.GetManyAsync(predicate: time, orderBy: order, include: "User");
                 }
                 else if (from != null && to != null && sort == null && status == null)
                 {
                     Expression<Func<FinancialTicket, bool>> time = query => query.CreatedOn >= from && query.CreatedOn <= to;
-                    listTicket = await _financialTicketsRepository.GetManyAsync(predicate: time, pageSize: pageSize, pageIndex: pageIndex, include: "User");
+                    listTicket = await _financialTicketsRepository.GetManyAsync(predicate: time, include: "User");
                 }
-                return AutoMapperConfig.Mapper.Map<List<FinancialTicketViewModel>>(listTicket);
+                var result =  AutoMapperConfig.Mapper.Map<List<FinancialTicketViewModel>>(listTicket);
+                return PaginationItem<FinancialTicketViewModel>.ToPagedList(result, pageIndex, pageSize);
             }
             catch (Exception ex) 
             {
@@ -139,7 +142,7 @@ namespace ExchangeStuff.Service.Services.Impls
             
         }
 
-        public async Task<List<FinancialTicketViewModel>> GetAllFinancialTicket(int pageSize, int pageIndex, FinancialTicketStatus? status = null!)
+        public async Task<PaginationItem<FinancialTicketViewModel>> GetAllFinancialTicket(int pageSize, int pageIndex, FinancialTicketStatus? status = null!)
         {
 
             try
@@ -147,16 +150,16 @@ namespace ExchangeStuff.Service.Services.Impls
                 List<FinancialTicket> listTicket = new List<FinancialTicket>();
                 if (status.HasValue)
                 {
-                    listTicket = await _financialTicketsRepository.GetManyAsync(pageSize: pageSize, pageIndex: pageIndex, predicate: p => p.Status == status, orderBy: p => p.OrderBy(p => p.CreatedOn), include: "User");
+                    listTicket = await _financialTicketsRepository.GetManyAsync(predicate: p => p.Status == status, orderBy: p => p.OrderBy(p => p.CreatedOn), include: "User");
 
                 }
                 else
                 {
-                    listTicket = await _financialTicketsRepository.GetManyAsync(pageSize: pageSize, pageIndex: pageIndex, orderBy: p => p.OrderBy(p => p.CreatedOn), include: "User");
+                    listTicket = await _financialTicketsRepository.GetManyAsync(orderBy: p => p.OrderBy(p => p.CreatedOn), include: "User");
 
                 }
                 var result = AutoMapperConfig.Mapper.Map<List<FinancialTicketViewModel>>(listTicket);
-                return result;
+                return PaginationItem<FinancialTicketViewModel>.ToPagedList(result, pageIndex, pageSize);
 
             }
             catch (Exception ex)
@@ -167,7 +170,7 @@ namespace ExchangeStuff.Service.Services.Impls
 
         }
 
-        public async Task<List<FinancialTicketViewModel>> GetFinancialTicketByUserId(int pageSize, int pageIndex, FinancialTicketStatus? status = null!)
+        public async Task<PaginationItem<FinancialTicketViewModel>> GetFinancialTicketByUserId(int pageSize, int pageIndex, FinancialTicketStatus? status = null!)
         {
             try
             {
@@ -175,16 +178,18 @@ namespace ExchangeStuff.Service.Services.Impls
                 if (status.HasValue)
                 {
                     listTicket = await _financialTicketsRepository.GetManyAsync(
-                        pageSize: 10, pageIndex: 1, predicate: p => p.Status == status && p.UserId.Equals(_identityUser.AccountId), orderBy: p => p.OrderBy(p => p.CreatedOn));
+                        predicate: p => p.Status == status && p.UserId.Equals(_identityUser.AccountId),
+                        orderBy: p => p.OrderBy(p => p.CreatedOn));
                 }
                 else
                 {
                     listTicket = await _financialTicketsRepository.GetManyAsync(
-                        pageSize: pageSize, pageIndex: pageIndex, predicate: p => p.UserId.Equals(_identityUser.AccountId), orderBy: p => p.OrderBy(p => p.CreatedOn));
+                        predicate: p => p.UserId.Equals(_identityUser.AccountId),
+                        orderBy: p => p.OrderBy(p => p.CreatedOn));
                 }
 
                 var result = AutoMapperConfig.Mapper.Map<List<FinancialTicketViewModel>>(listTicket);
-                return result;
+                return PaginationItem<FinancialTicketViewModel>.ToPagedList(result, pageIndex, pageSize);
             }
             catch (Exception ex)
             {
