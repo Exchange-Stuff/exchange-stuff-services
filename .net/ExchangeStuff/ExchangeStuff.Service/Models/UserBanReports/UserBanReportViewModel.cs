@@ -9,6 +9,7 @@ namespace ExchangeStuff.Service.Models.UserBanReports
         public UserViewModel User { get; set; }
 
         public BanReasonViewModel BanReason { get; set; }
+        public UserViewModel UserCreate { get; set; }
 
         public bool IsApproved { get; set; }
     }

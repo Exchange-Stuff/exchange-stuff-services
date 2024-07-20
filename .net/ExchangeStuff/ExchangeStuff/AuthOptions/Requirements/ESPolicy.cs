@@ -35,7 +35,6 @@ namespace ExchangeStuff.AuthOptions.Requirements
             foreach (var item in policyAuth)
             {
                 var policyDetail = item.Split('$', StringSplitOptions.RemoveEmptyEntries);
-                // policy requirement authorization key value pair
                 if (policyDetail != null && policyDetail.Count() == 2)
                 {
                     IAuthorizationRequirement authorizationRequirement = policyDetail[0] switch

@@ -10,6 +10,10 @@ namespace ExchangeStuff.Core.Entities
 
         public User User { get; set; }
 
+        public User UserCreate { get; set; }
+
+        public Guid UserCreateId { get; set; }
+
         public BanReason BanReason { get; set; }
 
         public bool IsApproved { get; set; }
