@@ -57,7 +57,7 @@ namespace ExchangeStuff.Service.Services.Impls
 
             var productBanCheck = await _productBanReportRepository.GetOneAsync(x => x.ProductId == productBanReportCreateModel.ProductId && x.CreatedBy == _identityUser.AccountId && !x.IsApproved);
             if (productBanCheck != null) throw new Exception("This report waiting accept");
-            var banrs = await _banReasonRepository.GetOneAsync(x => x.Id == productBanReportCreateModel.BanReasonId && x.BanReasonType == Core.Enums.BanReasonType.User);
+            var banrs = await _banReasonRepository.GetOneAsync(x => x.Id == productBanReportCreateModel.BanReasonId && x.BanReasonType == Core.Enums.BanReasonType.Product);
             if (banrs == null) throw new Exception("Not found ban reason");
             ProductBanReport productBanReport = new ProductBanReport
             {
