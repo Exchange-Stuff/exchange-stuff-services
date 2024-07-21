@@ -19,7 +19,7 @@ namespace ExchangeStuff.Controllers
         {
             _dashboardService = dashboardService;
         }
-        //[ESAuthorize(new string[] { ActionConstant.READ })]
+        [ESAuthorize(new string[] { ActionConstant.READ })]
         [HttpGet("get-report-purchase")]
         public async Task<IActionResult> GetReportPurchase()
         {
@@ -30,7 +30,7 @@ namespace ExchangeStuff.Controllers
                 Value = await _dashboardService.GetReportPurchaseTicketThisWeek()
             });
         }
-        //[ESAuthorize(new string[] { ActionConstant.READ })]
+        [ESAuthorize(new string[] { ActionConstant.READ })]
         [HttpGet("get-list-purchase-in-week")]
         public async Task<IActionResult> GetPurchasesInWeek()
         {
