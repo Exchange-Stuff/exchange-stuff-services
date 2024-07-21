@@ -1,5 +1,6 @@
 ﻿using ExchangeStuff.AuthOptions.Requirements;
 using ExchangeStuff.Core.Enums;
+using ExchangeStuff.CurrentUser.Users;
 using ExchangeStuff.Responses;
 using ExchangeStuff.Service.Constants;
 using ExchangeStuff.Service.Models.Products;
@@ -17,11 +18,15 @@ namespace ExchangeStuff.Controllers
     [Route("api/[controller]")]
     public class ProductController : ControllerBase
     {
+        private readonly IIdentityUser<Guid> _identityUser;
+        private readonly INotificationService _notiService;
         private readonly IProductService _productService;
 
 
-        public ProductController(IProductService productService)
+        public ProductController(IProductService productService, INotificationService notificationService, IIdentityUser<Guid> identityUser)
         {
+            _identityUser = identityUser;
+            _notiService = notificationService;
             _productService = productService;
         }
         [ESAuthorize(new string[] { ActionConstant.READ })]
@@ -86,6 +91,11 @@ namespace ExchangeStuff.Controllers
             var result = await _productService.CreateProductAsync(model);
             if (result)
             {
+                await _notiService.CreateNotification(new Service.Models.Notifications.NotificationCreateModel
+                {
+                    AccountId = _identityUser.AccountId,
+                    Message = "Tạo sản phẩm thành công"
+                });
                 return Ok(result);
             }
 
@@ -97,7 +107,11 @@ namespace ExchangeStuff.Controllers
         {
             var rs = await _productService.updateStatusProduct(updateProductViewModel);
             if (!rs) throw new Exception("Can not update product");
-
+            await _notiService.CreateNotification(new Service.Models.Notifications.NotificationCreateModel
+            {
+                AccountId = _identityUser.AccountId,
+                Message = "Cập nhật sản phẩm thành công"
+            });
             return StatusCode(StatusCodes.Status200OK, new ResponseResult<string>
             {
                 Error = null!,
@@ -129,7 +143,7 @@ namespace ExchangeStuff.Controllers
                 Value = await _productService.GetOtherUserProducts(userId)
             });
         }
-        [ESAuthorize(new string[] { ActionConstant.OVERWRITE})]
+        [ESAuthorize(new string[] { ActionConstant.OVERWRITE })]
         [HttpPut("cancelProduct/{productId}")]
         public async Task<IActionResult> CancelProduct(Guid productId)
         {

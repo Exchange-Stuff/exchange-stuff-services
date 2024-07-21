@@ -5,8 +5,6 @@ using ExchangeStuff.Core.Uows;
 using ExchangeStuff.CurrentUser.Users;
 using ExchangeStuff.Service.Maps;
 using ExchangeStuff.Service.Models.PurchaseTicket;
-using ExchangeStuff.Service.Models.Users;
-using ExchangeStuff.Service.Paginations;
 using ExchangeStuff.Service.Services.Interfaces;
 using System.Collections.Generic;
 
@@ -82,7 +80,7 @@ namespace ExchangeStuff.Service.Services.Impls
             return result > 0;
         }
 
-        public async Task<PaginationItem<PurchaseTicketViewModel>> GetAllPurchaseTicket(int pageSize, int pageIndex, PurchaseTicketStatus? status = null!)
+        public async Task<List<PurchaseTicketViewModel>> GetAllPurchaseTicket(int pageSize, int pageIndex, PurchaseTicketStatus? status = null!)
         {
             try
             {
@@ -90,17 +88,16 @@ namespace ExchangeStuff.Service.Services.Impls
                 if (status.HasValue)
                 {
                     listTicket = await _purchaseTicketRepository.GetManyAsync(
-                        predicate: p => p.Status.Equals(status),
-                        orderBy: p => p.OrderBy(p => p.CreatedOn));
+                        pageSize: pageSize, pageIndex: pageIndex, predicate: p => p.Status.Equals(status), orderBy: p => p.OrderBy(p => p.CreatedOn));
                 }
                 else
                 {
                     listTicket = await _purchaseTicketRepository.GetManyAsync(
-                        orderBy: p => p.OrderBy(p => p.CreatedOn));
+                        pageSize: pageSize, pageIndex: pageIndex, orderBy: p => p.OrderBy(p => p.CreatedOn));
                 }
 
                 var result = AutoMapperConfig.Mapper.Map<List<PurchaseTicketViewModel>>(listTicket);
-                return PaginationItem<PurchaseTicketViewModel>.ToPagedList(result, pageIndex, pageSize);
+                return result;
             }
             catch (Exception ex)
             {
@@ -108,7 +105,7 @@ namespace ExchangeStuff.Service.Services.Impls
             }
         }
 
-        public async Task<PaginationItem<PurchaseTicketViewModel>> GetListPurchaseTicketByUserId(int pageSize, int pageIndex, PurchaseTicketStatus? status = null!)
+        public async Task<List<PurchaseTicketViewModel>> GetListPurchaseTicketByUserId(int pageSize, int pageIndex, PurchaseTicketStatus? status = null!)
         {
             try
             {
@@ -116,20 +113,16 @@ namespace ExchangeStuff.Service.Services.Impls
                 if (status.HasValue)
                 {
                     listTicket = await _purchaseTicketRepository.GetManyAsync(
-                        predicate: p => p.Status.Equals(status) && p.UserId.Equals(_identityUser.AccountId),
-                        orderBy: p => p.OrderBy(p => p.CreatedOn),
-                        include: "Product");
+                        pageSize: pageSize, pageIndex: pageIndex, predicate: p => p.Status.Equals(status) && p.UserId.Equals(_identityUser.AccountId), orderBy: p => p.OrderBy(p => p.CreatedOn));
                 }
                 else
                 {
                     listTicket = await _purchaseTicketRepository.GetManyAsync(
-                        predicate: p => p.UserId.Equals(_identityUser.AccountId),
-                        orderBy: p => p.OrderBy(p => p.CreatedOn),
-                        include: "Product");
+                        pageSize: pageSize, pageIndex: pageIndex, predicate: p => p.UserId.Equals(_identityUser.AccountId), orderBy: p => p.OrderBy(p => p.CreatedOn));
                 }
 
                 var result = AutoMapperConfig.Mapper.Map<List<PurchaseTicketViewModel>>(listTicket);
-                return PaginationItem<PurchaseTicketViewModel>.ToPagedList(result, pageIndex, pageSize);
+                return result;
             }
             catch (Exception ex)
             {
@@ -142,7 +135,7 @@ namespace ExchangeStuff.Service.Services.Impls
             try
             {
                 PurchaseTicket ticket = new PurchaseTicket();
-                ticket = await _purchaseTicketRepository.GetOneAsync(predicate: p => p.Id.Equals(purchaseTicketId));
+                ticket = await _purchaseTicketRepository.GetOneAsync(predicate: p => p.Id.Equals(purchaseTicketId), include: "Product");
                 var result = AutoMapperConfig.Mapper.Map<PurchaseTicketViewModel>(ticket);
                 return result;
             }
