@@ -31,7 +31,7 @@ namespace ExchangeStuff.Controllers
 
         [ESAuthorize(new string[] { ActionConstant.READ })]
         [HttpGet("productBanReports/reasonIds")]
-        public async Task<IActionResult> GetProductBanReportsReasonIds(List<Guid>? reasonIds = null, int? pageIndex = null, int? pageSize = null)
+        public async Task<IActionResult> GetProductBanReportsReasonIds([FromQuery]List<Guid>? reasonIds = null, int? pageIndex = null, int? pageSize = null)
             => Ok(new ResponseResult<PaginationItem<ProductBanReportViewModel>>
             {
                 Error = null!,

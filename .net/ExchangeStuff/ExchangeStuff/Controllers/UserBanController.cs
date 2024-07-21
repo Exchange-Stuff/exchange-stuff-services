@@ -31,7 +31,7 @@ namespace ExchangeStuff.Controllers
         [ESAuthorize(new string[] { ActionConstant.READ })]
 
         [HttpGet("userBanReports/reasonIds")]
-        public async Task<IActionResult> GetUserBanReportsReasonIds(List<Guid>? reasonIds = null, int? pageIndex = null, int? pageSize = null)
+        public async Task<IActionResult> GetUserBanReportsReasonIds([FromQuery]List<Guid>? reasonIds = null, int? pageIndex = null, int? pageSize = null)
             => Ok(new ResponseResult<PaginationItem<UserBanReportViewModel>>
             {
                 Error = null!,
@@ -56,6 +56,8 @@ namespace ExchangeStuff.Controllers
             var rs = await _userBanReportService.CreateUserBanReport(userBanReportCreateModel);
             return rs != null ? StatusCode(StatusCodes.Status201Created, rs) : throw new Exception("Create user ban report fail");
         }
+
+
         [ESAuthorize(new string[] { ActionConstant.OVERWRITE })]
 
         [HttpPut("{id}")]

@@ -4,6 +4,7 @@ using ExchangeStuff.Repository.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ExchangeStuff.Repository.Migrations
 {
     [DbContext(typeof(ExchangeStuffContext))]
-    partial class ExchangeStuffContextModelSnapshot : ModelSnapshot
+    [Migration("20240719060627_update_token")]
+    partial class update_token
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -648,16 +651,11 @@ namespace ExchangeStuff.Repository.Migrations
                     b.Property<Guid>("ProductId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("Id");
 
                     b.HasIndex("BanReasonId");
 
                     b.HasIndex("ProductId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("ProductBanReports");
                 });
@@ -874,9 +872,6 @@ namespace ExchangeStuff.Repository.Migrations
                     b.Property<DateTime>("ModifiedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("UserCreateId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
@@ -884,11 +879,9 @@ namespace ExchangeStuff.Repository.Migrations
 
                     b.HasIndex("BanReasonId");
 
-                    b.HasIndex("UserCreateId");
-
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserBanReport", (string)null);
+                    b.ToTable("UserBanReports");
                 });
 
             modelBuilder.Entity("ImageProduct", b =>
@@ -1119,17 +1112,9 @@ namespace ExchangeStuff.Repository.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ExchangeStuff.Core.Entities.User", "User")
-                        .WithMany("ProductBanReports")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("BanReason");
 
                     b.Navigation("Product");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("ExchangeStuff.Core.Entities.PurchaseTicket", b =>
@@ -1203,23 +1188,15 @@ namespace ExchangeStuff.Repository.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ExchangeStuff.Core.Entities.User", "UserCreate")
-                        .WithMany("UserCreateBanReports")
-                        .HasForeignKey("UserCreateId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
                     b.HasOne("ExchangeStuff.Core.Entities.User", "User")
-                        .WithMany("UserBanReports")
+                        .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("BanReason");
 
                     b.Navigation("User");
-
-                    b.Navigation("UserCreate");
                 });
 
             modelBuilder.Entity("ImageProduct", b =>
@@ -1306,16 +1283,10 @@ namespace ExchangeStuff.Repository.Migrations
 
                     b.Navigation("PostTickets");
 
-                    b.Navigation("ProductBanReports");
-
                     b.Navigation("PurchaseTickets");
 
                     b.Navigation("UserBalance")
                         .IsRequired();
-
-                    b.Navigation("UserBanReports");
-
-                    b.Navigation("UserCreateBanReports");
                 });
 #pragma warning restore 612, 618
         }

@@ -2,7 +2,6 @@
 using ExchangeStuff.Responses;
 using ExchangeStuff.Service.Constants;
 using ExchangeStuff.Service.Models.Rating;
-using ExchangeStuff.Service.Paginations;
 using ExchangeStuff.Service.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -21,24 +20,24 @@ namespace ExchangeStuff.Controllers
         }
         [ESAuthorize(new string[] { ActionConstant.READ })]
         [HttpGet("product/{productId}")]
-        public async Task<IActionResult> GetRatingByProductId([FromRoute] Guid productId, [FromQuery] int pageIndex, [FromQuery] int pageSize)
+        public async Task<IActionResult> GetRatingByProductId([FromRoute] Guid productId)
         {
-            return Ok(new ResponseResult<PaginationItem<RatingViewModel>>
+            return Ok(new ResponseResult<List<RatingViewModel>>
             {
                 Error = null!,
                 IsSuccess = true,
-                Value = await _ratingSerivce.GetRatingByProductId(productId, pageSize, pageIndex)
+                Value = await _ratingSerivce.GetRatingByProductId(productId)
             });
         }
         [ESAuthorize(new string[] { ActionConstant.READ })]
         [HttpGet("user/{userId}")]
-        public async Task<IActionResult> GetRatingByUserId([FromRoute] Guid userId,[FromQuery] int pageSize, [FromQuery] int pageIndex)
+        public async Task<IActionResult> GetRatingByUserId([FromRoute] Guid userId)
         {
-            return Ok(new ResponseResult<PaginationItem<RatingViewModel>>
+            return Ok(new ResponseResult<List<RatingViewModel>>
             {
                 Error = null!,
                 IsSuccess = true,
-                Value = await _ratingSerivce.GetRatingByUserId(userId, pageSize, pageIndex)
+                Value = await _ratingSerivce.GetRatingByUserId(userId)
             });
         }
         [ESAuthorize(new string[] { ActionConstant.READ })]
