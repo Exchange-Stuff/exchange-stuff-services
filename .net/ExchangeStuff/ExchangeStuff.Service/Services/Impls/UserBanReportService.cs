@@ -63,7 +63,8 @@ namespace ExchangeStuff.Service.Services.Impls
             {
                 BanReasonId = userBanReportCreateModel.BanReasonId,
                 IsApproved = false,
-                UserId = userBanReportCreateModel.UserId
+                UserId = userBanReportCreateModel.UserId,
+                UserCreateId=_identityUser.AccountId,
             };
 
             await _userBanReportRepository.AddAsync(userBanReport);
