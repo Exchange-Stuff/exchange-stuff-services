@@ -1,4 +1,5 @@
 ﻿using ExchangeStuff.Core.Common;
+using ExchangeStuff.Core.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,5 +12,6 @@ namespace ExchangeStuff.Service.Models.Products
     {
         public string Name { get; set; }
         public string Thumbnail { get; set; }
+        public ProductStatus ProductStatus { get; set; }
     }
 }

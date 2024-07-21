@@ -44,7 +44,7 @@ namespace ExchangeStuff.Controllers
 
         [ESAuthorize(new string[] { ActionConstant.READ })]
         [HttpGet("getListFinancialTicketByUserId")]
-        public async Task<IActionResult> GetListFinancialTicketByUserId([FromQuery] int pageSize, [FromQuery] int pageIndex, [FromQuery] FinancialTicketStatus status)
+        public async Task<IActionResult> GetListFinancialTicketByUserId([FromQuery] int pageSize, [FromQuery] int pageIndex, [FromQuery] FinancialTicketStatus? status)
         {
             return Ok(new ResponseResult<List<FinancialTicketViewModel>>
             {

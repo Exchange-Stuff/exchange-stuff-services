@@ -36,7 +36,6 @@ namespace ExchangeStuff.Controllers
                 IsSuccess = true,
                 Value = await _purchaseTicketService.GetAllPurchaseTicket(pageSize, pageIndex, status)
             });
-
         }
         [ESAuthorize(new string[] { ActionConstant.READ })]
         [HttpGet("getListPurchaseTicketByUserId/{pageSize}/{pageIndex}/{status}")]
@@ -92,6 +91,7 @@ namespace ExchangeStuff.Controllers
         [HttpPut("UpdatePurchaseTicket")]
         public async Task<IActionResult> UpdatePurchaseTicket([FromBody] UpdatePurchaseTicketModel purchaseTicket)
         {
+
             var rs = await _purchaseTicketService.UpdatePurchaseTicket(purchaseTicket);
             var purchaseTicketget = await _purchaseTicketService.GetPurchaseTicketDetail(purchaseTicket.Id);
             if (purchaseTicketget != null)

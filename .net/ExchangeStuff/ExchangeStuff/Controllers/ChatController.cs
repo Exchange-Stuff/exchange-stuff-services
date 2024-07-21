@@ -18,7 +18,7 @@ namespace ExchangeStuff.Controllers
         {
             _chatService = chatService;
         }
-        [ESAuthorize(new string[] { ActionConstant.READ })]
+        //[ESAuthorize(new string[] { ActionConstant.READ })]
         [HttpGet("get-list-joined/{id}")]
         public async Task<IActionResult> GetListJoined([FromRoute] Guid id)
         {
@@ -29,7 +29,7 @@ namespace ExchangeStuff.Controllers
                 Value = await _chatService.GetGroupsJoined(id)
             });
         }
-        [ESAuthorize(new string[] { ActionConstant.READ })]
+        //[ESAuthorize(new string[] { ActionConstant.READ })]
         [HttpGet("get-list-messages/{id}")]
         public async Task<IActionResult> ListMessages([FromRoute] Guid id)
         {
@@ -40,7 +40,7 @@ namespace ExchangeStuff.Controllers
                 Value = await _chatService.GetListMessage(id)
             });
         }
-        [ESAuthorize(new string[] { ActionConstant.READ })]
+        //[ESAuthorize(new string[] { ActionConstant.READ })]
         [HttpGet("check-group")]
         public async Task<IActionResult> CheckGroupExisting(Guid senderId, Guid receiverId)
         {

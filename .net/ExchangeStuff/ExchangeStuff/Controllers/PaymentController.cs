@@ -20,7 +20,7 @@ namespace ExchangeStuff.Controllers
             _paymentService = paymentService;
         }
 
-        [ESAuthorize(new string[] { ActionConstant.READ })]
+        
         [HttpGet("createPayment")]
         public async Task<IActionResult> CreatePayment([FromQuery] Guid userId, [FromQuery] int amount, [FromQuery] int vnp_ResponseCode)
         {
