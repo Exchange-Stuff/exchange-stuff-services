@@ -64,7 +64,7 @@ namespace ExchangeStuff.Service.Services.Impls
         public async Task<PaginationItem<AccountViewModel>> GetAccounts(string? name = null, string? email = null, string? username = null, int? pageIndex = null, int? pageSize = null, bool? includeBan = null!)
         {
             var accounts = AutoMapperConfig.Mapper.Map<List<AccountViewModel>>
-                (await _accountRepository.GetAccountsFilter(name, email, username, "PermissionGroups", includeBan, pageIndex,pageSize));
+                (await _accountRepository.GetAccountsFilter(name, email, username, "PermissionGroups", includeBan, pageIndex, pageSize));
             return PaginationItem<AccountViewModel>.ToPagedList(accounts, pageIndex, pageSize);
         }
 
@@ -127,7 +127,7 @@ namespace ExchangeStuff.Service.Services.Impls
 
         public async Task<UserViewModel> UpdateUser(UserUpdateModel userUpdateModel)
         {
-           if (userUpdateModel.Id != _identityUser.AccountId) throw new Exception("You do not have permission");
+            if (userUpdateModel.Id != _identityUser.AccountId) throw new UnauthorizedAccessException("You do not have permission");
             var user = await _userRepository.GetOneAsync(x => x.Id == userUpdateModel.Id && x.IsActived, forUpdate: true);
             if (user == null!) throw new Exception("Not found this user");
 
@@ -158,6 +158,22 @@ namespace ExchangeStuff.Service.Services.Impls
             return AutoMapperConfig.Mapper.Map<UserViewModel>(user);
         }
 
+        public async Task<bool> DeleteAccount(Guid id)
+        {
+            var account = await _accountRepository.GetOneAsync(x => x.Id == id && x.IsActived, forUpdate: true);
+            if (account == null) throw new Exception("Not found this account");
+            account.IsActived = false;
+            var rs = await _uow.SaveChangeAsync();
+            return rs > 0;
+        }
 
+        public async Task<bool> UnDeleteAccount(Guid id)
+        {
+            var account = await _accountRepository.GetOneAsync(x => x.Id == id && !x.IsActived, forUpdate: true);
+            if (account == null) throw new Exception("Not found this account");
+            account.IsActived = true;
+            var rs = await _uow.SaveChangeAsync();
+            return rs > 0;
+        }
     }
 }
