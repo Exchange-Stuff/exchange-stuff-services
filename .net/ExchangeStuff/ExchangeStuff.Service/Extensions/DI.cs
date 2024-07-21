@@ -31,6 +31,7 @@ namespace ExchangeStuff.Service.Extensions
             services.AddScoped<IActionService, ActionService>();
             services.AddScoped<IChatService, ChatService>();
             services.AddScoped<IAdminService, AdminService>();
+            services.AddScoped<IDashboardService, DashboardService>();
             services.AddScoped<ITransactionHistoryService, TransactionHistoryService>();
             try
             {

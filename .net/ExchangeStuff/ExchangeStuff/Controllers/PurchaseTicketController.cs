@@ -32,7 +32,6 @@ namespace ExchangeStuff.Controllers
                 IsSuccess = true,
                 Value = await _purchaseTicketService.GetAllPurchaseTicket(pageSize, pageIndex, status)
             });
-
         }
         [ESAuthorize(new string[] { ActionConstant.READ })]
         [HttpGet("getListPurchaseTicketByUserId/{pageSize}/{pageIndex}/{status}")]
