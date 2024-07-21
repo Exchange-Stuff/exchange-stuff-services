@@ -21,14 +21,14 @@ namespace ExchangeStuff.Service.Hubs
             await base.OnConnectedAsync();
         }
 
-        public async Task SendNotification(string accountId, string msg)
+        public async Task SendNotification(string accountId, string msg, IHubContext<ESNotification> hubContext)
         {
             var connectionIds = await _cacheService.GetConnectionId((accountId + "").ToLower());
             if (connectionIds.Count > 0)
             {
                 foreach (var item in connectionIds)
                 {
-                    await Clients.Client(item).SendAsync("ReceiveNotification", msg);
+                    await hubContext.Clients.Client(item).SendAsync("ReceiveNotification", msg);
                 }
             }
         }
