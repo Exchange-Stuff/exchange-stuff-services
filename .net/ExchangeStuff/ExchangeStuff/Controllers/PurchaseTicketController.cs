@@ -91,15 +91,7 @@ namespace ExchangeStuff.Controllers
         [HttpPut("UpdatePurchaseTicket")]
         public async Task<IActionResult> UpdatePurchaseTicket([FromBody] UpdatePurchaseTicketModel purchaseTicket)
         {
-<<<<<<< HEAD
-            /*UpdatePurchaseTicketModel up = new UpdatePurchaseTicketModel
-            {
-                Id = Guid.Parse("3EF7A762-B8D7-4D9A-CD41-08DCA6DD14B7"),
-                Status = PurchaseTicketStatus.Processing
-            };
-            purchaseTicket = up;*/
-=======
->>>>>>> 1f898da6484b535d13018ef08e204de947a230c9
+
             var rs = await _purchaseTicketService.UpdatePurchaseTicket(purchaseTicket);
             var purchaseTicketget = await _purchaseTicketService.GetPurchaseTicketDetail(purchaseTicket.Id);
             if (purchaseTicketget != null)
