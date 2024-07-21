@@ -61,7 +61,7 @@ namespace ExchangeStuff.Service.Maps
 
             #region Mapper rating
             CreateMap<Rating, RatingViewModel>().ReverseMap();
-            CreateMap<Rating, CreateCommentModel>().ReverseMap();
+            CreateMap<Rating, CreateRatingModel>().ReverseMap();
             CreateMap<Rating, UpdateRatingModel>().ReverseMap();
             #endregion
             CreateMap<Category, CategoryViewModel>().ReverseMap();
