@@ -135,7 +135,7 @@ namespace ExchangeStuff.Service.Services.Impls
             try
             {
                 PurchaseTicket ticket = new PurchaseTicket();
-                ticket = await _purchaseTicketRepository.GetOneAsync(predicate: p => p.Id.Equals(purchaseTicketId));
+                ticket = await _purchaseTicketRepository.GetOneAsync(predicate: p => p.Id.Equals(purchaseTicketId), include: "Product");
                 var result = AutoMapperConfig.Mapper.Map<PurchaseTicketViewModel>(ticket);
                 return result;
             }

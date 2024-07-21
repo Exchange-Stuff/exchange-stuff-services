@@ -8,6 +8,7 @@ using Serilog;
 using ExchangeStuff.Service.Maps;
 using AutoMapper;
 using ExchangeStuff.Hubs;
+using ExchangeStuff.Service.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 

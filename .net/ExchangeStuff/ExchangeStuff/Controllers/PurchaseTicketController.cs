@@ -1,13 +1,11 @@
 ﻿using ExchangeStuff.AuthOptions.Requirements;
 using ExchangeStuff.Core.Enums;
+using ExchangeStuff.CurrentUser.Users;
 using ExchangeStuff.Responses;
 using ExchangeStuff.Service.Constants;
-using ExchangeStuff.Service.Models.Permissions;
 using ExchangeStuff.Service.Models.PurchaseTicket;
-using ExchangeStuff.Service.Services.Impls;
 using ExchangeStuff.Service.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using System.Net.NetworkInformation;
 
 namespace ExchangeStuff.Controllers
 {
@@ -15,12 +13,19 @@ namespace ExchangeStuff.Controllers
     [ApiController]
     public class PurchaseTicketController : ControllerBase
     {
+        private readonly IProductService _productService;
+        private readonly INotificationService _notiService;
+        private readonly IIdentityUser<Guid> _identityUser;
         private readonly IPurchaseTicketService _purchaseTicketService;
 
-        public PurchaseTicketController(IPurchaseTicketService purchaseTicketService)
+        public PurchaseTicketController(IPurchaseTicketService purchaseTicketService, IIdentityUser<Guid> identityUser, INotificationService notificationService, IProductService productService)
         {
+            _productService = productService;
+            _notiService = notificationService;
+            _identityUser = identityUser;
             _purchaseTicketService = purchaseTicketService;
         }
+
         [ESAuthorize(new string[] { ActionConstant.READ })]
         [HttpGet("getAllPurchaseTicket/{pageSize}/{pageIndex}/{status}")]
         public async Task<IActionResult> GetAllPurchaseTicket(int pageSize, int pageIndex, PurchaseTicketStatus status)
@@ -62,7 +67,20 @@ namespace ExchangeStuff.Controllers
             var rs = await _purchaseTicketService.CreatePurchaseTicket(purchaseTicket);
 
             if (!rs) throw new Exception("Can't create purchase ticket, CreatePurchaseTicket");
-
+            var product = await _productService.GetDetail(purchaseTicket.ProductId);
+            if (product != null)
+            {
+                await _notiService.CreateNotification(new Service.Models.Notifications.NotificationCreateModel
+                {
+                    AccountId = product.CreatedBy,
+                    Message = "Tên người mua đã đặt hàng sản phẩm của bạn"
+                });
+                await _notiService.CreateNotification(new Service.Models.Notifications.NotificationCreateModel
+                {
+                    AccountId = _identityUser.AccountId,
+                    Message = $"Bạn đã bị trừ {purchaseTicket.Amount} xu vào ví"
+                });
+            }
             return StatusCode(StatusCodes.Status201Created, new ResponseResult<string>
             {
                 Error = null!,
@@ -74,13 +92,24 @@ namespace ExchangeStuff.Controllers
         [HttpPut("UpdatePurchaseTicket")]
         public async Task<IActionResult> UpdatePurchaseTicket([FromBody] UpdatePurchaseTicketModel purchaseTicket)
         {
-            UpdatePurchaseTicketModel up = new UpdatePurchaseTicketModel
-            {
-                Id = Guid.Parse("3EF7A762-B8D7-4D9A-CD41-08DCA6DD14B7"),
-                Status = PurchaseTicketStatus.Processing
-            };
-            purchaseTicket = up;
             var rs = await _purchaseTicketService.UpdatePurchaseTicket(purchaseTicket);
+            var purchaseTicketget = await _purchaseTicketService.GetPurchaseTicketDetail(purchaseTicket.Id);
+            if (purchaseTicketget != null)
+            {
+                if (purchaseTicket.Status == PurchaseTicketStatus.Cancelled)
+                {
+                    await _notiService.CreateNotification(new Service.Models.Notifications.NotificationCreateModel
+                    {
+                        AccountId = purchaseTicketget.UserId,
+                        Message = $"Đơn hàng #{purchaseTicketget.Id} của bạn đã bị huỷ"
+                    });
+                    await _notiService.CreateNotification(new Service.Models.Notifications.NotificationCreateModel
+                    {
+                        AccountId = purchaseTicketget.UserId,
+                        Message = $"bạn được nhận lại {purchaseTicketget.Amount} xu vào ví"
+                    });
+                }
+            }
 
             if (!rs) throw new Exception("Can't update purchase ticket, UpdatePurchaseTicket");
 

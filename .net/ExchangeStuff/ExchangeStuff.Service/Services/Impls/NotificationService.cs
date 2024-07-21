@@ -2,22 +2,28 @@
 using ExchangeStuff.Core.Repositories;
 using ExchangeStuff.Core.Uows;
 using ExchangeStuff.CurrentUser.Users;
+using ExchangeStuff.Service.Hubs;
 using ExchangeStuff.Service.Maps;
 using ExchangeStuff.Service.Models.Notifications;
 using ExchangeStuff.Service.Paginations;
 using ExchangeStuff.Service.Services.Interfaces;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.IdentityModel.Tokens;
 
 namespace ExchangeStuff.Service.Services.Impls
 {
     public class NotificationService : INotificationService
     {
+        private readonly IHubContext<ESNotification> _hubContext;
+        private readonly ESNotification _hub;
         private readonly IIdentityUser<Guid> _identityUser;
         private readonly IUnitOfWork _uow;
         private readonly INotificationRepository _notificationRepository;
 
-        public NotificationService(IUnitOfWork unitOfWork, IIdentityUser<Guid> identityUser)
+        public NotificationService(IUnitOfWork unitOfWork, IIdentityUser<Guid> identityUser, IHubContext<ESNotification> hubContext, ICacheService cacheService)
         {
+            _hubContext = hubContext;
+            _hub = new ESNotification(cacheService);
             _identityUser = identityUser;
             _uow = unitOfWork;
             _notificationRepository = _uow.NotificationRepository;
@@ -33,6 +39,7 @@ namespace ExchangeStuff.Service.Services.Impls
             };
             await _notificationRepository.AddAsync(notificationNew);
             await _uow.SaveChangeAsync();
+            await _hub.SendNotification(notificationNew.AccountId + "", notificationNew.Message);
             return await GetNotifications(pageIndex: 0, pageSize: 50);
         }
 

@@ -1,5 +1,6 @@
 ﻿using ExchangeStuff.Core.Common;
 using ExchangeStuff.Core.Enums;
+using ExchangeStuff.Service.Models.Products;
 
 namespace ExchangeStuff.Service.Models.PurchaseTicket
 {
