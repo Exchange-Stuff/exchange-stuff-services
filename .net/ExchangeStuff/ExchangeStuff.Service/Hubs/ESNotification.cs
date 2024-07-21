@@ -1,7 +1,7 @@
 ﻿using ExchangeStuff.Service.Services.Interfaces;
 using Microsoft.AspNetCore.SignalR;
 
-namespace ExchangeStuff.Hubs
+namespace ExchangeStuff.Service.Hubs
 {
     /// <summary>
     /// pipeline
@@ -23,8 +23,8 @@ namespace ExchangeStuff.Hubs
 
         public async Task SendNotification(string accountId, string msg)
         {
-            var connectionIds = await _cacheService.GetConnectionId((accountId+"").ToLower());
-            if (connectionIds.Count>0)
+            var connectionIds = await _cacheService.GetConnectionId((accountId + "").ToLower());
+            if (connectionIds.Count > 0)
             {
                 foreach (var item in connectionIds)
                 {
@@ -32,7 +32,6 @@ namespace ExchangeStuff.Hubs
                 }
             }
         }
-
         public override async Task OnDisconnectedAsync(Exception? exception)
         {
             await _cacheService.RemoveConnection(Context.ConnectionId);
