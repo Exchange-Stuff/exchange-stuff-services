@@ -4,8 +4,6 @@ using ExchangeStuff.Core.Repositories;
 using ExchangeStuff.Core.Uows;
 using ExchangeStuff.Service.Maps;
 using ExchangeStuff.Service.Models.Comments;
-using ExchangeStuff.Service.Models.Users;
-using ExchangeStuff.Service.Paginations;
 using ExchangeStuff.Service.Services.Interfaces;
 
 namespace ExchangeStuff.Service.Services.Impls;
@@ -41,7 +39,7 @@ public class CommentService : ICommentService
         return result > 0;
     }
 
-    public async Task<PaginationItem<CommentViewModel>> GetCommentByProductId(Guid id, int pageIndex, int pageSize)
+    public async Task<List<CommentViewModel>> GetCommentByProductId(Guid id)
     {
         var comments = await _commentRepository.GetManyAsync(
             predicate: c => c.ProductId.Equals(id),
@@ -49,7 +47,7 @@ public class CommentService : ICommentService
             include: "User"
         );
         var result = AutoMapperConfig.Mapper.Map<List<CommentViewModel>>(comments);
-        return PaginationItem<CommentViewModel>.ToPagedList(result, pageIndex, pageSize);
+        return result;
     }
 
     public async Task<int> GetTotalCount(Guid productId)
