@@ -46,7 +46,7 @@ namespace ExchangeStuff.Service.Services.Impls
         public async Task<List<ProductViewModel>> GetAllProductsAsync()
         {
 
-            return AutoMapperConfig.Mapper.Map<List<ProductViewModel>>(await _productRepository.GetManyAsync(predicate: p => p.ProductStatus.Equals(ProductStatus.Approve) && p.IsActived && p.Quantity > 0, orderBy: p => p.OrderBy(p => p.CreatedOn)));
+            return AutoMapperConfig.Mapper.Map<List<ProductViewModel>>(await _productRepository.GetManyAsync(predicate: p => p.ProductStatus.Equals(ProductStatus.Approve) && p.IsActived == true && p.Quantity > 0, orderBy: p => p.OrderBy(p => p.CreatedOn)));
         }
 
         public async Task<List<ProductViewModel>> GetProductByName(string name)
