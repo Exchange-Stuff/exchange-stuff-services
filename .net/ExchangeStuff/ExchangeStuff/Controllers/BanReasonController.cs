@@ -18,6 +18,7 @@ namespace ExchangeStuff.Controllers
         {
             _banReasonService = banReasonService;
         }
+        [ESAuthorize(new string[] { ActionConstant.READ })]
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetBanReason([FromRoute] Guid id)
@@ -28,6 +29,7 @@ namespace ExchangeStuff.Controllers
             Value = await _banReasonService.GetBanReason(id)
         });
 
+        [ESAuthorize(new string[] { ActionConstant.READ })]
 
         [HttpGet("reasons")]
         public async Task<IActionResult> GetBanReason(string? content = null, BanReasonType? banReasonType = null!)
@@ -37,6 +39,7 @@ namespace ExchangeStuff.Controllers
             IsSuccess = true,
             Value = await _banReasonService.GetBanReasons(content, banReasonType)
         });
+        [ESAuthorize(new string[] { ActionConstant.WRITE })]
 
         [HttpPost]
         public async Task<IActionResult> CreateBanReason(BanReasonCreateModel banReasonCreateModel)
@@ -44,6 +47,7 @@ namespace ExchangeStuff.Controllers
             var rs = await _banReasonService.CreateBanReasons(banReasonCreateModel);
             return rs != null ? StatusCode(StatusCodes.Status201Created, rs) : throw new Exception("Create ban reason fail");
         }
+        [ESAuthorize(new string[] { ActionConstant.OVERWRITE })]
 
         [HttpPut]
         public async Task<IActionResult> UpdateBanReason(BanReasonUpdateModel banReasonUpdateModel)

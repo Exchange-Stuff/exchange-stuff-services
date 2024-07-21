@@ -22,7 +22,9 @@ namespace ExchangeStuff.Controllers
         {
             _commentService = commentService;
         }
+
         [ESAuthorize(new string[] { ActionConstant.READ })]
+
         [HttpGet("product/{id}")]
         public async Task<IActionResult> GetCommentByProductId([FromRoute] Guid id, [FromQuery] int pageIndex, [FromQuery] int pageSize)
         {
@@ -34,6 +36,7 @@ namespace ExchangeStuff.Controllers
             });
         }
         [ESAuthorize(new string[] { ActionConstant.WRITE })]
+
         [HttpPost("create")]
         public async Task<IActionResult> CreateComment(CreateCommentModel createModel)
         {
@@ -46,6 +49,7 @@ namespace ExchangeStuff.Controllers
             });
         }
         [ESAuthorize(new string[] { ActionConstant.READ })]
+
         [HttpGet("get-total-count/{id}")]
         public async Task<IActionResult> GetTotalCount(Guid id)
         {
@@ -57,7 +61,9 @@ namespace ExchangeStuff.Controllers
                 Value = result.ToString(),
             });
         }
+
         [ESAuthorize(new string[] { ActionConstant.OVERWRITE })]
+
         [HttpPut("update")]
         public async Task<IActionResult> UpdateComment(UpdateCommentModel updateModel)
         {

@@ -11,23 +11,13 @@ using ExchangeStuff.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
-//builder.Services.AddCors(options =>
-//{
-//    options.AddPolicy("AllowOrigin",
-//        builder =>
-//        {
-//            builder.WithOrigins("*")
-//                   .AllowAnyMethod()
-//                   .AllowAnyHeader();
-//        });
-//});
 builder.Services.AddCors(options => options.AddPolicy("CorsPolicy",
         builder =>
         {
             builder.AllowAnyHeader()
                    .AllowAnyMethod()
                    .SetIsOriginAllowed((host) => true)
-                   .AllowCredentials();
+                   .AllowCredentials().WithExposedHeaders("IS-EXCHANGESTUFF-TOKEN-EXPIRED"); ;
         }));
 
 builder.AddLogging();
@@ -52,7 +42,7 @@ builder.Services.Inject(builder.Configuration);
 
 
 var app = builder.Build();
-app.UseCors("AllowOrigin");
+app.UseCors("CorsPolicy");
 
 if (app.Environment.IsDevelopment())
 {
