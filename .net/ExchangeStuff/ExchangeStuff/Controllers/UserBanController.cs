@@ -56,6 +56,8 @@ namespace ExchangeStuff.Controllers
             var rs = await _userBanReportService.CreateUserBanReport(userBanReportCreateModel);
             return rs != null ? StatusCode(StatusCodes.Status201Created, rs) : throw new Exception("Create user ban report fail");
         }
+
+
         [ESAuthorize(new string[] { ActionConstant.OVERWRITE })]
 
         [HttpPut("{id}")]
