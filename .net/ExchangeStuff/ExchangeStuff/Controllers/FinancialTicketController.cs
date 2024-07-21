@@ -26,7 +26,7 @@ namespace ExchangeStuff.Controllers
         [ESAuthorize(new string[] { ActionConstant.READ })]
 
         [HttpGet("getAllFinancialTicket")]
-        public async Task<IActionResult> GetFinancialTicket([FromQuery] int pageSize, [FromQuery] int pageIndex, [FromQuery] FinancialTicketStatus status )
+        public async Task<IActionResult> GetFinancialTicket([FromQuery] int pageSize, [FromQuery] int pageIndex, [FromQuery] FinancialTicketStatus? status )
         {
             return Ok(new ResponseResult<PaginationItem<FinancialTicketViewModel>>
             {
@@ -39,7 +39,7 @@ namespace ExchangeStuff.Controllers
 
         [ESAuthorize(new string[] { ActionConstant.READ })]
         [HttpGet("getListFinancialTicketByUserId")]
-        public async Task<IActionResult> GetListFinancialTicketByUserId([FromQuery] int pageSize, [FromQuery] int pageIndex, [FromQuery] FinancialTicketStatus status)
+        public async Task<IActionResult> GetListFinancialTicketByUserId([FromQuery] int pageSize, [FromQuery] int pageIndex, [FromQuery] FinancialTicketStatus? status)
         {
             return Ok(new ResponseResult<PaginationItem<FinancialTicketViewModel>>
             {

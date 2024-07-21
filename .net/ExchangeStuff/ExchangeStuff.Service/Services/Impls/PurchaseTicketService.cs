@@ -165,6 +165,10 @@ namespace ExchangeStuff.Service.Services.Impls
 
                 if (request.Status.Equals(PurchaseTicketStatus.Cancelled))
                 {
+                    var product = await _productRepository.GetOneAsync(predicate: p => p.Id == ticket.ProductId);
+                    if (product == null) throw new Exception("Not found product!");
+                    product.Quantity += ticket.Quantity;
+                    _productRepository.Update(product);
                     TransactionHistory transactionHistory = new TransactionHistory
                     {
                         Id = Guid.NewGuid(),

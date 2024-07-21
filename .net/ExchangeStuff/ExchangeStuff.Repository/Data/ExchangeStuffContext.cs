@@ -14,6 +14,7 @@ namespace ExchangeStuff.Repository.Data
         {
 
         }
+
         public ExchangeStuffContext(DbContextOptions<ExchangeStuffContext> options, IIdentityUser<Guid> identityUser) : base(options)
         {
             _identityUser = identityUser;
@@ -23,7 +24,7 @@ namespace ExchangeStuff.Repository.Data
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer(GetConnectionString(), x => x.MigrationsAssembly("ExchangeStuff"));
+                optionsBuilder.UseSqlServer(GetConnectionString(), x => x.MigrationsAssembly("ExchangeStuff.Repository"));
             }
         }
 
@@ -87,6 +88,19 @@ namespace ExchangeStuff.Repository.Data
                 x.HasOne(x => x.Sender).WithMany(x => x.MessageChats).HasForeignKey(x => x.SenderId);
             });
             OnModelCreatingPartial(modelBuilder);
+
+            modelBuilder.Entity<Token>(x =>
+            {
+                x.ToTable(nameof(Token));
+                x.HasOne(x => x.Account).WithMany(x => x.Tokens).OnDelete(DeleteBehavior.NoAction).HasForeignKey(x => x.AccountId);
+            });
+
+            modelBuilder.Entity<UserBanReport>(x =>
+            {
+                x.ToTable($"{nameof(UserBanReport)}");
+                x.HasOne(x => x.User).WithMany(x => x.UserBanReports).OnDelete(DeleteBehavior.NoAction).HasForeignKey(x => x.UserId);
+                x.HasOne(x => x.UserCreate).WithMany(x => x.UserCreateBanReports).OnDelete(DeleteBehavior.NoAction).HasForeignKey(x => x.UserCreateId);
+            });
         }
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
