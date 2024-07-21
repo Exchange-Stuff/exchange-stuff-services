@@ -6,7 +6,6 @@ using ExchangeStuff.Service.Constants;
 using ExchangeStuff.Service.Models.Comments;
 using ExchangeStuff.Service.Models.FinancialTickets;
 using ExchangeStuff.Service.Models.PurchaseTicket;
-using ExchangeStuff.Service.Paginations;
 using ExchangeStuff.Service.Services.Impls;
 using ExchangeStuff.Service.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
@@ -35,7 +34,7 @@ namespace ExchangeStuff.Controllers
         public async Task<IActionResult> GetFinancialTicket([FromQuery] int pageSize, [FromQuery] int pageIndex, [FromQuery] FinancialTicketStatus? status )
 
         {
-            return Ok(new ResponseResult<PaginationItem<FinancialTicketViewModel>>
+            return Ok(new ResponseResult<List<FinancialTicketViewModel>>
             {
                 Error = null!,
                 IsSuccess = true,
@@ -48,7 +47,7 @@ namespace ExchangeStuff.Controllers
         [HttpGet("getListFinancialTicketByUserId")]
         public async Task<IActionResult> GetListFinancialTicketByUserId([FromQuery] int pageSize, [FromQuery] int pageIndex, [FromQuery] FinancialTicketStatus? status)
         {
-            return Ok(new ResponseResult<PaginationItem<FinancialTicketViewModel>>
+            return Ok(new ResponseResult<List<FinancialTicketViewModel>>
             {
                 Error = null,
                 IsSuccess = true,
@@ -110,7 +109,7 @@ namespace ExchangeStuff.Controllers
         [HttpGet("get-all-filter")]
         public async Task<IActionResult> GetAllFilter([FromQuery] int pageSize, [FromQuery] int pageIndex, [FromQuery] DateTime? from, [FromQuery] DateTime? to, [FromQuery] FinancialTicketStatus? status, [FromQuery] int? sort)
         {
-            return Ok(new ResponseResult<PaginationItem<FinancialTicketViewModel>>
+            return Ok(new ResponseResult<List<FinancialTicketViewModel>>
             {
                 Error = null!,
                 IsSuccess = true,

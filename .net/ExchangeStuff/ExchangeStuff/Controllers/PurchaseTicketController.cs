@@ -33,7 +33,7 @@ namespace ExchangeStuff.Controllers
         [HttpGet("getAllPurchaseTicket/{pageSize}/{pageIndex}/{status}")]
         public async Task<IActionResult> GetAllPurchaseTicket(int pageSize, int pageIndex, PurchaseTicketStatus status)
         {
-            return Ok(new ResponseResult<PaginationItem<PurchaseTicketViewModel>>
+            return Ok(new ResponseResult<List<PurchaseTicketViewModel>>
             {
                 Error = null!,
                 IsSuccess = true,
@@ -45,7 +45,7 @@ namespace ExchangeStuff.Controllers
         [HttpGet("getListPurchaseTicketByUserId/{pageSize}/{pageIndex}/{status}")]
         public async Task<IActionResult> GetListPurchaseTicketByUserId(int pageSize, int pageIndex, PurchaseTicketStatus status)
         {
-            return Ok(new ResponseResult<PaginationItem<PurchaseTicketViewModel>>
+            return Ok(new ResponseResult<List<PurchaseTicketViewModel>>
             {
                 Error = null!,
                 IsSuccess = true,

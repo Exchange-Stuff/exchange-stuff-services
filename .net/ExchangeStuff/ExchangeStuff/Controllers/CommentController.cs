@@ -4,7 +4,6 @@ using ExchangeStuff.Responses;
 using ExchangeStuff.Service.Constants;
 using ExchangeStuff.Service.Models.Comments;
 using ExchangeStuff.Service.Models.Users;
-using ExchangeStuff.Service.Paginations;
 using ExchangeStuff.Service.Services.Impls;
 using ExchangeStuff.Service.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
@@ -33,13 +32,13 @@ namespace ExchangeStuff.Controllers
         [ESAuthorize(new string[] { ActionConstant.READ })]
 
         [HttpGet("product/{id}")]
-        public async Task<IActionResult> GetCommentByProductId([FromRoute] Guid id, [FromQuery] int pageIndex, [FromQuery] int pageSize)
+        public async Task<IActionResult> GetCommentByProductId([FromRoute] Guid id)
         {
-            return Ok(new ResponseResult<PaginationItem<CommentViewModel>>
+            return Ok(new ResponseResult<List<CommentViewModel>>
             {
                 Error = null!,
                 IsSuccess = true,
-                Value = await _commentService.GetCommentByProductId(id, pageSize, pageIndex)
+                Value = await _commentService.GetCommentByProductId(id)
             });
         }
         [ESAuthorize(new string[] { ActionConstant.WRITE })]
