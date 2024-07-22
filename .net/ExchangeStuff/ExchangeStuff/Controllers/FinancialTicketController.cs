@@ -1,5 +1,6 @@
 ﻿using ExchangeStuff.AuthOptions.Requirements;
 using ExchangeStuff.Core.Enums;
+using ExchangeStuff.CurrentUser.Users;
 using ExchangeStuff.Responses;
 using ExchangeStuff.Service.Constants;
 using ExchangeStuff.Service.Models.Comments;
@@ -9,6 +10,7 @@ using ExchangeStuff.Service.Paginations;
 using ExchangeStuff.Service.Services.Impls;
 using ExchangeStuff.Service.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ExchangeStuff.Controllers
@@ -17,16 +19,21 @@ namespace ExchangeStuff.Controllers
     [ApiController]
     public class FinancialTicketController : ControllerBase
     {
+        private readonly INotificationService _notiService;
+        private readonly IIdentityUser<Guid> _identityUser;
         private readonly IFinancialTicketService _financialTicketService;
 
-        public FinancialTicketController(IFinancialTicketService financialTicketService)
+        public FinancialTicketController(IFinancialTicketService financialTicketService, INotificationService notificationService, IIdentityUser<Guid> identityUser)
         {
+            _notiService = notificationService;
+            _identityUser = identityUser;
             _financialTicketService = financialTicketService;
         }
         [ESAuthorize(new string[] { ActionConstant.READ })]
 
         [HttpGet("getAllFinancialTicket")]
         public async Task<IActionResult> GetFinancialTicket([FromQuery] int pageSize, [FromQuery] int pageIndex, [FromQuery] FinancialTicketStatus? status )
+
         {
             return Ok(new ResponseResult<PaginationItem<FinancialTicketViewModel>>
             {
@@ -45,7 +52,7 @@ namespace ExchangeStuff.Controllers
             {
                 Error = null,
                 IsSuccess = true,
-                Value = await _financialTicketService.GetFinancialTicketByUserId( pageSize, pageIndex, status)
+                Value = await _financialTicketService.GetFinancialTicketByUserId(pageSize, pageIndex, status)
 
             });
 
@@ -83,7 +90,15 @@ namespace ExchangeStuff.Controllers
             var rs = await _financialTicketService.UpdateFinancialTicket(financialTicket);
 
             if (!rs) throw new Exception("Can't update financial ticket, UpdateFiancialTicket");
-
+            var final = await _financialTicketService.GetFinancialTicketDetail(financialTicket.Id);
+            if (final != null)
+            {
+                await _notiService.CreateNotification(new Service.Models.Notifications.NotificationCreateModel
+                {
+                    AccountId = final.UserId,
+                    Message = $"Bạn nạp thành công {final.Amount} vào ví"
+                });
+            }
             return StatusCode(StatusCodes.Status201Created, new ResponseResult<string>
             {
                 Error = null!,

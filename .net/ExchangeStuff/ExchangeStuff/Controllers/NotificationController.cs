@@ -44,7 +44,17 @@ namespace ExchangeStuff.Controllers
                 Value = await _notificationService.GetNotifications(pageIndex: pageIndex, pageSize: pageSize)
             });
         }
-
+        [ESAuthorize(new string[] { ActionConstant.READ })]
+        [HttpGet("userid")]
+        public async Task<IActionResult> GetNotificationsByUserId(int? pageIndex = null!, int? pageSize = null!)
+        {
+            return Ok(new ResponseResult<PaginationItem<NotificationViewModel>>
+            {
+                Error = null!,
+                IsSuccess = true,
+                Value = await _notificationService.GetNotifications(pageIndex: pageIndex, pageSize: pageSize)
+            });
+        }
 
         [ESAuthorize(new string[] { ActionConstant.WRITE })]
 

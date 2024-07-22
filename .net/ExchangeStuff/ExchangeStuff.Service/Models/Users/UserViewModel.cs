@@ -1,7 +1,9 @@
 ﻿using ExchangeStuff.Core.Common;
+using ExchangeStuff.Core.Entities;
 using ExchangeStuff.Core.Enums;
 using ExchangeStuff.Service.Models.Campuses;
 using ExchangeStuff.Service.Models.PermissionGroups;
+using ExchangeStuff.Service.Models.UserBanReports;
 
 namespace ExchangeStuff.Service.Models.Users
 {
@@ -30,6 +32,8 @@ namespace ExchangeStuff.Service.Models.Users
         public CampusViewModel? Campus { get; set; }
 
         public UserBalanceViewModel UserBalance { get; set; }
-   
+        public List<UserBanReportViewModel>? UserBanReports { get; set; }
+
+
     }
 }

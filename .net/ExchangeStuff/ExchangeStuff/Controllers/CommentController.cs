@@ -1,4 +1,5 @@
 ﻿using ExchangeStuff.AuthOptions.Requirements;
+using ExchangeStuff.CurrentUser.Users;
 using ExchangeStuff.Responses;
 using ExchangeStuff.Service.Constants;
 using ExchangeStuff.Service.Models.Comments;
@@ -16,15 +17,20 @@ namespace ExchangeStuff.Controllers
     [ApiController]
     public class CommentController : ControllerBase
     {
+        private readonly INotificationService _notiService;
+        private readonly IIdentityUser<Guid> _identityUser;
+        private readonly IProductService _productService;
         private readonly ICommentService _commentService;
 
-        public CommentController(ICommentService commentService)
+        public CommentController(ICommentService commentService, IProductService productService, IIdentityUser<Guid> identityUser, INotificationService notificationService)
         {
+            _notiService = notificationService;
+            _identityUser = identityUser;
+            _productService = productService;
             _commentService = commentService;
         }
 
         [ESAuthorize(new string[] { ActionConstant.READ })]
-
         [HttpGet("product/{id}")]
         public async Task<IActionResult> GetCommentByProductId([FromRoute] Guid id, [FromQuery] int pageIndex, [FromQuery] int pageSize)
         {
@@ -41,6 +47,15 @@ namespace ExchangeStuff.Controllers
         public async Task<IActionResult> CreateComment(CreateCommentModel createModel)
         {
             bool result = await _commentService.CreateComment(createModel);
+            var prod = await _productService.GetDetail(createModel.ProductId);
+            if (prod != null)
+            {
+                await _notiService.CreateNotification(new Service.Models.Notifications.NotificationCreateModel
+                {
+                    AccountId = prod.CreatedBy,
+                    Message = $"Có một bình luận mới từ bài viết {prod.Name.Substring(0, 15)}...."
+                });
+            }
             return StatusCode(StatusCodes.Status201Created, new ResponseResult<string>
             {
                 Error = null!,

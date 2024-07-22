@@ -179,7 +179,7 @@ namespace ExchangeStuff.Service.Services.Impls
             {
                 var cons = await _distributedCache.GetStringAsync((_identityUser.AccountId + ""));
                 List<string> connections = new List<string>();
-                if (!string.IsNullOrEmpty(cons))
+                if (!string.IsNullOrEmpty((cons+"").Replace("[]","")))
                 {
                     connections = JsonConvert.DeserializeObject<List<string>>(cons)!;
                     if (connections == null)
