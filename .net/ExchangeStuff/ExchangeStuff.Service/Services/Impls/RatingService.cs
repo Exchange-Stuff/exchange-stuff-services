@@ -105,4 +105,13 @@ public class RatingService : IRatingSerivce
         var avgRating = totalRating == 0 ? 0 : ((decimal)totalRating / ratingCount);
         return new RatingAvgViewModel { RatingAvg = Math.Round(avgRating, 2), RatingCount = ratingCount };
     }
+
+    public async Task<RatingViewModel> GetRatingByPurchaseId(Guid id)
+    {
+        var purchase = await _purchaseTicketRepo.GetOneAsync(
+            predicate: p => p.Id == id,
+            include: "Rating");
+        if (purchase == null) throw new Exception("Not found purchase");
+        return AutoMapperConfig.Mapper.Map<RatingViewModel>(purchase.Rating);
+    }
 }
