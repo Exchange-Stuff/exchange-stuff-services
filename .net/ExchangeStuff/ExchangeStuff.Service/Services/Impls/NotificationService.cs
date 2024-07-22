@@ -39,7 +39,7 @@ namespace ExchangeStuff.Service.Services.Impls
             };
             await _notificationRepository.AddAsync(notificationNew);
             await _uow.SaveChangeAsync();
-            await _hub.SendNotification(notificationNew.AccountId + "", notificationNew.Message);
+            await _hub.SendNotification(notificationNew.AccountId + "", notificationNew.Message, _hubContext);
             return await GetNotifications(pageIndex: 0, pageSize: 50);
         }
 

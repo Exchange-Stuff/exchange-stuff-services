@@ -17,6 +17,5 @@ namespace ExchangeStuff.Service.Models.PurchaseTicket
         public PurchaseTicketStatus Status { get; set; }
         public DateTime CreatedOn { get; set; }
         public DateTime ModifiedOn { get; set; }
-        public ProductViewModel Product { get; set; }
     }
 }
