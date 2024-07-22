@@ -31,7 +31,6 @@ namespace ExchangeStuff.Controllers
         }
 
         [ESAuthorize(new string[] { ActionConstant.READ })]
-
         [HttpGet("product/{id}")]
         public async Task<IActionResult> GetCommentByProductId([FromRoute] Guid id, [FromQuery] int pageIndex, [FromQuery] int pageSize)
         {

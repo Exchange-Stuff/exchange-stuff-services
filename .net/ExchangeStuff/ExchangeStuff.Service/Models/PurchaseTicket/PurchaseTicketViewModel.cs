@@ -2,6 +2,7 @@
 using ExchangeStuff.Core.Entities;
 using ExchangeStuff.Core.Enums;
 using ExchangeStuff.Service.Models.Products;
+using ExchangeStuff.Service.Models.Users;
 using System;
 using System.ComponentModel.DataAnnotations;
 
@@ -17,5 +18,6 @@ namespace ExchangeStuff.Service.Models.PurchaseTicket
         public PurchaseTicketStatus Status { get; set; }
         public DateTime CreatedOn { get; set; }
         public DateTime ModifiedOn { get; set; }
+        public UserViewModel User { get; set; }
     }
 }
