@@ -35,7 +35,10 @@ public class DashboardService : IDashboardService
 
     public async Task<List<PurchaseTicketViewModel>> GetListPurchaseThisWeek()
     {
-        var listTicket = await _purchaseTicketRepo.GetManyAsync(predicate: p => p.CreatedOn >= firstDayInWeek && p.CreatedOn < lastDayInWeek);
+        var listTicket = await _purchaseTicketRepo.GetManyAsync(
+            predicate: p => p.CreatedOn >= firstDayInWeek && p.CreatedOn < lastDayInWeek,
+            include: "Product, User"
+        );
         return AutoMapperConfig.Mapper.Map<List<PurchaseTicketViewModel>>(listTicket);
     }
 
