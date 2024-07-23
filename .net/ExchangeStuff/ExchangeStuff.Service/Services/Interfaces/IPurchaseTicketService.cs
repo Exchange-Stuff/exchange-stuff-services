@@ -9,6 +9,7 @@ namespace ExchangeStuff.Service.Services.Interfaces
         Task<bool> CreatePurchaseTicket(CreatePurchaseTicketModel request);
         Task<bool> UpdatePurchaseTicket(UpdatePurchaseTicketModel request);
         Task<PaginationItem<PurchaseTicketViewModel>> GetListPurchaseTicketByUserId(int pageSize, int pageIndex, PurchaseTicketStatus? status = null!);
+        Task<PaginationItem<PurchaseTicketViewModel>> GetListPurchaseTicketForSeller(int pageSize, int pageIndex, PurchaseTicketStatus? status = null!);
         Task<PurchaseTicketViewModel> GetPurchaseTicketDetail(Guid purchaseTicketId);
         Task<PaginationItem<PurchaseTicketViewModel>> GetAllPurchaseTicket(int pageSize, int pageIndex, PurchaseTicketStatus? status = null!);
     }

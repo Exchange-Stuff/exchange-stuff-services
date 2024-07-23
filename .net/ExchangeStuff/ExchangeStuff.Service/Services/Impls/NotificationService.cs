@@ -46,7 +46,7 @@ namespace ExchangeStuff.Service.Services.Impls
         public async Task<PaginationItem<NotificationViewModel>> GetNotifications(int? pageIndex = null, int? pageSize = null)
         {
             if (_identityUser.AccountId == Guid.Empty) throw new UnauthorizedAccessException("Login please");
-            var notiNew = AutoMapperConfig.Mapper.Map<List<NotificationViewModel>>(await _notificationRepository.GetManyAsync(predicate:x=>x.AccountId==_identityUser.AccountId, pageIndex: pageIndex, pageSize: pageSize));
+            var notiNew = AutoMapperConfig.Mapper.Map<List<NotificationViewModel>>(await _notificationRepository.GetManyAsync(predicate:x=>x.AccountId==_identityUser.AccountId, pageIndex: pageIndex, pageSize: pageSize, orderBy: c => c.OrderByDescending(c => c.CreatedOn)));
             return PaginationItem<NotificationViewModel>.ToPagedList(notiNew, pageSize: pageSize, pageIndex: pageIndex);
         }
 

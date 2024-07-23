@@ -46,6 +46,8 @@ namespace ExchangeStuff.Service.Services.Impls
             return (await _uow.SaveChangeAsync()) > 0;
         }
 
+        public async Task<UserBanReportViewModel> GetUserBan(Guid id)
+            => AutoMapperConfig.Mapper.Map<UserBanReportViewModel>(await _userBanReportRepository.GetOneAsync(x => x.Id == id));
         public async Task<UserBanReportViewModel> CreateUserBanReport(UserBanReportCreateModel userBanReportCreateModel)
         {
             if (_identityUser.AccountId == Guid.Empty) throw new UnauthorizedAccessException("Login session expired");
@@ -64,7 +66,7 @@ namespace ExchangeStuff.Service.Services.Impls
                 BanReasonId = userBanReportCreateModel.BanReasonId,
                 IsApproved = false,
                 UserId = userBanReportCreateModel.UserId,
-                UserCreateId=_identityUser.AccountId,
+                UserCreateId = _identityUser.AccountId,
             };
 
             await _userBanReportRepository.AddAsync(userBanReport);
@@ -77,7 +79,7 @@ namespace ExchangeStuff.Service.Services.Impls
 
         public async Task<PaginationItem<UserBanReportViewModel>> GetUserBanReports(Guid? userId = null!, List<Guid>? reasonIds = null, Guid? reasonId = null, string? reason = null, int? pageIndex = null, int? pageSize = null)
         {
-            var userBans = await _userBanReportRepository.GetManyAsync(include: "BanReason,User");
+            var userBans = await _userBanReportRepository.GetManyAsync(predicate: x => !x.IsApproved, include: "BanReason,User");
             if (userId.HasValue)
             {
                 userBans = userBans.Where(x => x.UserId == userId).ToList();

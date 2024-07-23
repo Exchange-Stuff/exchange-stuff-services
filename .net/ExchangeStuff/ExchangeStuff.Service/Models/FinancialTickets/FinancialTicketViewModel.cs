@@ -17,6 +17,7 @@ namespace ExchangeStuff.Service.Models.FinancialTickets
         public string ImageQRCode { get; set; }
         public FinancialTicketStatus Status { get; set; }
         public DateTime CreatedOn { get; set; }
+        public Guid CreatedBy { get; set; }
         public DateTime ModifiedOn { get; set; }
     }
 }
