@@ -52,6 +52,19 @@ namespace ExchangeStuff.Controllers
                 Value = await _purchaseTicketService.GetListPurchaseTicketByUserId(pageSize, pageIndex, status)
             });
         }
+
+        [ESAuthorize(new string[] { ActionConstant.READ })]
+        [HttpGet("getListPurchaseTicketForSeller/{pageSize}/{pageIndex}/{status}")]
+        public async Task<IActionResult> GetListPurchaseTicketForSeller(int pageSize, int pageIndex, PurchaseTicketStatus status)
+        {
+            return Ok(new ResponseResult<PaginationItem<PurchaseTicketViewModel>>
+            {
+                Error = null!,
+                IsSuccess = true,
+                Value = await _purchaseTicketService.GetListPurchaseTicketForSeller(pageSize, pageIndex, status)
+            });
+        }
+
         [ESAuthorize(new string[] { ActionConstant.READ })]
         [HttpGet("getPurchaseTicketDetail/{purchaseTicketId}")]
         public async Task<IActionResult> GetPurchaseTicketDetail(Guid purchaseTicketId)
@@ -76,7 +89,7 @@ namespace ExchangeStuff.Controllers
                 await _notiService.CreateNotification(new Service.Models.Notifications.NotificationCreateModel
                 {
                     AccountId = product.CreatedBy,
-                    Message = "Tên người mua đã đặt hàng sản phẩm của bạn"
+                    Message = "Đã có người dùng đặt hàng sản phẩm của bạn"
                 });
                 await _notiService.CreateNotification(new Service.Models.Notifications.NotificationCreateModel
                 {
@@ -104,12 +117,20 @@ namespace ExchangeStuff.Controllers
                     await _notiService.CreateNotification(new Service.Models.Notifications.NotificationCreateModel
                     {
                         AccountId = purchaseTicketget.UserId,
-                        Message = $"Đơn hàng #{purchaseTicketget.Id} của bạn đã bị huỷ"
+                        Message = $"bạn được nhận lại {purchaseTicketget.Amount} xu vào ví"
                     });
                     await _notiService.CreateNotification(new Service.Models.Notifications.NotificationCreateModel
                     {
-                        AccountId = purchaseTicketget.UserId,
-                        Message = $"bạn được nhận lại {purchaseTicketget.Amount} xu vào ví"
+                        AccountId = purchaseTicketget.Product.CreatedBy,
+                        Message = $"Đơn hàng #{purchaseTicketget.Id} của bạn đã bị huỷ"
+                    });
+                }
+                else if (purchaseTicket.Status == PurchaseTicketStatus.Confirmed)
+                {
+                    await _notiService.CreateNotification(new Service.Models.Notifications.NotificationCreateModel
+                    {
+                        AccountId = purchaseTicketget.Product.CreatedBy,
+                        Message = $"Đơn hàng #{purchaseTicketget.Id} của bạn được xác nhận"
                     });
                 }
             }

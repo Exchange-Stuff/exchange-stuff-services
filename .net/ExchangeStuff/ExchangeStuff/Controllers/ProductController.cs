@@ -106,11 +106,12 @@ namespace ExchangeStuff.Controllers
         public async Task<IActionResult> UpdateProduct(UpdateProductViewModel updateProductViewModel)
         {
             var rs = await _productService.updateStatusProduct(updateProductViewModel);
+            ProductViewModel productViewModel = await _productService.GetDetail(updateProductViewModel.Id);
             if (!rs) throw new Exception("Can not update product");
             await _notiService.CreateNotification(new Service.Models.Notifications.NotificationCreateModel
             {
-                AccountId = _identityUser.AccountId,
-                Message = "Cập nhật sản phẩm thành công"
+                AccountId = productViewModel.CreatedBy,
+                Message = "Sản phẩm " + productViewModel.Name + " đã được duyệt"
             });
             return StatusCode(StatusCodes.Status200OK, new ResponseResult<string>
             {

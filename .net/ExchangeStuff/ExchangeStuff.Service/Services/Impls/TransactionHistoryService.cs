@@ -80,7 +80,7 @@ namespace ExchangeStuff.Service.Services.Impls
                 List<TransactionHistory> listTransactionHistory = new List<TransactionHistory>();
                 listTransactionHistory = await _transactionHistoryRepository.GetManyAsync(
                     predicate: t =>  t.UserId.Equals(_identityUser.AccountId),
-                    orderBy: t => t.OrderBy(t => t.CreatedOn));
+                    orderBy: t => t.OrderByDescending(t => t.CreatedOn));
 
                 var result = AutoMapperConfig.Mapper.Map<List<TransactionHistoryViewModel>>(listTransactionHistory);
                 return PaginationItem<TransactionHistoryViewModel>.ToPagedList(result, pageIndex, pageSize);

@@ -43,9 +43,11 @@ public class CommentService : ICommentService
 
     public async Task<PaginationItem<CommentViewModel>> GetCommentByProductId(Guid id, int pageSize, int pageIndex)
     {
+        var product = _productRepository.GetOneAsync(predicate: p => p.Id.Equals(id));
+        if (product == null) throw new Exception("Not found product!");
         var comments = await _commentRepository.GetManyAsync(
             predicate: c => c.ProductId.Equals(id),
-            orderBy: c => c.OrderByDescending(c => c.CreatedOn),
+            orderBy: c => c.OrderBy(c => c.CreatedOn),
             include: "User"
         );
         var result = AutoMapperConfig.Mapper.Map<List<CommentViewModel>>(comments);

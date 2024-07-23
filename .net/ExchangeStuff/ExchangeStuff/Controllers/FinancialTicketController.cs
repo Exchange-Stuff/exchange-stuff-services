@@ -45,8 +45,8 @@ namespace ExchangeStuff.Controllers
         }
 
         [ESAuthorize(new string[] { ActionConstant.READ })]
-        [HttpGet("getListFinancialTicketByUserId")]
-        public async Task<IActionResult> GetListFinancialTicketByUserId([FromQuery] int pageSize, [FromQuery] int pageIndex, [FromQuery] FinancialTicketStatus? status)
+        [HttpGet("getListFinancialTicketByUserId/{pageSize}/{pageIndex}/{status}")]
+        public async Task<IActionResult> GetListFinancialTicketByUserId(int pageSize, int pageIndex, FinancialTicketStatus? status)
         {
             return Ok(new ResponseResult<PaginationItem<FinancialTicketViewModel>>
             {
@@ -90,13 +90,13 @@ namespace ExchangeStuff.Controllers
             var rs = await _financialTicketService.UpdateFinancialTicket(financialTicket);
 
             if (!rs) throw new Exception("Can't update financial ticket, UpdateFiancialTicket");
-            var final = await _financialTicketService.GetFinancialTicketDetail(financialTicket.Id);
+            FinancialTicketViewModel final = await _financialTicketService.GetFinancialTicketDetail(financialTicket.Id);
             if (final != null)
             {
                 await _notiService.CreateNotification(new Service.Models.Notifications.NotificationCreateModel
                 {
-                    AccountId = final.UserId,
-                    Message = $"Bạn nạp thành công {final.Amount} vào ví"
+                    AccountId = final.CreatedBy,
+                    Message = $"Số tiền {final.Amount} xu của bạn đã được duyệt"
                 });
             }
             return StatusCode(StatusCodes.Status201Created, new ResponseResult<string>
