@@ -149,7 +149,7 @@ namespace ExchangeStuff.Service.Services.Impls
                 postTicketViewModel.UserId = _identityUser.AccountId;
                 await createPostTicket(postTicketViewModel);
 
-                var userBl = await _userBalanceRepository.GetOneAsync(predicate: p => p.UserId.Equals(product.CreatedBy));
+                var userBl = await _userBalanceRepository.GetOneAsync(predicate: p => p.UserId.Equals(_identityUser.AccountId));
 
                 if (userBl != null)
                 {

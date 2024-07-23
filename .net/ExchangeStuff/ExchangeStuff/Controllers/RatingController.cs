@@ -76,5 +76,16 @@ namespace ExchangeStuff.Controllers
                 Value = result.ToString()
             });
         }
+        [ESAuthorize(new string[] { ActionConstant.READ })]
+        [HttpGet("rating-by-purchase-id/{id}")]
+        public async Task<IActionResult> GetRatingByPurchaseId([FromRoute] Guid id)
+        {
+            return Ok(new ResponseResult<RatingViewModel>
+            {
+                Error = null!,
+                IsSuccess = true,
+                Value = await _ratingSerivce.GetRatingByPurchaseId(id)
+            });
+        }
     }
 }

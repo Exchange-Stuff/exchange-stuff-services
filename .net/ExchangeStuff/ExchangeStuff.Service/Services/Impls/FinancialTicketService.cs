@@ -179,13 +179,13 @@ namespace ExchangeStuff.Service.Services.Impls
                 {
                     listTicket = await _financialTicketsRepository.GetManyAsync(
                         predicate: p => p.Status == status && p.UserId.Equals(_identityUser.AccountId),
-                        orderBy: p => p.OrderBy(p => p.CreatedOn));
+                        orderBy: p => p.OrderByDescending(p => p.CreatedOn));
                 }
                 else
                 {
                     listTicket = await _financialTicketsRepository.GetManyAsync(
                         predicate: p => p.UserId.Equals(_identityUser.AccountId),
-                        orderBy: p => p.OrderBy(p => p.CreatedOn));
+                        orderBy: p => p.OrderByDescending(p => p.CreatedOn));
                 }
 
                 var result = AutoMapperConfig.Mapper.Map<List<FinancialTicketViewModel>>(listTicket);

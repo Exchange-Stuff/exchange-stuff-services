@@ -117,14 +117,43 @@ namespace ExchangeStuff.Service.Services.Impls
                 {
                     listTicket = await _purchaseTicketRepository.GetManyAsync(
                         predicate: p => p.Status.Equals(status) && p.UserId.Equals(_identityUser.AccountId),
-                        orderBy: p => p.OrderBy(p => p.CreatedOn),
+                        orderBy: p => p.OrderByDescending(p => p.CreatedOn),
                         include: "Product");
                 }
                 else
                 {
                     listTicket = await _purchaseTicketRepository.GetManyAsync(
                         predicate: p => p.UserId.Equals(_identityUser.AccountId),
-                        orderBy: p => p.OrderBy(p => p.CreatedOn),
+                        orderBy: p => p.OrderByDescending(p => p.CreatedOn),
+                        include: "Product");
+                }
+
+                var result = AutoMapperConfig.Mapper.Map<List<PurchaseTicketViewModel>>(listTicket);
+                return PaginationItem<PurchaseTicketViewModel>.ToPagedList(result, pageIndex, pageSize);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task<PaginationItem<PurchaseTicketViewModel>> GetListPurchaseTicketForSeller(int pageSize, int pageIndex, PurchaseTicketStatus? status = null!)
+        {
+            try
+            {
+                List<PurchaseTicket> listTicket;
+                if (status.HasValue)
+                {
+                    listTicket = await _purchaseTicketRepository.GetManyAsync(
+                        predicate: p => p.Status.Equals(status) && p.Product.CreatedBy.Equals(_identityUser.AccountId),
+                        orderBy: p => p.OrderByDescending(p => p.CreatedOn),
+                        include: "Product");
+                }
+                else
+                {
+                    listTicket = await _purchaseTicketRepository.GetManyAsync(
+                        predicate: p => p.Product.CreatedBy.Equals(_identityUser.AccountId),
+                        orderBy: p => p.OrderByDescending(p => p.CreatedOn),
                         include: "Product");
                 }
 

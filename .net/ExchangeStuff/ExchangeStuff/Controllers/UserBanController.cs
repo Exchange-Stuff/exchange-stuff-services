@@ -12,10 +12,12 @@ namespace ExchangeStuff.Controllers
     [ApiController]
     public class UserBanController : ControllerBase
     {
+        private readonly IAuthService _authService;
         private readonly IUserBanReportService _userBanReportService;
 
-        public UserBanController(IUserBanReportService userBanReport)
+        public UserBanController(IUserBanReportService userBanReport, IAuthService authService)
         {
+            _authService=authService;
             _userBanReportService = userBanReport;
         }
         [ESAuthorize(new string[] { ActionConstant.READ })]
@@ -64,6 +66,11 @@ namespace ExchangeStuff.Controllers
         public async Task<IActionResult> Approved([FromRoute] Guid id)
         {
             var rs = await _userBanReportService.ApproveUserBanReport(id);
+            var ubrp = await _userBanReportService.GetUserBanReport(id);
+            if (ubrp!=null)
+            {
+                await _authService.DeleteAccount(ubrp.User.Id);
+            }
             return rs ? StatusCode(StatusCodes.Status200OK, rs) : throw new Exception("Approve user ban report fail");
         }
     }

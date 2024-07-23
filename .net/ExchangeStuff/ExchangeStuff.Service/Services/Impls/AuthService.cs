@@ -326,6 +326,7 @@ namespace ExchangeStuff.Service.Services.Impls
                 }
                 else
                 {
+                    if (!account.IsActived) throw new UnauthorizedAccessException();
                     account.Thumbnail = userinfo.Thumbnail != account.Thumbnail ? userinfo.Thumbnail : account.Thumbnail;
                     account.Name = userinfo.Name != account.Name ? userinfo.Name : account.Name;
                     await _uow.SaveChangeAsync();
